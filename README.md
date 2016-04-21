@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/smartdevicelink/sdl_core.svg?branch=master)](https://travis-ci.org/smartdevicelink/sdl_core)
 
- [![codecov.io](https://codecov.io/github/LuxoftAKutsan/sdl_core/coverage.svg?branch=master)](https://codecov.io/github/LuxoftAKutsan/sdl_core?branch=master)
+ [![codecov.io](https://codecov.io/github/LuxoftAKutsan/sdl_core/coverage.svg?branch=develop)](https://codecov.io/github/LuxoftAKutsan/sdl_core?branch=develop)
 
 # SmartDeviceLink (SDL)
 
