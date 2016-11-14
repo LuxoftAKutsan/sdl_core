@@ -653,7 +653,7 @@ std::vector<UserFriendlyMessage> CacheManager::GetUserFriendlyMsg(
   return result;
 }
 
-void CacheManager::GetServiceUrls(const std::string& service_type,
+void CacheManager::GetUpdateUrls(const std::string& service_type,
                                   EndpointUrls& end_points) {
   LOG4CXX_AUTO_TRACE(logger_);
   CACHE_MANAGER_CHECK_VOID();

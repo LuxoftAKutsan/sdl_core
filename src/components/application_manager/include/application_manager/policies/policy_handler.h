@@ -115,7 +115,7 @@ virtual void OnSnapshotCreated(const BinaryMessage& pt_string) OVERRIDE;
   bool GetInitialAppData(const std::string& application_id,
                          StringArray* nicknames = NULL,
                          StringArray* app_hmi_types = NULL) OVERRIDE;
-  void GetServiceUrls(const std::string& service_type,
+  void GetUpdateUrls(const std::string& service_type,
                       EndpointUrls& end_points) OVERRIDE;
   void GetUpdateUrls(int service_type, EndpointUrls& end_points) OVERRIDE;
   virtual std::string GetLockScreenIconUrl() const OVERRIDE;

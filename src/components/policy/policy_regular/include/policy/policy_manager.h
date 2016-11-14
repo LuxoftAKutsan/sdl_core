@@ -88,7 +88,7 @@ class PolicyManager : public usage_statistics::StatisticsManager {
    * @param service_type Service specifies user of URL
    * @return vector of urls
    */
-  virtual void GetServiceUrls(const std::string& service_type,
+  virtual void GetUpdateUrls(const std::string& service_type,
                               EndpointUrls& end_points) = 0;
 
   /**
