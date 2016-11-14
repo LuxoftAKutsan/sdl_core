@@ -116,8 +116,9 @@ virtual void OnSnapshotCreated(const BinaryMessage& pt_string) OVERRIDE;
                          StringArray* nicknames = NULL,
                          StringArray* app_hmi_types = NULL) OVERRIDE;
   void GetUpdateUrls(const std::string& service_type,
-                      EndpointUrls& end_points) OVERRIDE;
-  void GetUpdateUrls(int service_type, EndpointUrls& end_points) OVERRIDE;
+                     EndpointUrls& out_end_points) OVERRIDE;
+  void GetUpdateUrls(const uint32_t service_type,
+                     EndpointUrls& out_end_points) OVERRIDE;
   virtual std::string GetLockScreenIconUrl() const OVERRIDE;
   void ResetRetrySequence() OVERRIDE;
   uint32_t NextRetryTimeout() OVERRIDE;

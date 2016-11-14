@@ -1285,9 +1285,15 @@ bool PolicyHandler::GetInitialAppData(const std::string& application_id,
 }
 
 void PolicyHandler::GetUpdateUrls(const std::string& service_type,
-                                   EndpointUrls& end_points) {
+                                  EndpointUrls& out_end_points) {
   POLICY_LIB_CHECK_VOID();
-  policy_manager_->GetUpdateUrls(service_type, end_points);
+  policy_manager_->GetUpdateUrls(service_type, out_end_points);
+}
+
+void PolicyHandler::GetUpdateUrls(const uint32_t service_type,
+                                  EndpointUrls& out_end_points) {
+  POLICY_LIB_CHECK_VOID();
+  policy_manager_->GetUpdateUrls(service_type, out_end_points);
 }
 
 std::string PolicyHandler::GetLockScreenIconUrl() const {
