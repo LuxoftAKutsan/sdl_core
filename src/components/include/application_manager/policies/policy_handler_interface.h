@@ -90,7 +90,7 @@ class PolicyHandlerInterface {
   virtual bool GetInitialAppData(const std::string& application_id,
                                  StringArray* nicknames = NULL,
                                  StringArray* app_hmi_types = NULL) = 0;
-  virtual void GetServiceUrls(const std::string& service_type,
+  virtual void GetUpdateUrls(const std::string& service_type,
                               EndpointUrls& end_points) = 0;
   virtual void GetUpdateUrls(int service_type, EndpointUrls& end_points) = 0;
   virtual std::string GetLockScreenIconUrl() const = 0;

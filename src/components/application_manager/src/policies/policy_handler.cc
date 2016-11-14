@@ -1230,7 +1230,7 @@ void PolicyHandler::OnSnapshotCreated(const BinaryMessage& pt_string) {
                                   application_manager_);
 #else
   EndpointUrls urls;
-  policy_manager_->GetServiceUrls("0x07", urls);
+  policy_manager_->GetUpdateUrls("0x07", urls);
 
   if (urls.empty()) {
     LOG4CXX_ERROR(logger_, "Service URLs are empty! NOT sending PT to mobile!");
@@ -1284,15 +1284,10 @@ bool PolicyHandler::GetInitialAppData(const std::string& application_id,
       application_id, nicknames, app_hmi_types);
 }
 
-void PolicyHandler::GetUpdateUrls(int service_type, EndpointUrls& end_points) {
-  POLICY_LIB_CHECK_VOID();
-  policy_manager_->GetUpdateUrls(service_type, end_points);
-}
-
-void PolicyHandler::GetServiceUrls(const std::string& service_type,
+void PolicyHandler::GetUpdateUrls(const std::string& service_type,
                                    EndpointUrls& end_points) {
   POLICY_LIB_CHECK_VOID();
-  policy_manager_->GetServiceUrls(service_type, end_points);
+  policy_manager_->GetUpdateUrls(service_type, end_points);
 }
 
 std::string PolicyHandler::GetLockScreenIconUrl() const {
@@ -1569,7 +1564,7 @@ const std::string PolicyHandler::RemoteAppsUrl() const {
   const std::string default_url;
   POLICY_LIB_CHECK(default_url);
   EndpointUrls endpoints;
-  policy_manager_->GetServiceUrls("queryAppsUrl", endpoints);
+  policy_manager_->GetUpdateUrls("queryAppsUrl", endpoints);
   if (endpoints.empty() || endpoints[0].url.empty()) {
     return default_url;
   }

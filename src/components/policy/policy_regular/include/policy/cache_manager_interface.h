@@ -151,7 +151,7 @@ class CacheManagerInterface {
    * @param service_type If URLs for specific service are preset,
    * return them otherwise default URLs.
    */
-  virtual void GetServiceUrls(const std::string& service_type,
+  virtual void GetUpdateUrls(const std::string& service_type,
                               EndpointUrls& end_points) = 0;
 
   /**

@@ -243,10 +243,10 @@ void PolicyManagerImpl::PrepareNotificationData(
   std::for_each(group_names.begin(), group_names.end(), processor);
 }
 
-void PolicyManagerImpl::GetServiceUrls(const std::string& service_type,
+void PolicyManagerImpl::GetUpdateUrls(const std::string& service_type,
                                        EndpointUrls& end_points) {
   LOG4CXX_AUTO_TRACE(logger_);
-  cache_->GetServiceUrls(service_type, end_points);
+  cache_->GetUpdateUrls(service_type, end_points);
 }
 
 bool PolicyManagerImpl::RequestPTUpdate() {

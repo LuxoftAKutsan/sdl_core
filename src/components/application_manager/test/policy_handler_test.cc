@@ -465,15 +465,15 @@ TEST_F(PolicyHandlerTest, GetInitialAppData) {
   policy_handler_.GetInitialAppData(kPolicyAppId_, nicknames, app_hmi_types);
 }
 
-TEST_F(PolicyHandlerTest, GetServiceUrls) {
+TEST_F(PolicyHandlerTest, GetUpdateUrls) {
   // Arrange
   EnablePolicyAndPolicyManagerMock();
   EndpointUrls endpoints;
   const std::string service_type_ = "0x0";
   // Check expectations
-  EXPECT_CALL(*mock_policy_manager_, GetServiceUrls(service_type_, _));
+  EXPECT_CALL(*mock_policy_manager_, GetUpdateUrls(service_type_, _));
   // Act
-  policy_handler_.GetServiceUrls(service_type_, endpoints);
+  policy_handler_.GetUpdateUrls(service_type_, endpoints);
 }
 
 TEST_F(PolicyHandlerTest, ResetRetrySequence) {
@@ -1221,7 +1221,7 @@ TEST_F(PolicyHandlerTest, OnSnapshotCreated_UrlNotAdded) {
 #ifdef EXTENDED_POLICY
   ExtendedPolicyExpectations();
 #else
-  EXPECT_CALL(*mock_policy_manager_, GetServiceUrls(_, _))
+  EXPECT_CALL(*mock_policy_manager_, GetUpdateUrls(_, _))
       .WillRepeatedly(SetArgReferee<1>(test_data));
 #endif  // EXTENDED_POLICY
 
@@ -1238,7 +1238,7 @@ TEST_F(PolicyHandlerTest, OnSnapshotCreated_UrlAdded) {
 #ifdef EXTENDED_POLICY
   ExtendedPolicyExpectations();
 #else
-  EXPECT_CALL(*mock_policy_manager_, GetServiceUrls(_, _))
+  EXPECT_CALL(*mock_policy_manager_, GetUpdateUrls(_, _))
       .WillRepeatedly(SetArgReferee<1>(test_data));
   EXPECT_CALL(app_manager_, connection_handler())
       .WillOnce(ReturnRef(conn_handler));

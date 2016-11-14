@@ -195,7 +195,7 @@ class MockPolicyHandlerInterface : public policy::PolicyHandlerInterface {
   MOCK_CONST_METHOD0(RetrieveCertificate, std::string());
   MOCK_CONST_METHOD0(get_settings, const policy::PolicySettings&());
   MOCK_CONST_METHOD0(RemoteAppsUrl, const std::string());
-  MOCK_METHOD2(GetServiceUrls,
+  MOCK_METHOD2(GetUpdateUrls,
                void(const std::string& service_type,
                     policy::EndpointUrls& end_points));
 

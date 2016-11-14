@@ -73,7 +73,7 @@ void GetUrls::Run() {
       object[msg_params][hmi_request::service].asString();
 
   policy::EndpointUrls endpoints;
-  application_manager_.GetPolicyHandler().GetServiceUrls(
+  application_manager_.GetPolicyHandler().GetUpdateUrls(
       object[strings::msg_params][hmi_request::service].asString(), endpoints);
   if (endpoints.empty()) {
     LOG4CXX_ERROR(logger_, "No URLs for service " << service_to_check);
