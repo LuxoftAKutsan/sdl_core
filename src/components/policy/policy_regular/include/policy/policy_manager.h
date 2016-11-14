@@ -89,7 +89,9 @@ class PolicyManager : public usage_statistics::StatisticsManager {
    * @return vector of urls
    */
   virtual void GetUpdateUrls(const std::string& service_type,
-                              EndpointUrls& end_points) = 0;
+                             EndpointUrls& out_end_points) = 0;
+  virtual void GetUpdateUrls(const uint32_t service_type,
+                             EndpointUrls& out_end_points) = 0;
 
   /**
    * @brief PTU is needed, for this PTS has to be formed and sent.

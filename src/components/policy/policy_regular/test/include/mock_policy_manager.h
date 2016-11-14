@@ -60,7 +60,11 @@ class MockPolicyManager : public PolicyManager {
                bool(const std::string& file, const BinaryMessage& pt_content));
   MOCK_METHOD1(ResetPT, bool(const std::string& file_name));
   MOCK_CONST_METHOD1(GetUpdateUrl, std::string(int service_type));
-  MOCK_METHOD2(GetUpdateUrls, void(int service_type, EndpointUrls& end_points));
+  MOCK_METHOD2(GetUpdateUrls,
+               void(const uint32_t service_type, EndpointUrls& out_end_points));
+  MOCK_METHOD2(GetUpdateUrls,
+               void(const std::string& service_type,
+                    EndpointUrls& out_end_points));
   MOCK_METHOD0(RequestPTUpdate, bool());
   MOCK_METHOD5(CheckPermissions,
                void(const PTString& app_id,

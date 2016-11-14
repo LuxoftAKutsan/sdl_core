@@ -157,8 +157,10 @@ class CacheManager : public CacheManagerInterface {
    * return them otherwise default URLs.
    */
   virtual void GetUpdateUrls(const std::string& service_type,
-                              EndpointUrls& end_points);
+                             EndpointUrls& out_end_points);
 
+  virtual void GetUpdateUrls(const uint32_t service_type,
+                             EndpointUrls& out_end_points);
   /**
    * @brief GetLockScreenIcon allows to obtain lock screen icon url;
    *
@@ -712,16 +714,6 @@ class CacheManager : public CacheManagerInterface {
   bool IsPermissionsCalculated(const std::string& device_id,
                                const std::string& policy_app_id,
                                policy::Permissions& permission);
-
- private:
-  /**
-   * @brief Checks, if input string is known service represented by number, than
-   * converts input string to service number
-   * @param input Input string
-   * @param output Output service
-   * @return true, if successfully converted, otherwise - false
-   */
-  bool IsNumberService(const std::string& input, std::string& output) const;
 
  private:
   utils::SharedPtr<policy_table::Table> pt_;

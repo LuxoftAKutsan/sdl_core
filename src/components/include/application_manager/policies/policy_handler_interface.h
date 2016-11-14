@@ -91,8 +91,9 @@ class PolicyHandlerInterface {
                                  StringArray* nicknames = NULL,
                                  StringArray* app_hmi_types = NULL) = 0;
   virtual void GetUpdateUrls(const std::string& service_type,
-                              EndpointUrls& end_points) = 0;
-  virtual void GetUpdateUrls(int service_type, EndpointUrls& end_points) = 0;
+                             EndpointUrls& out_end_points) = 0;
+  virtual void GetUpdateUrls(const uint32_t service_type,
+                             EndpointUrls& out_end_points) = 0;
   virtual std::string GetLockScreenIconUrl() const = 0;
   virtual void ResetRetrySequence() = 0;
   virtual uint32_t NextRetryTimeout() = 0;

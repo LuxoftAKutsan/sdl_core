@@ -152,7 +152,9 @@ class CacheManagerInterface {
    * return them otherwise default URLs.
    */
   virtual void GetUpdateUrls(const std::string& service_type,
-                              EndpointUrls& end_points) = 0;
+                             EndpointUrls& out_end_points) = 0;
+  virtual void GetUpdateUrls(const uint32_t service_type,
+                             EndpointUrls& out_end_points) = 0;
 
   /**
    * @brief GetLockScreenIcon allows to obtain lock screen icon url;
