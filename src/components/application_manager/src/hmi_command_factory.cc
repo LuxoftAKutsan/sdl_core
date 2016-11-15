@@ -157,10 +157,10 @@
 #include "application_manager/commands/hmi/on_app_permission_changed_notification.h"
 #include "application_manager/commands/hmi/on_event_changed_notification.h"
 
-//#ifdef EXTENDED_PROPRIETARY
-//#include "application_manager/commands/hmi/decrypt_certificate_request.cc
-//#include "application_manager/commands/hmi/decrypt_certificate_response.cc
-//#endif// EXTENDED_PROPRIETARY
+#ifdef EXTENDED_PROPRIETARY
+#include "application_manager/commands/hmi/decrypt_certificate_request.h"
+#include "application_manager/commands/hmi/decrypt_certificate_response.h"
+#endif// EXTENDED_PROPRIETARY
 
 #ifdef HMI_DBUS_API
 #include "application_manager/commands/hmi/vi_get_vehicle_data_request_template.h"
