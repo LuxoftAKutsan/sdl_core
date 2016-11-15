@@ -99,17 +99,17 @@ void GetUrls::ProcessServiceURLs(const policy::EndpointUrls& endpoints) {
         service_info[hmi_response::policy_app_id] = endpoints[e].app_id;
 #else   // EXTENDED_PROPRIETARY
         ApplicationSharedPtr app =
-            application_manager_.application_by_policy_id(endpoints[i].app_id);
+            application_manager_.application_by_policy_id(endpoints[e].app_id);
 
         if (!app) {
           LOG4CXX_ERROR(logger_,
                         "Can't find application with policy id "
-                            << policy_app_id
+                            << endpoints[e].app_id
                             << " URLs adding for this appliation is skipped.");
           continue;
         }
 
-        service_info[app_id] = app->hmi_app_id();
+        service_info[strings::app_id] = app->hmi_app_id();
 #endif  // EXTENDED_PROPRIETARY
       }
     }
