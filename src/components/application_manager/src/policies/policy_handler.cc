@@ -913,6 +913,45 @@ bool PolicyHandler::UnloadPolicyLibrary() {
   return ret;
 }
 
+#ifdef EXTENDED_PROPRIETARY
+struct SDLAlowedNotification {
+  SDLAlowedNotification(const connection_handler::DeviceHandle& device_id,
+                        PolicyManager* policy_manager,
+                        StateController& state_controller)
+      : device_id_(device_id)
+      , policy_manager_(policy_manager)
+      , state_controller_(state_controller) {}
+
+  void operator()(const ApplicationSharedPtr& app) {
+    if (!policy_manager_) {
+      return;
+    }
+    if (device_id_ == app->device()) {
+      std::string hmi_level;
+      mobile_apis::HMILevel::eType default_mobile_hmi;
+      policy_manager_->GetDefaultHmi(app->policy_app_id(), &hmi_level);
+      if ("BACKGROUND" == hmi_level) {
+        default_mobile_hmi = mobile_apis::HMILevel::HMI_BACKGROUND;
+      } else if ("FULL" == hmi_level) {
+        default_mobile_hmi = mobile_apis::HMILevel::HMI_FULL;
+      } else if ("LIMITED" == hmi_level) {
+        default_mobile_hmi = mobile_apis::HMILevel::HMI_LIMITED;
+      } else if ("NONE" == hmi_level) {
+        default_mobile_hmi = mobile_apis::HMILevel::HMI_NONE;
+      } else {
+        return;
+      }
+      state_controller_.SetRegularState(app, default_mobile_hmi, true);
+    }
+  }
+
+ private:
+  connection_handler::DeviceHandle device_id_;
+  PolicyManager* policy_manager_;
+  StateController& state_controller_;
+};
+#endif // EXTENDED_PROPRIETARY
+
 void PolicyHandler::OnAllowSDLFunctionalityNotification(
     bool is_allowed, const std::string& device_mac) {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -962,12 +1001,12 @@ void PolicyHandler::OnAllowSDLFunctionalityNotification(
                                 application_manager_.state_controller()));
     }
 #endif  // EXTENDED_PROPRIETARY
-  }
+}
 
   // Case, when specific device was changed
   if (device_specific) {
     uint32_t device_handle = 0u;
-    if (!connection_handler.GetDeviceID(device_id, &device_handle)) {
+    if (!connection_handler.GetDeviceID(device_mac, &device_handle)) {
       LOG4CXX_WARN(logger_,
                    "Device hadle with mac " << device_mac << " wasn't found.");
     }
@@ -1070,7 +1109,7 @@ void PolicyHandler::OnActivateApp(uint32_t connection_key,
       MessageHelper::SendOnAppPermissionsChangedNotification(
           app->app_id(), permissions, application_manager_);
     }
-#else EXTENDED_PROPRIETARY
+#else  // EXTENDED_PROPRIETARY
     permissions.isSDLAllowed = true;
 #endif  // EXTENDED_PROPRIETARY
     policy_manager_->RemovePendingPermissionChanges(policy_app_id);
