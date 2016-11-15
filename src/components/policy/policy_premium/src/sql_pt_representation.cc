@@ -70,19 +70,19 @@ const char* kDatabaseName = "policy";
 }  // namespace
 
 SQLPTRepresentation::SQLPTRepresentation()
-    : db_(new utils::dbms::SQLDatabaseImpl(kDatabaseName)) {
+    : db_(new utils::dbms::SQLDatabase(kDatabaseName)) {
   is_in_memory = false;
 }
 
 SQLPTRepresentation::SQLPTRepresentation(bool in_memory) {
   is_in_memory = in_memory;
 #ifdef __QNX__
-  db_ = new utils::dbms::SQLDatabaseImpl(kDatabaseName);
+  db_ = new utils::dbms::SQLDatabase(kDatabaseName);
 #else   // __QNX__
   if (in_memory) {
-    db_ = new utils::dbms::SQLDatabaseImpl();
+    db_ = new utils::dbms::SQLDatabase();
   } else {
-    db_ = new utils::dbms::SQLDatabaseImpl(kDatabaseName);
+    db_ = new utils::dbms::SQLDatabase(kDatabaseName);
   }
 #endif  // __QNX__
 }
@@ -1650,8 +1650,7 @@ const int32_t SQLPTRepresentation::GetDBVersion() const {
 
 utils::dbms::SQLDatabase* SQLPTRepresentation::db() const {
 #ifdef __QNX__
-  utils::dbms::SQLDatabase* db =
-      new utils::dbms::SQLDatabaseImpl(kDatabaseName);
+  utils::dbms::SQLDatabase* db = new utils::dbms::SQLDatabase(kDatabaseName);
   db->Open();
   return db;
 #else
