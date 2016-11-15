@@ -87,7 +87,11 @@ class MockCacheManagerInterface : public ::policy::CacheManagerInterface {
                std::vector<UserFriendlyMessage>(
                    const std::vector<std::string>& msg_codes,
                    const std::string& language));
-  MOCK_METHOD2(GetUpdateUrls, void(int service_type, EndpointUrls& end_points));
+  MOCK_METHOD2(GetUpdateUrls,
+               void(const std::string& service_type,
+                    EndpointUrls& out_end_points));
+  MOCK_METHOD2(GetUpdateUrls,
+               void(const uint32_t service_type, EndpointUrls& out_end_points));
   MOCK_METHOD1(
       GetNotificationsNumber,
       policy_table::NumberOfNotificationsType(const std::string& priority));
