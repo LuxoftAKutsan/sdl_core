@@ -333,18 +333,18 @@ CommandSharedPtr HMICommandFactory::CreateCommand(
       }
       break;
     }
-//#ifdef EXTENDED_PROPRIETARY
-//  case hmi_apis::FunctionID::BasicCommunication_DecryptCertificate: {
-//    if (is_response) {
-//      command.reset(
-//          new commands::DecryptCertificateResponse(message, application_manager));
-//    } else {
-//      command.reset(
-//          new commands::DecryptCertificateRequest(message, application_manager));
-//    }
-//    break;
-//  }
-//#endif // EXTENDED_PROPRIETARY
+#ifdef EXTENDED_PROPRIETARY
+  case hmi_apis::FunctionID::BasicCommunication_DecryptCertificate: {
+    if (is_response) {
+      command.reset(
+          new commands::DecryptCertificateResponse(message, application_manager));
+    } else {
+      command.reset(
+          new commands::DecryptCertificateRequest(message, application_manager));
+    }
+    break;
+  }
+#endif // EXTENDED_PROPRIETARY
     case hmi_apis::FunctionID::BasicCommunication_GetSystemInfo: {
       if (is_response) {
         command.reset(
