@@ -101,7 +101,7 @@ CacheManager::CacheManager(bool in_memory)
 CacheManager::~CacheManager() {
   LOG4CXX_AUTO_TRACE(logger_);
   sync_primitives::AutoLock lock(backuper_locker_);
-  backup_thread_->join(threads::Thread::kForceStop);
+  backup_thread_->join();
   delete backup_thread_->delegate();
   threads::DeleteThread(backup_thread_);
 }
