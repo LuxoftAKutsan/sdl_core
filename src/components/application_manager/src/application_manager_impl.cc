@@ -2787,9 +2787,10 @@ mobile_apis::Result::eType ApplicationManagerImpl::CheckPolicyPermissions(
                                              << stringified_hmi_level << " rpc "
                                              << stringified_functionID);
   policy::CheckPermissionResult result;
-  GetPolicyHandler().CheckPermissions(policy_app_id,
-                                      stringified_hmi_level,
-                                      stringified_functionID,
+  policy::PTString x1,x2,x3;
+  GetPolicyHandler().CheckPermissions(x1,
+                                      x2,
+                                      x3,
                                       rpc_params,
                                       result);
 

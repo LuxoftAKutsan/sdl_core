@@ -40,7 +40,7 @@
 namespace policy {
 
 class PolicyHandlerInterface;
-
+namespace smart_objects = NsSmartDeviceLink::NsSmartObjects;
 class PolicyEventObserver
     : public application_manager::event_engine::EventObserver {
  public:
