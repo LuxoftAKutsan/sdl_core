@@ -172,7 +172,7 @@ bool ApplicationImpl::IsFullscreen() const {
 }
 
 bool ApplicationImpl::is_audio() const {
-  return is_media() || is_voice_communication() || is_navi();
+  return is_media_application() || is_voice_communication_supported() || is_navi();
 }
 
 void ApplicationImpl::ChangeSupportingAppHMIType() {
