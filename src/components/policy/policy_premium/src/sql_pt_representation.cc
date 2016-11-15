@@ -37,6 +37,7 @@
 #include <unistd.h>
 
 #include "utils/logger.h"
+#include "utils/sqlite_wrapper/sql_database.h"
 #include "utils/file_system.h"
 #include "utils/gen_hash.h"
 #include "policy/sql_pt_representation.h"
