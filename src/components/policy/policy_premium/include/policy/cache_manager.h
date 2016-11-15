@@ -151,12 +151,24 @@ class CacheManager : public CacheManagerInterface {
   std::vector<UserFriendlyMessage> GetUserFriendlyMsg(
       const std::vector<std::string>& msg_codes, const std::string& language);
 
+    /**
+     * @brief GetLockScreenIcon allows to obtain lock screen icon url;
+     *
+     * @return url which point to the resourse where lock screen icon could be
+     *obtained.
+     */
+    virtual std::string GetLockScreenIconUrl() const;
+
   /**
    * @brief Gets list of URL to send PTS to
    * @param service_type If URLs for specific service are preset,
    * return them otherwise default URLs.
    */
-  virtual void GetUpdateUrls(int service_type, EndpointUrls& end_points);
+  virtual void GetUpdateUrls(const std::string& service_type,
+                             EndpointUrls& out_end_points);
+
+  virtual void GetUpdateUrls(const uint32_t service_type,
+                             EndpointUrls& out_end_points);
 
   /**
    * @brief Gets allowed number of notifications
