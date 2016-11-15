@@ -60,8 +60,10 @@ class PolicyManagerImpl : public PolicyManager {
                       const PolicySettings* settings);
   virtual bool LoadPT(const std::string& file, const BinaryMessage& pt_content);
   virtual bool ResetPT(const std::string& file_name);
-  virtual std::string GetUpdateUrl(int service_type) const;
-  virtual void GetUpdateUrls(int service_type, EndpointUrls& end_points);
+  virtual void GetUpdateUrls(const uint32_t service_type,
+                             EndpointUrls& out_end_points);
+  virtual void GetUpdateUrls(const std::string& service_type,
+                             EndpointUrls& out_end_points);
   virtual void RequestPTUpdate();
   virtual void CheckPermissions(const PTString& app_id,
                                 const PTString& hmi_level,
@@ -78,6 +80,7 @@ class PolicyManagerImpl : public PolicyManager {
   virtual int TimeoutExchange();
   virtual const std::vector<int> RetrySequenceDelaysSeconds();
   virtual void OnExceededTimeout();
+  virtual std::string GetLockScreenIconUrl() const OVERRIDE;
   virtual void OnUpdateStarted();
   virtual void PTUpdatedAt(Counters counter, int value);
 
