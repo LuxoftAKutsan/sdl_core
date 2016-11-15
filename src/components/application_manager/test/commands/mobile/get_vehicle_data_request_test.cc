@@ -163,9 +163,9 @@ TEST_F(GetVehicleDataRequestTest,
   EXPECT_CALL(*am::MockMessageHelper::message_helper_mock(), vehicle_data())
       .WillRepeatedly(ReturnRef(kEmptyVehicleData));
 
-  std::vector<std::string>& disallowed_params =
+  RPCParams& disallowed_params =
       command->get_disallowed_params();
-  disallowed_params.push_back("test_param");
+  disallowed_params.insert("test_param");
 
   MockAppPtr app(CreateMockApp());
   EXPECT_CALL(app_mngr_, application(kConnectionKey)).WillOnce(Return(app));
