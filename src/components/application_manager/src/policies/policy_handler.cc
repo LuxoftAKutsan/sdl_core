@@ -304,11 +304,11 @@ bool PolicyHandler::LoadPolicyLibrary() {
                  "System is configured to work without policy "
                  "functionality.");
     policy_manager_.reset();
-    return NULL;
+    return false;
   }
   dl_handle_ = dlopen(kLibrary.c_str(), RTLD_LAZY);
 
-  char* error = dlerror();
+  const char* error = dlerror();
   if (!error) {
     if (CreateManager()) {
       policy_manager_->set_listener(this);
@@ -355,7 +355,7 @@ bool PolicyHandler::InitPolicyTable() {
   // info necessary for policy table
   event_observer_->subscribe_on_event(
       hmi_apis::FunctionID::BasicCommunication_OnReady);
-  const std::string& preloaded_file = get_settings().preloaded_pt_file();
+  std::string preloaded_file = get_settings().preloaded_pt_file();
   if (file_system::FileExists(preloaded_file)) {
     return policy_manager_->InitPT(preloaded_file, &get_settings());
   }
@@ -366,7 +366,7 @@ bool PolicyHandler::InitPolicyTable() {
 bool PolicyHandler::ResetPolicyTable() {
   LOG4CXX_TRACE(logger_, "Reset policy table.");
   POLICY_LIB_CHECK(false);
-  const std::string& preloaded_file = get_settings().preloaded_pt_file();
+  std::string preloaded_file = get_settings().preloaded_pt_file();
   if (file_system::FileExists(preloaded_file)) {
     return policy_manager_->ResetPT(preloaded_file);
   }
@@ -601,6 +601,7 @@ void PolicyHandler::OnGetListOfPermissions(const uint32_t connection_key,
   if (!connection_key) {
     sync_primitives::AutoLock lock(app_to_device_link_lock_);
     LinkAppToDevice linker(app_to_device_link_, application_manager_);
+    {
     const ApplicationSet& accessor =
         application_manager_.applications().GetData();
     ApplicationSetConstIt it_app = accessor.begin();
@@ -608,6 +609,7 @@ void PolicyHandler::OnGetListOfPermissions(const uint32_t connection_key,
 
     // Add all currently registered applications
     std::for_each(it_app, it_app_end, linker);
+    }
 
     PermissionsConsolidator consolidator;
     std::vector<policy::FunctionalGroupPermission> group_permissions;
@@ -728,6 +730,20 @@ void PolicyHandler::OnVIIsReady() {
 void PolicyHandler::OnVehicleDataUpdated(
     const smart_objects::SmartObject& message) {
   POLICY_LIB_CHECK_VOID();
+  #ifdef EXTENDED_PROPRIETARY
+    if (!message.keyExists(strings::msg_params)) {
+    LOG4CXX_ERROR(logger_,
+                  "Message does not contains mandatory section "
+                      << strings::msg_params);
+    return;
+  }
+  if (message[strings::msg_params].keyExists(strings::vin)) {
+    policy_manager_->SetVINValue(
+        message[strings::msg_params][strings::vin].asString());
+  }
+  #else
+   LOG4CXX_DEBUG(logger_, "This functionality is not available for not premium policy");
+  #endif
 }
 
 void PolicyHandler::OnPendingPermissionChange(
@@ -929,12 +945,29 @@ void PolicyHandler::OnAllowSDLFunctionalityNotification(
       LOG4CXX_WARN(logger_,
                    "Device hadle with mac " << device_mac << " wasn't found.");
     }
+#ifdef EXTENDED_PROPRIETARY
+    DataAccessor<ApplicationSet> accessor = application_manager_.applications();
+    if (!is_allowed) {
+      std::for_each(
+          accessor.GetData().begin(),
+          accessor.GetData().end(),
+          DeactivateApplication(device_handle,
+                                application_manager_.state_controller()));
+    } else {
+      std::for_each(
+          accessor.GetData().begin(),
+          accessor.GetData().end(),
+          SDLAlowedNotification(device_handle,
+                                policy_manager_.get(),
+                                application_manager_.state_controller()));
+    }
+#endif  // EXTENDED_PROPRIETARY
   }
 
   // Case, when specific device was changed
   if (device_specific) {
-    uint32_t device_handle = 0;
-    if (!connection_handler.GetDeviceID(device_mac, &device_handle)) {
+    uint32_t device_handle = 0u;
+    if (!connection_handler.GetDeviceID(device_id, &device_handle)) {
       LOG4CXX_WARN(logger_,
                    "Device hadle with mac " << device_mac << " wasn't found.");
     }
@@ -948,6 +981,31 @@ void PolicyHandler::OnAllowSDLFunctionalityNotification(
 
     pending_device_handles_.erase(it);
   }
+#ifdef EXTENDED_PROPRIETARY
+  if (is_allowed && last_activated_app_id_) {
+    ApplicationSharedPtr app =
+        application_manager_.application(last_activated_app_id_);
+
+    if (!app) {
+      LOG4CXX_WARN(logger_,
+                   "Application with id '"
+                       << last_activated_app_id_
+                       << "' not found within registered applications.");
+      return;
+    }
+    if (app) {
+      // Send HMI status notification to mobile
+      // Put application in full
+      AudioStreamingState::eType state = app->is_audio()
+                                             ? AudioStreamingState::AUDIBLE
+                                             : AudioStreamingState::NOT_AUDIBLE;
+
+      application_manager_.state_controller().SetRegularState(
+          app, mobile_apis::HMILevel::HMI_FULL, state, true);
+      last_activated_app_id_ = 0;
+    }
+  }
+#endif  // EXTENDED_PROPRIETARY
 }
 
 void PolicyHandler::OnIgnitionCycleOver() {
@@ -977,8 +1035,44 @@ void PolicyHandler::OnActivateApp(uint32_t connection_key,
     }
   } else {
     permissions = policy_manager_->GetAppPermissionsChanges(policy_app_id);
+#ifdef EXTENDED_PROPRIETARY
+    UsageStatistics& usage = app->usage_report();
 
+    usage.RecordAppUserSelection();
+    DeviceParams device_params = GetDeviceParams(
+        app->device(),
+        application_manager_.connection_handler().get_session_observer());
+    permissions.deviceInfo = device_params;
+
+    DeviceConsent consent = policy_manager_->GetUserConsentForDevice(
+        permissions.deviceInfo.device_mac_address);
+    permissions.isSDLAllowed = kDeviceAllowed == consent ? true : false;
+
+    // According to the SDLAQ-CRS-2794, p.9
+    // 'priority' should be ommited in case when device
+    // is not allowed.
+    if (permissions.isSDLAllowed == false) {
+      permissions.priority.clear();
+      last_activated_app_id_ = connection_key;
+    }
+
+    if (permissions.appRevoked) {
+      usage.RecordRunAttemptsWhileRevoked();
+    }
+
+    // If isSDLAllowed is false, we should provide device params for user
+    // consent
+    if (!permissions.isSDLAllowed) {
+      pending_device_handles_.push_back(permissions.deviceInfo.device_handle);
+    }
+
+    if (permissions.appPermissionsConsentNeeded) {
+      MessageHelper::SendOnAppPermissionsChangedNotification(
+          app->app_id(), permissions, application_manager_);
+    }
+#else EXTENDED_PROPRIETARY
     permissions.isSDLAllowed = true;
+#endif  // EXTENDED_PROPRIETARY
     policy_manager_->RemovePendingPermissionChanges(policy_app_id);
   }
   // If application is revoked it should not be activated
@@ -1091,8 +1185,8 @@ void PolicyHandler::OnPermissionsUpdated(const std::string& policy_app_id,
 bool PolicyHandler::SaveSnapshot(const BinaryMessage& pt_string,
                                  std::string& snap_path) {
   const std::string& policy_snapshot_file_name =
-      settings_.policies_snapshot_file_name();
-  const std::string& system_files_path = settings_.system_files_path();
+      get_settings().policies_snapshot_file_name();
+  const std::string& system_files_path = get_settings().system_files_path();
   snap_path = system_files_path + '/' + policy_snapshot_file_name;
 
   bool result = false;
@@ -1107,6 +1201,20 @@ bool PolicyHandler::SaveSnapshot(const BinaryMessage& pt_string,
   return result;
 }
 
+#ifdef EXTENDED_PROPRIETARY
+void PolicyHandler::OnSnapshotCreated(
+    const BinaryMessage& pt_string,
+    const std::vector<int>& retry_delay_seconds,
+    int timeout_exchange) {
+  std::string policy_snapshot_full_path;
+  if (SaveSnapshot(pt_string, policy_snapshot_full_path)) {
+    MessageHelper::SendPolicyUpdate(policy_snapshot_full_path,
+                                    timeout_exchange,
+                                    retry_delay_seconds,
+                                    application_manager_);
+  }
+}
+#else  //EXTENDED_PROPRIETARY
 void PolicyHandler::OnSnapshotCreated(const BinaryMessage& pt_string) {
   LOG4CXX_AUTO_TRACE(logger_);
   POLICY_LIB_CHECK_VOID();
@@ -1133,6 +1241,7 @@ void PolicyHandler::OnSnapshotCreated(const BinaryMessage& pt_string) {
   // reset update required false
   OnUpdateRequestSentToMobile();
 }
+#endif  // EXTENDED_PROPRIETARY
 
 bool PolicyHandler::GetPriority(const std::string& policy_app_id,
                                 std::string* priority) const {
@@ -1173,6 +1282,11 @@ bool PolicyHandler::GetInitialAppData(const std::string& application_id,
   POLICY_LIB_CHECK(false);
   return policy_manager_->GetInitialAppData(
       application_id, nicknames, app_hmi_types);
+}
+
+void PolicyHandler::GetUpdateUrls(int service_type, EndpointUrls& end_points) {
+  POLICY_LIB_CHECK_VOID();
+  policy_manager_->GetUpdateUrls(service_type, end_points);
 }
 
 void PolicyHandler::GetServiceUrls(const std::string& service_type,
@@ -1292,7 +1406,84 @@ void PolicyHandler::OnUpdateHMIAppType(
     (*it)->OnUpdateHMIAppType(app_hmi_types);
   }
 }
+#ifdef EXTENDED_PROPRIETARY
 
+void PolicyHandler::OnCertificateUpdated(const std::string& certificate_data) {
+  LOG4CXX_AUTO_TRACE(logger_);
+  if (certificate_data.empty()) {
+    OnEmptyCertificateArrived();
+    return;
+  }
+
+  const std::string file_name =
+      file_system::GetAbsolutePath(get_settings().app_storage_folder()) + "/" +
+      kCerficateFileName;
+  const bool is_written = file_system::Write(
+      file_name,
+      std::vector<uint8_t>(certificate_data.begin(), certificate_data.end()));
+  LOG4CXX_DEBUG(logger_,
+                "Saving encrypted certificate data: \"" << certificate_data
+                                                        << '"');
+  if (!is_written) {
+    LOG4CXX_ERROR(logger_,
+                  "Unable to save encrypted certificate to file " << file_name);
+    return;
+  }
+  LOG4CXX_DEBUG(logger_, "Saved encrypted certificate data" << file_name);
+
+  MessageHelper::SendDecryptCertificateToHMI(file_name, application_manager_);
+}
+
+void PolicyHandler::OnEmptyCertificateArrived() const {
+  LOG4CXX_DEBUG(logger_, "Empty certificate arrived");
+  const std::string empty_certificate = "";
+  sync_primitives::AutoLock lock(listeners_lock_);
+  std::for_each(
+      listeners_.begin(),
+      listeners_.end(),
+      std::bind2nd(std::mem_fun(&PolicyHandlerObserver::OnCertificateUpdated),
+                   empty_certificate));
+}
+
+void PolicyHandler::OnCertificateDecrypted(bool is_succeeded) {
+  LOG4CXX_AUTO_TRACE(logger_);
+  POLICY_LIB_CHECK_VOID();
+
+  const std::string file_name =
+      file_system::GetAbsolutePath(get_settings().app_storage_folder()) + +"/" +
+      kCerficateFileName;
+
+  LOG4CXX_DEBUG(logger_, "Loading certificate data from file " << file_name);
+
+  utils::ScopeGuard file_deleter =
+      utils::MakeGuard(file_system::DeleteFile, file_name);
+  UNUSED(file_deleter);
+
+  if (!is_succeeded) {
+    LOG4CXX_ERROR(logger_, "Couldn't delete file " << file_name);
+    return;
+  }
+
+  std::string certificate_data;
+  if (!file_system::ReadFile(file_name, certificate_data)) {
+    LOG4CXX_ERROR(logger_,
+                  "Unable to read certificate from file " << file_name);
+    return;
+  }
+  LOG4CXX_DEBUG(logger_,
+                "Loaded decrypted certificate data: \"" << certificate_data
+                                                        << '"');
+
+  policy_manager_->SetDecryptedCertificate(certificate_data);
+
+  sync_primitives::AutoLock lock(listeners_lock_);
+  std::for_each(
+      listeners_.begin(),
+      listeners_.end(),
+      std::bind2nd(std::mem_fun(&PolicyHandlerObserver::OnCertificateUpdated),
+                   certificate_data));
+}
+#else  // EXTENDED_PROPRIETARY
 void PolicyHandler::OnCertificateUpdated(const std::string& certificate_data) {
   LOG4CXX_AUTO_TRACE(logger_);
   sync_primitives::AutoLock lock(listeners_lock_);
@@ -1302,6 +1493,8 @@ void PolicyHandler::OnCertificateUpdated(const std::string& certificate_data) {
     observer->OnCertificateUpdated(certificate_data);
   }
 }
+#endif  // EXTENDED_PROPRIETARY
+
 
 bool PolicyHandler::CanUpdate() {
   return 0 != GetAppIdForSending();
@@ -1312,6 +1505,17 @@ void PolicyHandler::RemoveDevice(const std::string& device_id) {
   POLICY_LIB_CHECK_VOID();
 
   policy_manager_->MarkUnpairedDevice(device_id);
+#ifdef EXTENDED_PROPRIETARY
+  connection_handler::DeviceHandle device_uid;
+  if (application_manager_.connection_handler().GetDeviceID(device_id,
+                                                            &device_uid)) {
+    DataAccessor<ApplicationSet> accessor = application_manager_.applications();
+    std::for_each(accessor.GetData().begin(),
+                  accessor.GetData().end(),
+                  DeactivateApplication(
+                      device_uid, application_manager_.state_controller()));
+  }
+#endif  // EXTENDED_PROPRIETARY
 }
 
 bool PolicyHandler::IsApplicationRevoked(const std::string& app_id) {
@@ -1373,7 +1577,7 @@ const std::string PolicyHandler::RemoteAppsUrl() const {
   return endpoints[0].url[0];
 }
 
-void policy::PolicyHandler::OnAppsSearchStarted() {
+void PolicyHandler::OnAppsSearchStarted() {
   POLICY_LIB_CHECK();
   policy_manager_->OnAppsSearchStarted();
 }
@@ -1422,6 +1626,11 @@ const std::vector<std::string> PolicyHandler::GetAppRequestTypes(
 const VehicleInfo policy::PolicyHandler::GetVehicleInfo() const {
   POLICY_LIB_CHECK(VehicleInfo());
   return policy_manager_->GetVehicleInfo();
+}
+
+const MetaInfo PolicyHandler::GetMetaInfo() const {
+  POLICY_LIB_CHECK(MetaInfo());
+  return policy_manager_->GetMetaInfo();
 }
 
 void PolicyHandler::Increment(usage_statistics::GlobalCounterId type) {
