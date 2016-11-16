@@ -38,14 +38,13 @@
 #include <sys/stat.h>
 
 #include "gtest/gtest.h"
-#include "policy/test/include/driver_dbms.h"
+#include "driver_dbms.h"
 #include "policy/sql_pt_representation.h"
 #include "policy/policy_types.h"
-#include "policy/mock_policy_settings.h"
+#include "mock_policy_settings.h"
 #include "json/writer.h"
 #include "json/reader.h"
 #include "rpc_base/rpc_base.h"
-#include "policy/mock_policy_settings.h"
 #include "utils/shared_ptr.h"
 #include "utils/make_shared.h"
 #include "utils/file_system.h"

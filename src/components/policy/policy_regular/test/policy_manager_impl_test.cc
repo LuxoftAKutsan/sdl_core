@@ -43,7 +43,7 @@
 #include "config_profile/profile.h"
 #include "policy/policy_table/enums.h"
 #include "policy/policy_table/types.h"
-#include "policy/mock_policy_settings.h"
+#include "mock_policy_settings.h"
 #include "mock_policy_listener.h"
 #include "mock_cache_manager.h"
 #include "mock_update_status_manager.h"

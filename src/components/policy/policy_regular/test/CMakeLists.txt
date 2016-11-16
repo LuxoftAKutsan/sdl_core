@@ -38,6 +38,7 @@ include_directories(
   ${COMPONENTS_DIR}/config_profile/include
   ${COMPONENTS_DIR}/utils/include/
   ${POLICY_PATH}/test/include/
+  ${POLICY_MOCK_INCLUDE_PATH}
 )
 
 set(testLibraries

@@ -69,9 +69,13 @@ class PolicyHandlerInterface {
   virtual void OnPermissionsUpdated(const std::string& policy_app_id,
                                     const Permissions& permissions) = 0;
 
+#ifdef EXTENDED_PROPRIETARY
   virtual void OnSnapshotCreated(const BinaryMessage& pt_string,
                                  const std::vector<int>& retry_delay_seconds,
                                  int timeout_exchange) = 0;
+#else   // EXTENDED_PROPRIETARY
+  virtual void OnSnapshotCreated(const BinaryMessage& pt_string) = 0;
+#endif  // EXTENDED_PROPRIETARY
 
   virtual bool GetPriority(const std::string& policy_app_id,
                            std::string* priority) const = 0;
@@ -287,9 +291,9 @@ virtual void OnSnapshotCreated(const BinaryMessage& pt_string);
       std::map<std::string, StringArray> app_hmi_types) = 0;
 
   virtual void OnCertificateUpdated(const std::string& certificate_data) = 0;
-
+#ifdef EXTENDED_PROPRIETARY
   virtual void OnCertificateDecrypted(bool is_succeeded) = 0;
-
+#endif  // EXTENDED_PROPRIETARY
   virtual bool CanUpdate() = 0;
 
   virtual void OnDeviceConsentChanged(const std::string& device_id,

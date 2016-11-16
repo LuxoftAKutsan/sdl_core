@@ -367,7 +367,6 @@ virtual void OnSnapshotCreated(const BinaryMessage& pt_string) OVERRIDE;
   void OnAppsSearchCompleted() OVERRIDE;
 
 
-#ifdef EXTENDED_PROPRIETARY
   /**
    * @brief OnAppRegisteredOnMobile allows to handle event when application were
    * succesfully registered on mobile device.
@@ -376,7 +375,7 @@ virtual void OnSnapshotCreated(const BinaryMessage& pt_string) OVERRIDE;
    * @param application_id registered application.
    */
   void OnAppRegisteredOnMobile(const std::string& application_id) OVERRIDE;
-#endif  // EXTENDED_PROPRIETARY
+
   /**
    * @brief Checks if certain request type is allowed for application
    * @param policy_app_id Unique applicaion id

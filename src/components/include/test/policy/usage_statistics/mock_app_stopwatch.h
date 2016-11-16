@@ -1,5 +1,4 @@
-/*
- * Copyright (c) 2016, Ford Motor Company
+/* Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,31 +28,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "application_manager/commands/hmi/decrypt_certificate_response.h"
 
-#include "application_manager/policies/policy_handler.h"
-#ifdef EXTENDED_PROPRIETARY
-namespace application_manager {
+#ifndef SRC_COMPONENTS_INCLUDE_TEST_POLICY_USAGE_STATISTICS_MOCK_APP_STOPWATCH_H_
+#define SRC_COMPONENTS_INCLUDE_TEST_POLICY_USAGE_STATISTICS_MOCK_APP_STOPWATCH_H_
 
-namespace commands {
+#include "gmock/gmock.h"
+#include "policy/usage_statistics/app_stopwatch.h"
+#include "policy/usage_statistics/statistics_manager.h"
 
-DecryptCertificateResponse::DecryptCertificateResponse(
-    const MessageSharedPtr& message, ApplicationManager& application_manager)
-    : ResponseFromHMI(message, application_manager) {}
+namespace test {
+namespace components {
+namespace usage_statistics_test {
 
-DecryptCertificateResponse::~DecryptCertificateResponse() {}
+class MockAppStopwatch : public usage_statistics::AppStopwatch {
+ public:
+  MOCK_METHOD1(Start, void(usage_statistics::AppStopwatchId stopwatch_type));
+  MOCK_METHOD1(Switch, void(usage_statistics::AppStopwatchId stopwatch_type));
+  MOCK_METHOD0(WriteTime, void());
+};
 
-void DecryptCertificateResponse::Run() {
-  LOG4CXX_AUTO_TRACE(logger_);
-  const hmi_apis::Common_Result::eType code =
-      static_cast<hmi_apis::Common_Result::eType>(
-          (*message_)[strings::params][hmi_response::code].asInt());
+}  // namespace usage_statistics_test
+}  // namespace components
+}  // namespace test
 
-  const bool is_succeeded = hmi_apis::Common_Result::SUCCESS == code;
-
-  application_manager_.GetPolicyHandler().OnCertificateDecrypted(is_succeeded);
-}
-
-}  // namespace commands
-}  // namespace application_manager
-#endif  // EXTENDED_PROPRIETARY
+#endif  // SRC_COMPONENTS_INCLUDE_TEST_POLICY_USAGE_STATISTICS_MOCK_APP_STOPWATCH_H_

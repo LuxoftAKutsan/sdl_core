@@ -1695,10 +1695,12 @@ const VehicleInfo policy::PolicyHandler::GetVehicleInfo() const {
   return policy_manager_->GetVehicleInfo();
 }
 
+#ifdef EXTENDED_PROPRIETARY
 const MetaInfo PolicyHandler::GetMetaInfo() const {
   POLICY_LIB_CHECK(MetaInfo());
   return policy_manager_->GetMetaInfo();
 }
+#endif  // EXTENDED_PROPRIETARY
 
 void PolicyHandler::Increment(usage_statistics::GlobalCounterId type) {
   POLICY_LIB_CHECK();
