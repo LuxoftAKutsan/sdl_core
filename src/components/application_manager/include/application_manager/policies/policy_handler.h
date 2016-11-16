@@ -128,6 +128,7 @@ virtual void OnSnapshotCreated(const BinaryMessage& pt_string) OVERRIDE;
   void PTUpdatedAt(Counters counter, int value) OVERRIDE;
   void add_listener(PolicyHandlerObserver* listener) OVERRIDE;
   void remove_listener(PolicyHandlerObserver* listener) OVERRIDE;
+virtual void OnSnapshotCreated(const BinaryMessage& pt_string) OVERRIDE;
 
   utils::SharedPtr<usage_statistics::StatisticsManager> GetStatisticManager()
       const OVERRIDE;
