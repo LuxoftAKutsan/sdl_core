@@ -207,7 +207,9 @@ class MockPolicyHandlerInterface : public policy::PolicyHandlerInterface {
                void(const std::string& app_id,
                     usage_statistics::AppStopwatchId type,
                     int32_t timespan_seconds));
+#ifdef ENABLE_SECURITY
   MOCK_CONST_METHOD0(RetrieveCertificate, std::string());
+#endif  // ENABLE_SECURITY
   MOCK_CONST_METHOD0(get_settings, const policy::PolicySettings&());
   MOCK_CONST_METHOD0(RemoteAppsUrl, const std::string());
   MOCK_METHOD2(GetUpdateUrls,

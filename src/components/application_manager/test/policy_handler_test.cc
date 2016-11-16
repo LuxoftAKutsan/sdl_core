@@ -1218,15 +1218,19 @@ TEST_F(PolicyHandlerTest, OnSnapshotCreated_UrlNotAdded) {
   EnablePolicyAndPolicyManagerMock();
   BinaryMessage msg;
   EndpointUrls test_data;
-#ifndef EXTENDED_POLICY
+#if !defined(EXTENDED_POLICY) && !defined(EXTENDED_PROPRIETARY)
   ExtendedPolicyExpectations();
-#else
+#endif
+#ifdef EXTENDED_PROPRIETARY
+  std::vector<int> retry_delay_seconds;
+    const int timeout_exchange = 10;
 // TODO(AKutsan): Policy move issues
 //  EXPECT_CALL(*mock_policy_manager_, GetUpdateUrls(_, _))
 //      .WillRepeatedly(SetArgReferee<1>(test_data));
-#endif  // EXTENDED_POLICY
-
+      policy_handler_.OnSnapshotCreated(msg, retry_delay_seconds, timeout_exchange);
+#else  // EXTENDED_POLICY
   policy_handler_.OnSnapshotCreated(msg);
+#endif
 }
 
 TEST_F(PolicyHandlerTest, OnSnapshotCreated_UrlAdded) {
@@ -1236,12 +1240,19 @@ TEST_F(PolicyHandlerTest, OnSnapshotCreated_UrlAdded) {
   EndpointData data("some_data");
   test_data.push_back(data);
 
-#ifndef EXTENDED_POLICY
+#if !defined(EXTENDED_POLICY) && !defined(EXTENDED_PROPRIETARY)
   ExtendedPolicyExpectations();
-#else
+#else // EXTENDED_POLICY
+
+#ifdef EXTENDED_PROPRIETARY
+  std::vector<int> retry_delay_seconds;
+    const int timeout_exchange = 10;
+
 // TODO(AKutsan): Policy move issues
 //  EXPECT_CALL(*mock_policy_manager_, GetUpdateUrls(_, _))
 //      .WillRepeatedly(SetArgReferee<1>(test_data));
+#endif //EXTENDED_PROPRIETARY
+
   EXPECT_CALL(app_manager_, connection_handler())
       .WillOnce(ReturnRef(conn_handler));
   EXPECT_CALL(conn_handler, get_session_observer())
@@ -1258,7 +1269,12 @@ TEST_F(PolicyHandlerTest, OnSnapshotCreated_UrlAdded) {
   EXPECT_CALL(*mock_app_, policy_app_id()).WillOnce(Return(kPolicyAppId_));
 #endif  // EXTENDED_POLICY
 
-  policy_handler_.OnSnapshotCreated(msg);
+
+#ifdef EXTENDED_PROPRIETARY
+    policy_handler_.OnSnapshotCreated(msg, retry_delay_seconds, timeout_exchange);
+#else // EXTENDED_PROPRIETARY
+    policy_handler_.OnSnapshotCreated(msg);
+#endif // EXTENDED_PROPRIETARY
 }
 
 TEST_F(PolicyHandlerTest,

@@ -1258,7 +1258,7 @@ void PolicyHandler::OnSnapshotCreated(
 void PolicyHandler::OnSnapshotCreated(const BinaryMessage& pt_string) {
   LOG4CXX_AUTO_TRACE(logger_);
   POLICY_LIB_CHECK_VOID();
-#ifdef EXTENDED_POLICY
+#ifndef EXTENDED_POLICY
   std::string policy_snapshot_full_path;
   if (!SaveSnapshot(pt_string, policy_snapshot_full_path)) {
     LOG4CXX_ERROR(logger_, "Snapshot processing skipped.");
@@ -1268,7 +1268,7 @@ void PolicyHandler::OnSnapshotCreated(const BinaryMessage& pt_string) {
                                   policy_manager_->TimeoutExchange(),
                                   policy_manager_->RetrySequenceDelaysSeconds(),
                                   application_manager_);
-#else
+#else  // EXTENDED_POLICY
   EndpointUrls urls;
   policy_manager_->GetUpdateUrls("0x07", urls);
 
@@ -1277,7 +1277,7 @@ void PolicyHandler::OnSnapshotCreated(const BinaryMessage& pt_string) {
     return;
   }
   SendMessageToSDK(pt_string, urls.front().url.front());
-#endif
+#endif // EXTENDED_POLICY
   // reset update required false
   OnUpdateRequestSentToMobile();
 }

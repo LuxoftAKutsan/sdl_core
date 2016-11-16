@@ -321,8 +321,8 @@ TEST_F(CommandRequestImplTest, RemoveDisallowedParameters_SUCCESS) {
   CommandParametersPermissions& permission = command->parameters_permissions();
   permission.disallowed_params.insert(kDisallowedParam1);
   permission.disallowed_params.insert(kDisallowedParam2);
-  permission.allowed_params.push_back(kAllowedParam);
-  permission.undefined_params.push_back(kUndefinedParam);
+  permission.allowed_params.insert(kAllowedParam);
+  permission.undefined_params.insert(kUndefinedParam);
 
   command->RemoveDisallowedParameters();
 
