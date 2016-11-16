@@ -181,6 +181,11 @@ class MockPolicyHandlerInterface : public policy::PolicyHandlerInterface {
       GetAppRequestTypes,
       const std::vector<std::string>(const std::string& policy_app_id));
   MOCK_CONST_METHOD0(GetVehicleInfo, const policy::VehicleInfo());
+
+#ifdef EXTENDED_PROPRIETARY
+  MOCK_CONST_METHOD0(GetMetaInfo, const policy::MetaInfo());
+#endif  // EXTENDED_PROPRIETARY
+
   MOCK_METHOD1(Increment, void(usage_statistics::GlobalCounterId type));
   MOCK_METHOD2(Increment,
                void(const std::string& app_id,
