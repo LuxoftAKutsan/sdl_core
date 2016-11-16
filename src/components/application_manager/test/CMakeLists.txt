@@ -32,7 +32,6 @@
 # application manager(AM) singleton while refactoring of AM is finished.
 
 if (BUILD_TESTS)
-
   include_directories(
     ${GMOCK_INCLUDE_DIRECTORY}
     ${CMAKE_BINARY_DIR}/src/components/
@@ -44,6 +43,7 @@ if (BUILD_TESTS)
     ${COMPONENTS_DIR}/media_manager/include/
     ${COMPONENTS_DIR}/security_manager/include/
     ${POLICY_PATH}/policy/test/include/
+    ${POLICY_MOCK_INCLUDE_PATH}
     ${COMPONENTS_DIR}/application_manager/test/include/
     )
 
