@@ -455,7 +455,7 @@ void CacheManager::CheckPermissions(const PTString& app_id,
               rpc_param.parameters->end();
 
           for (; params_iter != params_iter_end; ++params_iter) {
-            result.list_of_allowed_params.push_back(
+            result.list_of_allowed_params.insert(
                 policy_table::EnumToJsonString(*params_iter));
           }
         }

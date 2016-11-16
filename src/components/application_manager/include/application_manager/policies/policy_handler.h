@@ -93,11 +93,11 @@ class PolicyHandler : public PolicyHandlerInterface,
                                     const Permissions& permissions) OVERRIDE;
 
 #ifdef EXTENDED_PROPRIETARY
-  virtual void OnSnapshotCreated(const BinaryMessage& pt_string,
+  void OnSnapshotCreated(const BinaryMessage& pt_string,
                                  const std::vector<int>& retry_delay_seconds,
                                  int timeout_exchange) OVERRIDE;
 #else  // EXTENDED_PROPRIETARY
-virtual void OnSnapshotCreated(const BinaryMessage& pt_string) OVERRIDE;
+  void OnSnapshotCreated(const BinaryMessage& pt_string) OVERRIDE;
 #endif  // EXTENDED_PROPRIETARY
   virtual bool GetPriority(const std::string& policy_app_id,
                            std::string* priority) const OVERRIDE;
@@ -128,7 +128,6 @@ virtual void OnSnapshotCreated(const BinaryMessage& pt_string) OVERRIDE;
   void PTUpdatedAt(Counters counter, int value) OVERRIDE;
   void add_listener(PolicyHandlerObserver* listener) OVERRIDE;
   void remove_listener(PolicyHandlerObserver* listener) OVERRIDE;
-virtual void OnSnapshotCreated(const BinaryMessage& pt_string) OVERRIDE;
 
   utils::SharedPtr<usage_statistics::StatisticsManager> GetStatisticManager()
       const OVERRIDE;

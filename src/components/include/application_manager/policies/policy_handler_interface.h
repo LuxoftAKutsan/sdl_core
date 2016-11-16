@@ -84,7 +84,6 @@ class PolicyHandlerInterface {
                                 const PTString& rpc,
                                 const RPCParams& rpc_params,
                                 CheckPermissionResult& result) = 0;
-virtual void OnSnapshotCreated(const BinaryMessage& pt_string);
   virtual uint32_t GetNotificationsNumber(
       const std::string& priority) const = 0;
   virtual DeviceConsent GetUserConsentForDevice(

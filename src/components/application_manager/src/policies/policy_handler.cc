@@ -327,33 +327,6 @@ bool PolicyHandler::PolicyEnabled() const {
   return get_settings().enable_policy();
 }
 
-void PolicyHandler::OnSnapshotCreated(const BinaryMessage& pt_string) {
-  LOG4CXX_AUTO_TRACE(logger_);
-  POLICY_LIB_CHECK_VOID();
-#ifndef EXTENDED_POLICY
-  std::string policy_snapshot_full_path;
-  if (!SaveSnapshot(pt_string, policy_snapshot_full_path)) {
-    LOG4CXX_ERROR(logger_, "Snapshot processing skipped.");
-    return;
-  }
-  MessageHelper::SendPolicyUpdate(policy_snapshot_full_path,
-                                  policy_manager_->TimeoutExchange(),
-                                  policy_manager_->RetrySequenceDelaysSeconds(),
-                                  application_manager_);
-#else
-  EndpointUrls urls;
-  policy_manager_->GetServiceUrls("0x07", urls);
-
-  if (urls.empty()) {
-    LOG4CXX_ERROR(logger_, "Service URLs are empty! NOT sending PT to mobile!");
-    return;
-  }
-  SendMessageToSDK(pt_string, urls.front().url.front());
-#endif
-  // reset update required false
-  OnUpdateRequestSentToMobile();
-}
-
 bool PolicyHandler::CreateManager() {
   typedef PolicyManager* (*CreateManager)();
   typedef void (*DeleteManager)(PolicyManager*);
@@ -1281,6 +1254,7 @@ void PolicyHandler::OnSnapshotCreated(
   }
 }
 #else  //EXTENDED_PROPRIETARY
+
 void PolicyHandler::OnSnapshotCreated(const BinaryMessage& pt_string) {
   LOG4CXX_AUTO_TRACE(logger_);
   POLICY_LIB_CHECK_VOID();

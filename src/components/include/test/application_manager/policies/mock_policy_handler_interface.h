@@ -63,10 +63,19 @@ class MockPolicyHandlerInterface : public policy::PolicyHandlerInterface {
   MOCK_METHOD2(OnPermissionsUpdated,
                void(const std::string& policy_app_id,
                     const policy::Permissions& permissions));
+
+
+#ifdef EXTENDED_PROPRIETARY
   MOCK_METHOD3(OnSnapshotCreated,
                void(const policy::BinaryMessage& pt_string,
                     const std::vector<int>& retry_delay_seconds,
                     int timeout_exchange));
+#else   // EXTENDED_PROPRIETARY
+  MOCK_METHOD1(OnSnapshotCreated,
+               void(const policy::BinaryMessage& pt_string));
+#endif  // EXTENDED_PROPRIETARY
+
+
   MOCK_CONST_METHOD2(GetPriority,
                      bool(const std::string& policy_app_id,
                           std::string* priority));

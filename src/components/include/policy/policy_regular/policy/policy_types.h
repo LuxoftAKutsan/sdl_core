@@ -109,9 +109,9 @@ struct CheckPermissionResult {
   CheckPermissionResult() : hmi_level_permitted(kRpcDisallowed) {}
 
   PermitResult hmi_level_permitted;
-  std::vector<PTString> list_of_allowed_params;
-  std::vector<PTString> list_of_disallowed_params;
-  std::vector<PTString> list_of_undefined_params;
+  RPCParams list_of_allowed_params;
+  RPCParams list_of_disallowed_params;
+  RPCParams list_of_undefined_params;
 };
 
 /**
