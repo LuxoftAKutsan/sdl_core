@@ -1218,7 +1218,7 @@ TEST_F(PolicyHandlerTest, OnSnapshotCreated_UrlNotAdded) {
   EnablePolicyAndPolicyManagerMock();
   BinaryMessage msg;
   EndpointUrls test_data;
-#ifdef EXTENDED_POLICY
+#ifndef EXTENDED_POLICY
   ExtendedPolicyExpectations();
 #else
   EXPECT_CALL(*mock_policy_manager_, GetUpdateUrls(_, _))
@@ -1235,7 +1235,7 @@ TEST_F(PolicyHandlerTest, OnSnapshotCreated_UrlAdded) {
   EndpointData data("some_data");
   test_data.push_back(data);
 
-#ifdef EXTENDED_POLICY
+#ifndef EXTENDED_POLICY
   ExtendedPolicyExpectations();
 #else
   EXPECT_CALL(*mock_policy_manager_, GetUpdateUrls(_, _))
