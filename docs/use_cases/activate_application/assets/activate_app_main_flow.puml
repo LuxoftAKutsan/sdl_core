@@ -1,0 +1,11 @@
+@startuml
+HMI -> SDL: SDL.ActivateApp (app_ID)
+note right: User activates app_ID
+SDL ---> HMI: SDL.ActivateApp (SUCCESS)  
+SDL -> app_ID: OnHMIStatus (maximum possible HMILevel)
+note right
+	Application HMI Type: any 
+	app_ID successfully registers on SDL
+	app_ID in other-than-NULL policies
+end note
+@enduml

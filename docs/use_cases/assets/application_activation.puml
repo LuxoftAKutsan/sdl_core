@@ -1,0 +1,10 @@
+@startuml
+left to right direction
+actor Mobile
+actor HMI
+rectangle SDL {
+  HMI -> (Applicaiton Activation)
+  (Applicaiton Activation) .> (Policy Update) : triggers
+  (Applicaiton Activation) .> Mobile : HMI Status notiifcation
+}
+@enduml
