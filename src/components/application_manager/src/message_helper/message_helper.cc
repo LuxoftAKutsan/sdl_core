@@ -69,6 +69,8 @@ namespace {
 typedef std::map<std::string, hmi_apis::Common_AppPriority::eType>
     CommonAppPriorityMap;
 
+typedef std::vector<policy::FunctionalGroupPermission> PermissionsList;
+
 CommonAppPriorityMap app_priority_values = {
     {"NORMAL", hmi_apis::Common_AppPriority::NORMAL},
     {"COMMUNICATION", hmi_apis::Common_AppPriority::COMMUNICATION},
@@ -1647,46 +1649,79 @@ void MessageHelper::SendGetUserFriendlyMessageResponse(
   app_mngr.ManageHMICommand(message);
 }
 
+#ifdef EXTERNAL_PROPRIETARY_MODE
 void MessageHelper::SendGetListOfPermissionsResponse(
     const std::vector<policy::FunctionalGroupPermission>& permissions,
-    const uint32_t correlation_id,
+    const policy::ExternalConsentStatus& external_consent_status,
+    uint32_t correlation_id,
     ApplicationManager& app_mngr) {
-  smart_objects::SmartObject message(smart_objects::SmartType_Map);
+  using namespace smart_objects;
+  using namespace hmi_apis;
 
-  message[strings::params][strings::function_id] =
-      hmi_apis::FunctionID::SDL_GetListOfPermissions;
-  message[strings::params][strings::message_type] = MessageType::kResponse;
-  message[strings::params][strings::correlation_id] = correlation_id;
-  message[strings::params][hmi_response::code] = 0;
+  SmartObjectSPtr message = utils::MakeShared<SmartObject>(SmartType_Map);
+  DCHECK_OR_RETURN_VOID(message);
+
+  SmartObject& params = (*message)[strings::params];
+
+  params[strings::function_id] = FunctionID::SDL_GetListOfPermissions;
+  params[strings::message_type] = MessageType::kResponse;
+  params[strings::correlation_id] = correlation_id;
+  params[hmi_response::code] = static_cast<int32_t>(Common_Result::SUCCESS);
+
+  SmartObject& msg_params = (*message)[strings::msg_params];
 
   const std::string allowed_functions = "allowedFunctions";
-  message[strings::msg_params][allowed_functions] =
-      smart_objects::SmartObject(smart_objects::SmartType_Array);
+  msg_params[allowed_functions] = SmartObject(SmartType_Array);
 
-  smart_objects::SmartObject& allowed_functions_array =
-      message[strings::msg_params][allowed_functions];
+  SmartObject& allowed_functions_array = msg_params[allowed_functions];
 
-  std::vector<policy::FunctionalGroupPermission>::const_iterator it =
-      permissions.begin();
-  std::vector<policy::FunctionalGroupPermission>::const_iterator it_end =
-      permissions.end();
-  for (uint32_t index = 0; it != it_end; ++it, ++index) {
-    allowed_functions_array[index] =
-        smart_objects::SmartObject(smart_objects::SmartType_Map);
+  GroupsAppender groups_appender(allowed_functions_array);
+  std::for_each(permissions.begin(), permissions.end(), groups_appender);
 
-    smart_objects::SmartObject& item = allowed_functions_array[index];
-    item[strings::name] = (*it).group_alias;
-    item[strings::id] = (*it).group_id;
-    policy::GroupConsent permission_state = (*it).state;
-    // If state undefined, 'allowed' parameter should be absent
-    if (policy::kGroupUndefined != permission_state) {
-      item["allowed"] = policy::kGroupAllowed == permission_state;
-    }
-  }
+  const std::string external_consent_status_key = "externalConsentStatus";
+  msg_params[external_consent_status_key] = SmartObject(SmartType_Array);
 
-  app_mngr.ManageHMICommand(
-      utils::MakeShared<smart_objects::SmartObject>(message));
+  SmartObject& external_consent_status_array =
+      msg_params[external_consent_status_key];
+
+  ExternalConsentStatusAppender external_consent_status_appender(
+      external_consent_status_array);
+  std::for_each(external_consent_status.begin(),
+                external_consent_status.end(),
+                external_consent_status_appender);
+
+  app_mngr.ManageHMICommand(message);
 }
+#else
+void MessageHelper::SendGetListOfPermissionsResponse(
+    const std::vector<policy::FunctionalGroupPermission>& permissions,
+    uint32_t correlation_id,
+    ApplicationManager& app_mngr) {
+  using namespace smart_objects;
+  using namespace hmi_apis;
+
+  SmartObjectSPtr message = utils::MakeShared<SmartObject>(SmartType_Map);
+  DCHECK_OR_RETURN_VOID(message);
+
+  SmartObject& params = (*message)[strings::params];
+
+  params[strings::function_id] = FunctionID::SDL_GetListOfPermissions;
+  params[strings::message_type] = MessageType::kResponse;
+  params[strings::correlation_id] = correlation_id;
+  params[hmi_response::code] = static_cast<int32_t>(Common_Result::SUCCESS);
+
+  SmartObject& msg_params = (*message)[strings::msg_params];
+
+  const std::string allowed_functions = "allowedFunctions";
+  msg_params[allowed_functions] = SmartObject(SmartType_Array);
+
+  SmartObject& allowed_functions_array = msg_params[allowed_functions];
+
+  GroupsAppender groups_appender(allowed_functions_array);
+  std::for_each(permissions.begin(), permissions.end(), groups_appender);
+  app_mngr.ManageHMICommand(message);
+}
+#endif  // EXTERNAL_PROPRIETARY_MODE
 
 smart_objects::SmartObjectSPtr MessageHelper::CreateNegativeResponse(
     uint32_t connection_key,

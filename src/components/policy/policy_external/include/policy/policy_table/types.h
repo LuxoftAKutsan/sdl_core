@@ -101,6 +101,9 @@ typedef Map<DeviceParams, 0, 255> DeviceData;
 
 typedef Array<Enum<RequestType>, 0, 255> RequestsTypeArray;
 
+typedef AppHMIType AppHmiType;
+typedef std::vector<AppHMIType> AppHmiTypes;
+
 struct RequestTypes : public RequestsTypeArray {
   RequestTypes();
   explicit RequestTypes(Json::Value* value);

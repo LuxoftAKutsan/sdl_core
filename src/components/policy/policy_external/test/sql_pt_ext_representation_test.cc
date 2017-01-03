@@ -193,6 +193,45 @@ class SQLPTExtRepresentationTest : public ::testing::Test {
     }
     return result;
   }
+  // Attempt of simplifying policy table checks, hides internal stuff, add
+  // basic checks for data existence before getting of data
+  // For usage example see SaveUserConsentRecords_ExpectedSaved,
+  // SaveFunctionalGroupings_ExpectedSaved tests
+  template <typename ParentType, typename KeyType>
+  bool IsExist(const ParentType& parent) const;
+
+  template <typename ParentType, typename Value>
+  bool IsKeyExist(const ParentType& parent, const Value& value) const {
+    return parent.end() != std::find(parent.begin(), parent.end(), value);
+  }
+
+  template <typename ParentType>
+  bool IsKeyExist(const ParentType& parent, const std::string& value) const {
+    return parent.end() != parent.find(value);
+  }
+
+  template <typename ParentType, typename KeyType>
+  const KeyType& GetData(const ParentType& parent) const {
+    EXPECT_TRUE((IsExist<ParentType, KeyType>(parent)));
+    return GetDataInternal<ParentType, KeyType>(parent);
+  }
+
+  template <typename ParentType, typename KeyType>
+  const KeyType& GetKeyData(const ParentType& parent,
+                            const std::string& key_name) const {
+    EXPECT_TRUE((IsKeyExist<ParentType>(parent, key_name)));
+    return GetKeyDataInternal<ParentType, KeyType>(parent, key_name);
+  }
+
+ private:
+  template <typename ParentType, typename KeyType>
+  const KeyType& GetDataInternal(const ParentType& parent) const;
+
+  template <typename ParentType, typename KeyType>
+  const KeyType& GetKeyDataInternal(const ParentType& parent,
+                                    const std::string& key_name) const {
+    return parent.find(key_name)->second;
+  }
 };
 
 // Specializations for 'policy_table' section

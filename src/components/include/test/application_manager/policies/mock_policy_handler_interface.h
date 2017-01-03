@@ -34,6 +34,7 @@
 #define SRC_COMPONENTS_INCLUDE_TEST_APPLICATION_MANAGER_POLICIES_MOCK_POLICY_HANDLER_INTERFACE_H_
 
 #include "application_manager/policies/policy_handler_interface.h"
+#include "application_manager/application_manager.h"
 #include "gmock/gmock.h"
 #include "policy/policy_types.h"
 #include "smart_objects/smart_object.h"
@@ -76,11 +77,10 @@ class MockPolicyHandlerInterface : public policy::PolicyHandlerInterface {
   MOCK_CONST_METHOD2(GetPriority,
                      bool(const std::string& policy_app_id,
                           std::string* priority));
-  MOCK_METHOD5(CheckPermissions,
-               void(const policy::PTString& app_id,
-                    const policy::PTString& hmi_level,
+  MOCK_METHOD4(CheckPermissions,
+               void(const application_manager::ApplicationSharedPtr app,
                     const policy::PTString& rpc,
-                    const policy::RPCParams& rpc_params,
+                    const application_manager::RPCParams& rpc_params,
                     policy::CheckPermissionResult& result));
   MOCK_CONST_METHOD1(GetNotificationsNumber,
                      uint32_t(const std::string& priority));
@@ -175,8 +175,11 @@ class MockPolicyHandlerInterface : public policy::PolicyHandlerInterface {
                           const std::string& policy_app_id));
   MOCK_METHOD0(OnPTExchangeNeeded, void());
   MOCK_METHOD1(GetAvailableApps, void(std::queue<std::string>& apps));
-  MOCK_METHOD1(AddApplication,
-               policy::StatusNotifier(const std::string& application_id));
+  MOCK_METHOD2(
+      AddApplication,
+      policy::StatusNotifier(
+          const std::string& application_id,
+          const rpc::policy_table_interface_base::AppHmiTypes& hmi_types));
   MOCK_METHOD1(IsApplicationRevoked, bool(const std::string& app_id));
   MOCK_METHOD0(OnUpdateRequestSentToMobile, void());
   MOCK_CONST_METHOD1(HeartBeatTimeout, uint32_t(const std::string& app_id));

@@ -180,129 +180,6 @@ struct GroupSorter
 
 }  // namespace
 
-namespace {
-
-/**
- * @brief Extracts group name from group permission structure
- */
-struct GroupNamesAppender
-    : public std::unary_function<void,
-                                 const policy::FunctionalGroupPermission&> {
-  GroupNamesAppender(policy_table::Strings& names) : names_(names) {}
-
-  void operator()(const policy::FunctionalGroupPermission& value) {
-    names_.push_back(value.group_name);
-  }
-
- private:
-  policy_table::Strings& names_;
-};
-
-/**
- * @brief Updates permission state of input group permission value in case
- * group name is found within allowed or disallowed groups lists
- * Also collects matched groups names to separate collection for futher
- * processing
- */
-struct ConsentsUpdater
-    : public std::unary_function<void, policy::FunctionalGroupPermission&> {
-  ConsentsUpdater(const policy::GroupsNames& allowed,
-                  const policy::GroupsNames& disallowed,
-                  std::vector<policy::FunctionalGroupPermission>&
-                      out_external_consent_matches)
-      : allowed_(allowed)
-      , disallowed_(disallowed)
-      , out_external_consent_matches_(out_external_consent_matches) {}
-
-  void operator()(policy::FunctionalGroupPermission& value) {
-    if (helpers::in_range(disallowed_, value.group_name)) {
-      value.state = policy::kGroupDisallowed;
-      out_external_consent_matches_.push_back(value);
-      return;
-    }
-
-    if (helpers::in_range(allowed_, value.group_name)) {
-      value.state = policy::kGroupAllowed;
-      out_external_consent_matches_.push_back(value);
-    }
-  }
-
- private:
-  const policy::GroupsNames& allowed_;
-  const policy::GroupsNames& disallowed_;
-  std::vector<policy::FunctionalGroupPermission>& out_external_consent_matches_;
-};
-
-/**
- * @brief Checks whether ExternalConsent entity status is the same as name of
- * group
- * container where entity has been found in. In case of match group is added to
- * 'disallowed' list, otherwise - to 'allowed' one.
- * E.g. if entity has "ON" status and is found in
- * 'disallowed_by_external_consent_entities_on' it will be added to
- * 'disallowed'. If it has
- * been found in 'disallowed_by_external_consent_entities_off' than group is
- * added to
- * 'allowed' list.
- */
-struct GroupChecker
-    : std::unary_function<
-          void,
-          policy::GroupsByExternalConsentStatus::mapped_type::value_type> {
-  GroupChecker(const policy::EntityStatus entity_status,
-               policy::GroupsNames& out_allowed,
-               policy::GroupsNames& out_disallowed)
-      : entity_status_(entity_status)
-      , out_allowed_(out_allowed)
-      , out_disallowed_(out_disallowed) {}
-
-  void operator()(
-      const policy::GroupsByExternalConsentStatus::mapped_type::value_type
-          value) {
-    using namespace policy;
-
-    const std::string group_name = value.first;
-
-    if ((value.second && (kStatusOn == entity_status_)) ||
-        (!value.second && (kStatusOff == entity_status_))) {
-      out_disallowed_.insert(group_name);
-    } else {
-      out_allowed_.insert(group_name);
-    }
-  }
-
- private:
-  const policy::EntityStatus entity_status_;
-  policy::GroupsNames& out_allowed_;
-  policy::GroupsNames& out_disallowed_;
-};
-
-/**
- * @brief Sorts groups for 'allowed' and 'disallowed' by ExternalConsent
- * entities statuses.
- * Wraps GroupChecker logic.
- */
-struct GroupSorter
-    : std::unary_function<
-          void,
-          const policy::GroupsByExternalConsentStatus::value_type&> {
-  GroupSorter(policy::GroupsNames& out_allowed,
-              policy::GroupsNames& out_disallowed)
-      : out_allowed_(out_allowed), out_disallowed_(out_disallowed) {}
-
-  void operator()(
-      const policy::GroupsByExternalConsentStatus::value_type& value) {
-    GroupChecker checker(value.first.status_, out_allowed_, out_disallowed_);
-    std::for_each(value.second.begin(), value.second.end(), checker);
-  }
-
- private:
-  policy::GroupsNames& out_allowed_;
-  policy::GroupsNames& out_disallowed_;
-};
-
-}  // namespace
-
 namespace policy {
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "Policy")
@@ -1725,8 +1602,9 @@ AppIdURL PolicyManagerImpl::RetrySequenceUrl(const struct RetrySequenceURL& rs,
       app_idx = 0;
     }
   }
+  const AppIdURL next_app_url = std::make_pair(app_idx, url_idx);
 
-  return std::make_pair(app_idx, url_idx);
+  return next_app_url;
 }
 
 /**
@@ -1749,7 +1627,8 @@ class CallStatusChange : public utils::Callable {
 };
 
 StatusNotifier PolicyManagerImpl::AddApplication(
-    const std::string& application_id) {
+    const std::string& application_id,
+    const rpc::policy_table_interface_base::AppHmiTypes& hmi_types) {
   LOG4CXX_AUTO_TRACE(logger_);
   const std::string device_id = GetCurrentDeviceId(application_id);
   DeviceConsent device_consent = GetUserConsentForDevice(device_id);
@@ -1760,6 +1639,11 @@ StatusNotifier PolicyManagerImpl::AddApplication(
                                                device_consent);
   } else {
     PromoteExistedApplication(application_id, device_consent);
+    if (helpers::in_range(hmi_types, policy_table::AHT_NAVIGATION) &&
+        !HasCertificate()) {
+      LOG4CXX_DEBUG(logger_, "Certificate does not exist, scheduling update.");
+      update_status_manager_.ScheduleUpdate();
+    }
     return utils::MakeShared<utils::CallNothing>();
   }
 }

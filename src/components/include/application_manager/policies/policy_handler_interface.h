@@ -40,14 +40,16 @@
 #include <queue>
 #include "interfaces/MOBILE_API.h"
 #include "application_manager/policies/policy_handler_observer.h"
-#include "application_manager/core_service.h"
+#include "application_manager/application.h"
 #include "policy/usage_statistics/statistics_manager.h"
 #include "utils/custom_string.h"
 #include "utils/callable.h"
 #include "policy/policy_settings.h"
 #include "smart_objects/smart_object.h"
 #include "policy/policy_types.h"
+#include "policy/policy_table/types.h"
 
+using namespace ::rpc::policy_table_interface_base;
 namespace policy {
 typedef utils::SharedPtr<utils::Callable> StatusNotifier;
 
@@ -82,11 +84,12 @@ class PolicyHandlerInterface {
 
   virtual bool GetPriority(const std::string& policy_app_id,
                            std::string* priority) const = 0;
-  virtual void CheckPermissions(const PTString& app_id,
-                                const PTString& hmi_level,
-                                const PTString& rpc,
-                                const RPCParams& rpc_params,
-                                CheckPermissionResult& result) = 0;
+  virtual void CheckPermissions(
+            const application_manager::ApplicationSharedPtr app,
+            const PTString& rpc,
+            const RPCParams& rpc_params,
+            CheckPermissionResult& result)  = 0;
+
   virtual uint32_t GetNotificationsNumber(
       const std::string& priority) const = 0;
   virtual DeviceConsent GetUserConsentForDevice(
@@ -315,7 +318,9 @@ class PolicyHandlerInterface {
    * @param application_id The policy aplication id.
    * @return function that will notify update manager about new application
    */
-  virtual StatusNotifier AddApplication(const std::string& application_id) = 0;
+  virtual StatusNotifier AddApplication(
+            const std::string& application_id,
+            const rpc::policy_table_interface_base::AppHmiTypes& hmi_types) = 0;
 
   /**
    * Checks whether application is revoked

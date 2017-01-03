@@ -102,11 +102,12 @@ class PolicyHandler : public PolicyHandlerInterface,
 #endif  // EXTERNAL_PROPRIETARY_MODE
   virtual bool GetPriority(const std::string& policy_app_id,
                            std::string* priority) const OVERRIDE;
-  void CheckPermissions(const PTString& app_id,
-                        const PTString& hmi_level,
-                        const PTString& rpc,
-                        const RPCParams& rpc_params,
-                        CheckPermissionResult& result) OVERRIDE;
+  virtual void CheckPermissions(
+      const application_manager::ApplicationSharedPtr app,
+      const PTString& rpc,
+      const RPCParams& rpc_params,
+      CheckPermissionResult& result) OVERRIDE;
+
 
   uint32_t GetNotificationsNumber(const std::string& priority) const OVERRIDE;
   virtual DeviceConsent GetUserConsentForDevice(
@@ -344,7 +345,9 @@ class PolicyHandler : public PolicyHandlerInterface,
    * @param application_id The policy aplication id.
    ** @return function that will notify update manager about new application
    */
-  StatusNotifier AddApplication(const std::string& application_id) OVERRIDE;
+  StatusNotifier AddApplication(
+      const std::string& application_id,
+      const rpc::policy_table_interface_base::AppHmiTypes& hmi_types) OVERRIDE;
 
   /**
    * Checks whether application is revoked
@@ -436,6 +439,10 @@ class PolicyHandler : public PolicyHandlerInterface,
 #ifdef BUILD_TESTS
   void SetPolicyManager(utils::SharedPtr<PolicyManager> pm) {
     policy_manager_ = pm;
+  }
+
+  AppIds& last_used_app_ids() {
+    return last_used_app_ids_;
   }
 #endif  // BUILD_TESTS
 

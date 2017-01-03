@@ -45,6 +45,8 @@
 #include "application_manager/app_launch/app_launch_ctrl.h"
 #include "application_manager/message_helper.h"
 #include "application_manager/resumption/resume_ctrl.h"
+#include "application_manager/policies/policy_handler.h"
+#include "config_profile/profile.h"
 #include "interfaces/MOBILE_API.h"
 #include "interfaces/generated_msg_version.h"
 
@@ -138,6 +140,13 @@ struct CheckMissedTypes {
  private:
   const policy::StringArray& policy_app_types_;
   std::string& log_;
+};
+
+class SmartArrayValueExtractor {
+ public:
+  AppHmiType operator()(const smart_objects::SmartObject& so) const {
+    return static_cast<AppHmiType>(so.asInt());
+  }
 };
 
 struct IsSameNickname {
@@ -636,8 +645,21 @@ void RegisterAppInterfaceRequest::SendRegisterAppInterfaceResponseToMobile() {
                                             application->mac_address());
   }
 
-  policy::StatusNotifier notify_upd_manager =
-      GetPolicyHandler().AddApplication(application->policy_app_id());
+  AppHmiTypes hmi_types;
+  if ((*message_)[strings::msg_params].keyExists(strings::app_hmi_type)) {
+    smart_objects::SmartArray* hmi_types_ptr =
+        (*message_)[strings::msg_params][strings::app_hmi_type].asArray();
+    DCHECK_OR_RETURN_VOID(hmi_types_ptr);
+    SmartArrayValueExtractor extractor;
+    if (hmi_types_ptr && 0 < hmi_types_ptr->size()) {
+      std::transform(hmi_types_ptr->begin(),
+                     hmi_types_ptr->end(),
+                     std::back_inserter(hmi_types),
+                     extractor);
+    }
+  }
+  policy::StatusNotifier notify_upd_manager = GetPolicyHandler().AddApplication(
+      application->policy_app_id(), hmi_types);
   SendResponse(true, result_code, add_info.c_str(), &response_params);
   SendOnAppRegisteredNotificationToHMI(
       *(application.get()), resumption, need_restore_vr);
