@@ -223,7 +223,7 @@ class CacheManager : public CacheManagerInterface {
    * @return true in case app contains certain HMI type, false otherwise.
    */
   virtual bool AppHasHMIType(const std::string& application_id,
-                             policy_table::AppHMIType hmi_type) const OVERRIDE;
+                             policy_table::AppHMIType hmi_type) const FINAL;
 
   /**
    * Gets flag updateRequired
@@ -604,13 +604,12 @@ class CacheManager : public CacheManagerInterface {
   /**
    * @brief MergePreloadPT allows to load policy table from certain JSON file,
    * and then decide if merge is needed. The merge is needed in case when
-   * preload
+   *preload
    * JSON date is different than current database.
    *
    * @param file_name the preloaded policy table JSON file.
-   * @return false in case of invalid preloaded_pt
    */
-  bool MergePreloadPT(const std::string& file_name);
+  void MergePreloadPT(const std::string& file_name);
 
   /**
    * @brief MergeMC allows to merge ModuleConfig section by definite rules.

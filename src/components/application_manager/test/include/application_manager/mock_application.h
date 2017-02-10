@@ -279,8 +279,22 @@ class MockApplication : public ::application_manager::Application {
   MOCK_CONST_METHOD0(is_foreground, bool());
   MOCK_METHOD1(set_foreground, void(bool is_foreground));
   MOCK_CONST_METHOD0(IsRegistered, bool());
+<<<<<<< HEAD
   MOCK_CONST_METHOD0(SchemaUrl, std::string());
   MOCK_CONST_METHOD0(PackageName, std::string());
+=======
+  MOCK_METHOD1(
+      set_audio_streaming_indicator,
+      void(const mobile_apis::AudioStreamingIndicator::eType indicator));
+  MOCK_CONST_METHOD0(audio_streaming_indicator,
+                     mobile_apis::AudioStreamingIndicator::eType());
+  MOCK_METHOD1(
+      AddIndicatorWaitForResponse,
+      bool(const mobile_apis::AudioStreamingIndicator::eType indicator));
+  MOCK_METHOD1(
+      RemoveIndicatorWaitForResponse,
+      void(const mobile_apis::AudioStreamingIndicator::eType indicator));
+>>>>>>> 1dea8f2... Fix coding style
 };
 
 }  // namespace application_manager_test
