@@ -77,11 +77,13 @@ class PolicyManager : public usage_statistics::StatisticsManager {
    */
   virtual bool ResetPT(const std::string& file_name) = 0;
 
+  virtual std::string GetUpdateUrl(int service_type) = 0;
+
   /**
-   * @brief Gets all URLs for sending PTS to from PT itself.
-   * @param service_type Service specifies user of URL
-   * @return vector of urls
-   */
+ * @brief Gets all URLs for sending PTS to from PT itself.
+ * @param service_type Service specifies user of URL
+ * @return vector of urls
+ */
 
   virtual void GetUpdateUrls(const uint32_t service_type,
                              EndpointUrls& out_end_points) = 0;

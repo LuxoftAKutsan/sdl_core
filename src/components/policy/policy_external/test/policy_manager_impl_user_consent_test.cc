@@ -47,10 +47,10 @@ TEST_F(
     PolicyManagerImplTest2,
     AddApplication_AddNewApplicationFromDeviceWithConsent_ExpectUpdateRequired) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
 
   EXPECT_CALL(listener_, OnCurrentDeviceIdUpdateRequired(app_id_1_))
-      .WillOnce(Return(device_id_1_));
+      .WillRepeatedly(Return(device_id_1_));
 
   policy_manager_->SetUserConsentForDevice(device_id_1_, true);
 
@@ -63,7 +63,7 @@ TEST_F(
     PolicyManagerImplTest2,
     AddApplication_AddNewApplicationFromDeviceWithoutConsent_ExpectUpToDate) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
 
   // To set UP_TO_DATE before registration
   GetPTU(kValidSdlPtUpdateJson);
@@ -76,7 +76,7 @@ TEST_F(
   policy_manager_->PTUpdatedAt(KILOMETERS, 1000);
 
   EXPECT_CALL(listener_, OnCurrentDeviceIdUpdateRequired(app_id_1_))
-      .WillOnce(Return(device_id_1_));
+      .WillRepeatedly(Return(device_id_1_));
 
   policy_manager_->SetUserConsentForDevice(device_id_1_, false);
 
@@ -89,7 +89,7 @@ TEST_F(
     PolicyManagerImplTest2,
     ReactOnUserDevConsentForApp_AddNewApplicationFromDeviceWithoutConsent_ExpectPreDataConsent) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   policy_manager_->AddApplication(app_id_1_);
   ASSERT_TRUE(policy_manager_->IsPredataPolicy(app_id_1_));
   policy_manager_->ReactOnUserDevConsentForApp(app_id_1_, false);
@@ -150,7 +150,7 @@ TEST_F(PolicyManagerImplTest2,
 // Related to manual tests APPLINK-18763, APPLINK-18764
 TEST_F(PolicyManagerImplTest2, CheckPreDataConsent_GetDefaultHmiLevel_NONE) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   policy_manager_->AddApplication(app_id_2_);
   std::string default_hmi;
   // Default HMI level is NONE
@@ -211,7 +211,7 @@ TEST_F(
     PolicyManagerImplTest2,
     GetUserConsentForDevice_SetDeviceWithoutConcent_ExpectReceivedConsentCorrect) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   ASSERT_TRUE(
       (policy_manager_->GetCache())->AddDevice(device_id_2_, "Bluetooth"));
   ::policy::DeviceConsent consent =
@@ -223,7 +223,7 @@ TEST_F(
 TEST_F(PolicyManagerImplTest2,
        GetUserConsentForDevice_SetDeviceAllowed_ExpectReceivedConsentCorrect) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   ASSERT_TRUE(
       (policy_manager_->GetCache())->AddDevice(device_id_2_, "Bluetooth"));
 
@@ -248,7 +248,7 @@ TEST_F(
     PolicyManagerImplTest2,
     GetUserConsentForDevice_SetDeviceDisallowed_ExpectReceivedConsentCorrect) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   ASSERT_TRUE(
       (policy_manager_->GetCache())->AddDevice(device_id_2_, "Bluetooth"));
   ASSERT_TRUE((policy_manager_->GetCache())
@@ -370,7 +370,7 @@ TEST_F(PolicyManagerImplTest2,
 TEST_F(PolicyManagerImplTest2,
        GetUserFirendlyMessages_ExpectReceivedCorrectMessages) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   ::policy::StringArray message_code;
   message_code.push_back("SettingEnableUpdates");
   message_code.push_back("AppPermissions");
@@ -476,7 +476,7 @@ TEST_F(PolicyManagerImplTest2, SetDeviceInfo_ExpectDevInfoAddedToPT) {
 
 TEST_F(PolicyManagerImplTest2, GetInitialAppData_ExpectReceivedConsentCorrect) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   policy_manager_->AddApplication(app_id_2_);
   ::policy::StringArray app_nicknames;
   ::policy::StringArray app_hmi_types;
@@ -519,7 +519,7 @@ TEST_F(
     PolicyManagerImplTest2,
     CanAppKeepContext_AddAppFromUnconsentedDevice_ExpectAppCannotKeepContext) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   policy_manager_->AddApplication(app_id_2_);
   // Check if app has preData policy
   EXPECT_TRUE(policy_manager_->IsPredataPolicy(app_id_2_));
@@ -530,7 +530,7 @@ TEST_F(
 TEST_F(PolicyManagerImplTest2,
        CanAppKeepContext_AddAppFromConsentedDevice_ExpectAppCannotKeepContext) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   ASSERT_TRUE(
       (policy_manager_->GetCache())->AddDevice(device_id_2_, "Bluetooth"));
   policy_manager_->AddApplication(app_id_2_);
@@ -558,7 +558,7 @@ TEST_F(PolicyManagerImplTest2,
 TEST_F(PolicyManagerImplTest2,
        CanAppStealFocus_AddAppFromUnconsentedDevice_ExpectAppCannotStealFocus) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   policy_manager_->AddApplication(app_id_2_);
   // Check if app has preData policy
   EXPECT_TRUE(policy_manager_->IsPredataPolicy(app_id_2_));
@@ -569,7 +569,7 @@ TEST_F(PolicyManagerImplTest2,
 TEST_F(PolicyManagerImplTest2,
        CanAppStealFocus_AddAppFromConsentedDevice_ExpectAppCannotStealFocus) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   ASSERT_TRUE(
       (policy_manager_->GetCache())->AddDevice(device_id_2_, "Bluetooth"));
   policy_manager_->AddApplication(app_id_2_);
@@ -597,7 +597,7 @@ TEST_F(PolicyManagerImplTest2,
 TEST_F(PolicyManagerImplTest2,
        IsPredataPolicy_SetAppWIthPredataPolicy_ExpectPredataPolicy) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   policy_manager_->AddApplication(app_id_2_);
   // Check if app has preData policy
   EXPECT_TRUE(policy_manager_->IsPredataPolicy(app_id_2_));

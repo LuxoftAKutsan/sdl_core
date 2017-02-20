@@ -38,6 +38,7 @@
 #include "gtest/gtest.h"
 
 #include "policy/policy_manager_impl_test_base.h"
+#include "policy/policy_table/types.h"
 
 #include "utils/date_time.h"
 #include "utils/gen_hash.h"
@@ -73,14 +74,26 @@ TEST_F(PolicyManagerImplTest,
               GetGroupsWithSameEntities(external_consent_status))
       .WillOnce(Return(group));
 
+  EXPECT_CALL(*cache_manager_, ResetCalculatedPermissions());
+
+  EXPECT_CALL(*cache_manager_, GetPermissionsForApp(_, _, _))
+      .WillOnce(Return(true))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*cache_manager_, GetFunctionalGroupNames(_))
+      .WillOnce(Return(true))
+      .WillOnce(Return(true));
+
+  EXPECT_CALL(*cache_manager_, SetUserPermissionsForApp(_))
+      .WillOnce(Return(false));
+
   EXPECT_CALL(*cache_manager_, SetExternalConsentForApp(_));
 
   EXPECT_CALL(*cache_manager_, IsPredataPolicy(_)).WillOnce(Return(false));
   EXPECT_CALL(*cache_manager_, IsApplicationRepresented(_))
       .WillOnce(Return(true));
-  EXPECT_EQ(policy_manager_->GetPolicyTableStatus(), "UP_TO_DATE");
-  policy_manager_->AddApplication(kDefaultId);
-  EXPECT_EQ(policy_manager_->GetPolicyTableStatus(), "UP_TO_DATE");
+  EXPECT_EQ(manager_->GetPolicyTableStatus(), "UP_TO_DATE");
+  manager_->AddApplication(kDefaultId);
+  EXPECT_EQ(manager_->GetPolicyTableStatus(), "UP_TO_DATE");
 }
 
 TEST_F(PolicyManagerImplTest2, GetNotificationsNumberAfterPTUpdate) {
@@ -128,16 +141,17 @@ TEST_F(PolicyManagerImplTest2, IsAppRevoked_SetRevokedAppID_ExpectAppRevoked) {
   // Arrange
   CreateLocalPT(preloaded_pt_filename_);
 
-  AppHmiTypes types;
-  policy_manager_->AddApplication(app_id_1_, types);
+  policy_manager_->AddApplication(app_id_1_);
 
-  std::ifstream ifile(preloaded_pt_filename_);
+  std::ifstream ifile(kValidSdlPtUpdateJson);
   Json::Reader reader;
   std::string json;
   Json::Value root(Json::objectValue);
-  if (ifile.is_open() && reader.parse(ifile, root, true)) {
-    root["policy_table"]["app_policies"][app_id_1_] = Json::nullValue;
-    json = root.toStyledString();
+  if (ifile.is_open()) {
+    if (reader.parse(ifile, root, true)) {
+      root["policy_table"]["app_policies"][app_id_1_] = Json::nullValue;
+      json = root.toStyledString();
+    }
   }
   ifile.close();
 
@@ -158,7 +172,7 @@ TEST_F(PolicyManagerImplTest2, AppRevokedOne_AppRegistered) {
   EXPECT_FALSE(policy_manager_->GetCache()->IsPTPreloaded());
   ASSERT_TRUE(
       (policy_manager_->GetCache())->AddDevice(device_id_2_, "Bluetooth"));
-  policy_manager_->AddApplication(application_id_, hmi_types_);
+  policy_manager_->AddApplication(application_id_);
   // Registration is allowed
   CheckRpcPermissions("RegisterAppInterface", ::policy::kRpcAllowed);
 }
@@ -170,7 +184,7 @@ TEST_F(PolicyManagerImplTest2, AppRevokedOne_AppRegistered_HMIDefault) {
   EmulatePTAppRevoked(kPtu2Json);
 
   EXPECT_FALSE(policy_manager_->GetCache()->IsPTPreloaded());
-  policy_manager_->AddApplication(application_id_, hmi_types_);
+  policy_manager_->AddApplication(application_id_);
 
   std::string default_hmi;
   // Default HMI level is NONE
@@ -181,7 +195,7 @@ TEST_F(PolicyManagerImplTest2, AppRevokedOne_AppRegistered_HMIDefault) {
 TEST_F(PolicyManagerImplTest2,
        CheckPermissions_SetRevokedAppID_ExpectRPCDisallowed) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   policy::CacheManagerInterfaceSPtr cache = policy_manager_->GetCache();
   cache->AddDevice(device_id_1_, "Bluetooth");
   cache->SetDeviceData(device_id_1_,
@@ -238,7 +252,7 @@ TEST_F(PolicyManagerImplTest2,
 TEST_F(PolicyManagerImplTest2,
        CheckPermissions_SetAppIDwithPolicies_ExpectRPCAllowed) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   policy_manager_->AddDevice(device_id_1_, "Bluetooth");
   policy::CacheManagerInterfaceSPtr cache = policy_manager_->GetCache();
 
@@ -552,7 +566,7 @@ TEST_F(PolicyManagerImplTest2,
 TEST_F(PolicyManagerImplTest2, GetUpdateUrl) {
   // Arrange
   CreateLocalPT(preloaded_pt_filename_);
-  GetPTU(preloaded_pt_filename_);
+  GetPTU(kValidSdlPtUpdateJson);
   // Check expectations
   const std::string update_url(
       "http://policies.telematics.ford.com/api/policies");
@@ -568,8 +582,8 @@ TEST_F(PolicyManagerImplTest2, GetCorrectStatus_PTUSuccessful) {
   EXPECT_EQ("UP_TO_DATE", policy_manager_->GetPolicyTableStatus());
 
   // Adding changes PT status
-  policy_manager_->AddApplication(application_id_, hmi_types_);
-  EXPECT_EQ("UPDATE_NEEDED", policy_manager_->GetPolicyTableStatus());
+  policy_manager_->AddApplication(application_id_);
+  EXPECT_EQ("UP_TO_DATE", policy_manager_->GetPolicyTableStatus());
   // Before load PT we should send notification about start updating
   policy_manager_->OnUpdateStarted();
   // Update
@@ -890,7 +904,7 @@ TEST_F(
     PolicyManagerImplTest2,
     AddApplication_AddExistingApplicationFromDeviceWithoutConsent_ExpectNoUpdateRequired) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   EXPECT_EQ("UP_TO_DATE", policy_manager_->GetPolicyTableStatus());
   GetPTU(kValidSdlPtUpdateJson);
   EXPECT_EQ("UP_TO_DATE", policy_manager_->GetPolicyTableStatus());
@@ -909,7 +923,7 @@ uint32_t GetCurrentDaysCount() {
 TEST_F(PolicyManagerImplTest2,
        PTUpdatedAt_DaysNotExceedLimit_ExpectNoUpdateRequired) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   const uint32_t days = GetCurrentDaysCount();
   EXPECT_EQ("UP_TO_DATE", policy_manager_->GetPolicyTableStatus());
 
@@ -929,7 +943,7 @@ TEST_F(PolicyManagerImplTest2,
 TEST_F(PolicyManagerImplTest2,
        PTUpdatedAt_DaysExceedLimit_ExpectUpdateRequired) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   const uint32_t days = GetCurrentDaysCount();
   EXPECT_EQ("UP_TO_DATE", policy_manager_->GetPolicyTableStatus());
   GetPTU(kValidSdlPtUpdateJson);
@@ -948,7 +962,7 @@ TEST_F(
     PolicyManagerImplTest2,
     OnIgnitionCyclesExceeded_SetExceededIgnitionCycles_ExpectUpdateScheduled) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   const uint32_t days = GetCurrentDaysCount();
   EXPECT_EQ("UP_TO_DATE", policy_manager_->GetPolicyTableStatus());
   GetPTU(kValidSdlPtUpdateJson);
@@ -975,7 +989,7 @@ TEST_F(
 TEST_F(PolicyManagerImplTest2,
        GetUserConsentForApp_SetUserConsentForApp_ExpectReceivedConsentCorrect) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   ASSERT_TRUE(
       (policy_manager_->GetCache())->AddDevice(device_id_2_, "Bluetooth"));
   ASSERT_TRUE((policy_manager_->GetCache())
@@ -1040,7 +1054,7 @@ TEST_F(PolicyManagerImplTest2,
 TEST_F(PolicyManagerImplTest2,
        CanAppKeepContext_SetPoliciesForAppUpdated_ExpectAppCanKeepContext) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   policy_manager_->AddApplication(app_id_2_);
   GetPTU(kValidSdlPtUpdateJson);
   // Check keep context in updated policies for app
@@ -1050,7 +1064,7 @@ TEST_F(PolicyManagerImplTest2,
 TEST_F(PolicyManagerImplTest2,
        CanAppStealFocus_SetPoliciesForAppUpdated_ExpectAppCanStealFocus) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   policy_manager_->AddApplication(app_id_2_);
   GetPTU(kValidSdlPtUpdateJson);
   // Check keep context in updated policies for app
@@ -1060,7 +1074,7 @@ TEST_F(PolicyManagerImplTest2,
 TEST_F(PolicyManagerImplTest2,
        GetVehicleInfo_SetVehicleInfo_ExpectReceivedInfoCorrect) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   GetPTU(kValidSdlPtUpdateJson);
   utils::SharedPtr<policy_table::Table> pt =
       (policy_manager_->GetCache())->GetPT();
@@ -1079,7 +1093,7 @@ TEST_F(
     PolicyManagerImplTest2,
     GetPermissionsForApp_SetUserConsentForApp_ExpectReceivedPermissionsCorrect) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
 
   ASSERT_TRUE(
       (policy_manager_->GetCache())->AddDevice(device_id_2_, "Bluetooth"));
@@ -1145,7 +1159,7 @@ TEST_F(
     PolicyManagerImplTest2,
     GetAppRequestTypes_AddApp_UpdateAppPolicies_ExpectReceivedRequestTypesCorrect) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
 
   policy_manager_->AddApplication(app_id_3_);
   ::policy::StringArray app_requests =
@@ -1168,7 +1182,7 @@ TEST_F(
     PolicyManagerImplTest2,
     HertBeatTimeout_AddApp_UpdateAppPolicies_ExpectReceivedHertBeatTimeoutCorrect) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   utils::SharedPtr<policy_table::Table> pt =
       (policy_manager_->GetCache())->GetPT();
   ::policy_table::PolicyTableType type1 =
@@ -1207,7 +1221,7 @@ TEST_F(
 TEST_F(PolicyManagerImplTest2,
        RemoveAppConsentForGroup_SetUserConsentForApp_ExpectAppConsentDeleted) {
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
   ASSERT_TRUE(
       (policy_manager_->GetCache())->AddDevice(device_id_2_, "Bluetooth"));
   ASSERT_TRUE((policy_manager_->GetCache())
@@ -1296,7 +1310,7 @@ TEST_F(PolicyManagerImplTest2,
   const std::string section_name = app_id_2_;
 
   // Arrange
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
 
   // Setting device consent to 'true' in order to have defult application
   // permissions, request type etc.
@@ -1354,7 +1368,7 @@ TEST_F(PolicyManagerImplTest2,
 TEST_F(PolicyManagerImplTest2,
        InitPT_LoadPT_ExpectIncrementedCountOfSamePrompts) {
   // Initializing policy_table
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
 
   policy_table::FunctionalGroupings functional_groupings;
   GetFunctionalGroupingsFromManager(functional_groupings);
@@ -1387,7 +1401,7 @@ TEST_F(PolicyManagerImplTest2,
 TEST_F(PolicyManagerImplTest2,
        LoadPT_UpdatePT_ChangingCountsOfDifferentUserConsentPrompts) {
   // Initializing policy_table
-  CreateLocalPT(preloadet_pt_filename_);
+  CreateLocalPT(preloaded_pt_filename_);
 
   // First update of policy table
   GetPTU("json/sdl_pt_first_update.json");
@@ -1438,7 +1452,7 @@ TEST_F(PolicyManagerImplTest_RequestTypes,
 TEST_F(PolicyManagerImplTest_RequestTypes,
        LoadPT_InvalidRequestTypeBetweenCorectValuesInPTU_EraseInvalidValue) {
   // Refresh policy table with invalid RequestType in application
-  RefreshPT(preloadet_pt_filename_, kJsonFiles[1]);
+  RefreshPT(preloaded_pt_filename_, kJsonFiles[1]);
   // Correct of Request Types
   policy_table::RequestTypes correct_types;
   correct_types.push_back(policy_table::RequestType::RT_HTTP);
@@ -1461,7 +1475,7 @@ TEST_F(
 TEST_F(PolicyManagerImplTest_RequestTypes,
        LoadPT_RequestTypeArrayHaveNoOneValues_AvalibleAllRequestTypes) {
   // Refresh policy table with invalid RequestType in application
-  RefreshPT(preloadet_pt_filename_, kJsonFiles[3]);
+  RefreshPT(preloaded_pt_filename_, kJsonFiles[3]);
 
   // Get <app_id> Request Types
   policy_table::RequestTypes received_types =
@@ -1523,7 +1537,7 @@ TEST_F(PolicyManagerImplTest_RequestTypes,
   policy_table::RequestTypes correct_types = CreateDefaultAppPTURequestValues();
 
   // Load valid values for RequestType
-  RefreshPT(preloadet_pt_filename_, kJsonFiles[7]);
+  RefreshPT(preloaded_pt_filename_, kJsonFiles[7]);
 
   // Get Request Types for "<default>"
   policy_table::RequestTypes received_types =
@@ -1540,7 +1554,7 @@ TEST_F(
       CreateDefaultAppDatabaseRequestValues();
 
   // Load RequestType with invalid values
-  RefreshPT(preloadet_pt_filename_, kJsonFiles[8]);
+  RefreshPT(preloaded_pt_filename_, kJsonFiles[8]);
 
   // Get Request Types for "<default>"
   policy_table::RequestTypes received_types =
@@ -1552,7 +1566,7 @@ TEST_F(
 TEST_F(PolicyManagerImplTest_RequestTypes,
        LoadPT_PTDefaultAppEmptyRequestTypeValues_RequestTypeValueEmpty) {
   // Load RequestType with empty values
-  RefreshPT(preloadet_pt_filename_, kJsonFiles[9]);
+  RefreshPT(preloaded_pt_filename_, kJsonFiles[9]);
 
   // Get Request Types for "<default>"
   policy_table::RequestTypes received_types =
@@ -1570,7 +1584,7 @@ TEST_F(PolicyManagerImplTest_RequestTypes,
       CreateDefaultAppDatabaseRequestValues();
 
   // Load omitted RequestType values
-  RefreshPT(preloadet_pt_filename_, kJsonFiles[10]);
+  RefreshPT(preloaded_pt_filename_, kJsonFiles[10]);
 
   // Get Request Types for "<default>"
   policy_table::RequestTypes received_types =
@@ -1586,7 +1600,7 @@ TEST_F(
   policy_table::RequestTypes correct_types = CreateDefaultAppPTURequestValues();
 
   // Load RequestType with one invalid value
-  RefreshPT(preloadet_pt_filename_, kJsonFiles[11]);
+  RefreshPT(preloaded_pt_filename_, kJsonFiles[11]);
 
   // Get Request Types for "<default>"
   policy_table::RequestTypes received_types =
@@ -1602,7 +1616,7 @@ TEST_F(PolicyManagerImplTest_RequestTypes,
       CreatePreDataConsentAppPTURequestValues();
 
   // Load valid values for RequestType
-  RefreshPT(preloadet_pt_filename_, kJsonFiles[12]);
+  RefreshPT(preloaded_pt_filename_, kJsonFiles[12]);
 
   // Get Request Types for "<pre_DataConsent>"
   policy_table::RequestTypes received_types =
@@ -1618,42 +1632,28 @@ TEST_F(
   policy_table::RequestTypes correct_types;
   correct_types.push_back(policy_table::RequestType::RT_HTTP);
 
-  ON_CALL(listener_, OnCurrentDeviceIdUpdateRequired(_))
-      .WillByDefault(Return(device_id));
-
-  utils::SharedPtr<Table> pt = (policy_manager_->GetCache())->GetPT();
+  // Load RequestType with invalid values
+  RefreshPT(preloaded_pt_filename_, kJsonFiles[13]);
 
   // Get Request Types for "<pre_DataConsent>"
   policy_table::RequestTypes received_types =
       GetRequestTypesForApplication(policy::kPreDataConsentId);
 
-  const DeviceData& device_data = *pt->policy_table.device_data;
+  CompareRequestTypesContainers(correct_types, received_types);
 }
 
 TEST_F(PolicyManagerImplTest_RequestTypes,
        LoadPT_PTPreDataConsentAppEmptyRequestTypeValues_RequestTypeValueEmpty) {
   // Load RequestType with empty values
-  RefreshPT(preloadet_pt_filename_, kJsonFiles[14]);
+  RefreshPT(preloaded_pt_filename_, kJsonFiles[14]);
 
-  EXPECT_EQ(1u, device_data.size());
+  // Get Request Types for "<pre_DataConsent>"
+  policy_table::RequestTypes received_types =
+      GetRequestTypesForApplication(policy::kPreDataConsentId);
 
-  const DeviceData::const_iterator dev_data_iter = device_data.find(device_id);
-  EXPECT_TRUE(device_data.end() != dev_data_iter);
-
-  UserConsentRecords::const_iterator it_device_consent =
-      dev_data_iter->second.user_consent_records->find(device);
-
-  EXPECT_TRUE(dev_data_iter->second.user_consent_records->end() !=
-              it_device_consent);
-
-  const ConsentRecords& parameters = it_device_consent->second;
-  const Json::Value time_stamp = (parameters.time_stamp).ToJsonValue();
-  EXPECT_EQ(device, it_device_consent->first);
-
-  const bool time_stamp_result = CheckPolicyTimeStamp(time_stamp.asString());
-
-  EXPECT_TRUE(time_stamp_result);
-  EXPECT_EQ(DeviceConsent::kDeviceAllowed, device_consent);
+  // Expect
+  const size_t received_size = received_types.size();
+  EXPECT_EQ(0u, received_size);
 }
 
 TEST_F(
@@ -1664,7 +1664,7 @@ TEST_F(
   correct_types.push_back(policy_table::RequestType::RT_HTTP);
 
   // Load omitted RequestType values
-  RefreshPT(preloadet_pt_filename_, kJsonFiles[15]);
+  RefreshPT(preloaded_pt_filename_, kJsonFiles[15]);
 
   // Get Request Types for "<pre_DataConsent>"
   policy_table::RequestTypes received_types =
@@ -1681,7 +1681,7 @@ TEST_F(
       CreatePreDataConsentAppPTURequestValues();
 
   // Load RequestType with one invalid value
-  RefreshPT(preloadet_pt_filename_, kJsonFiles[16]);
+  RefreshPT(preloaded_pt_filename_, kJsonFiles[16]);
 
   // Get Request Types for "<pre_DataConsent>"
   policy_table::RequestTypes received_types =
