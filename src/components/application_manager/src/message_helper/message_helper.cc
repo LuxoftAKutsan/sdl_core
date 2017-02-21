@@ -38,6 +38,7 @@
 
 #include <set>
 #include <string>
+#include <strings.h>
 #include <algorithm>
 #include <utility>
 #include <map>
