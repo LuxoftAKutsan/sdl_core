@@ -619,7 +619,7 @@ TEST_F(
 
   EXPECT_TRUE(policy_manager_->GetCache()->ApplyUpdate(t));
 
-  EXPECT_CALL(listener_, OnPermissionsUpdated(app_id_1_, _)).Times(AtLeast(2));
+  EXPECT_CALL(listener_, OnPermissionsUpdated(app_id_1_, _));
   EXPECT_CALL(listener_, OnCurrentDeviceIdUpdateRequired(app_id_1_))
       .WillOnce(Return(device_id_1_))         // registered
       .WillOnce(Return(""))                   // not registered
@@ -709,7 +709,7 @@ TEST_F(
 
   EXPECT_TRUE(policy_manager_->GetCache()->ApplyUpdate(t));
 
-  EXPECT_CALL(listener_, OnPermissionsUpdated(app_id_1_, _)).Times(AtLeast(2));
+  EXPECT_CALL(listener_, OnPermissionsUpdated(app_id_1_, _));
   EXPECT_CALL(listener_, OnCurrentDeviceIdUpdateRequired(app_id_1_))
       .WillOnce(Return(device_id_1_))         // registered
       .WillOnce(Return(""))                   // not registered
@@ -807,7 +807,7 @@ TEST_F(PolicyManagerImplTest_ExternalConsent,
 
   EXPECT_TRUE(policy_manager_->SetExternalConsentStatus(status));
 
-  EXPECT_CALL(listener_, OnPermissionsUpdated(app_id_1_, _)).Times(AtLeast(1));
+  EXPECT_CALL(listener_, OnPermissionsUpdated(app_id_1_, _)).Times(0);
   EXPECT_CALL(listener_, OnCurrentDeviceIdUpdateRequired(app_id_1_))
       .WillRepeatedly(Return(device_id_1_));
 
@@ -867,8 +867,7 @@ TEST_F(PolicyManagerImplTest_ExternalConsent,
 
   const BinaryMessage msg(ptu_json.begin(), ptu_json.end());
 
-  ON_CALL(listener_, GetRegisteredLinks())
-      .WillByDefault(Return(std::map<std::string, std::string>()));
+  ON_CALL(listener_, GetRegisteredLinks(_)).WillByDefault(Return());
 
   EXPECT_CALL(listener_, OnCertificateUpdated(_));
 
@@ -933,7 +932,7 @@ TEST_F(PolicyManagerImplTest_ExternalConsent,
 
   EXPECT_TRUE(policy_manager_->SetExternalConsentStatus(status));
 
-  EXPECT_CALL(listener_, OnPermissionsUpdated(app_id_1_, _)).Times(AtLeast(1));
+  EXPECT_CALL(listener_, OnPermissionsUpdated(app_id_1_, _)).Times(0);
   EXPECT_CALL(listener_, OnCurrentDeviceIdUpdateRequired(app_id_1_))
       .WillRepeatedly(Return(device_id_1_));
 
@@ -988,8 +987,7 @@ TEST_F(PolicyManagerImplTest_ExternalConsent,
 
   const BinaryMessage msg(ptu_json.begin(), ptu_json.end());
 
-  ON_CALL(listener_, GetRegisteredLinks())
-      .WillByDefault(Return(std::map<std::string, std::string>()));
+  ON_CALL(listener_, GetRegisteredLinks(_)).WillByDefault(Return());
 
   EXPECT_CALL(listener_, OnCertificateUpdated(_));
 
@@ -1104,7 +1102,7 @@ TEST_F(
   status_off.insert(ExternalConsentStatusItem(type_2_, id_2_, kStatusOff));
   status_off.insert(ExternalConsentStatusItem(type_3_, id_3_, kStatusOff));
 
-  EXPECT_CALL(listener_, OnPermissionsUpdated(app_id_1_, _));
+  EXPECT_CALL(listener_, OnPermissionsUpdated(app_id_1_, _)).Times(0);
 
   EXPECT_TRUE(policy_manager_->SetExternalConsentStatus(status_on));
 

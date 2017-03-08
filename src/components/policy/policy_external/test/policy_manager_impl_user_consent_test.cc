@@ -495,7 +495,7 @@ TEST_F(PolicyManagerImplTest2, GetInitialAppData_ExpectReceivedConsentCorrect) {
   ::policy::StringArray app_nicknames;
   ::policy::StringArray app_hmi_types;
   policy_manager_->GetInitialAppData(app_id_2_, &app_nicknames, &app_hmi_types);
-  // Expect Empty nicknames and AppHMITypes
+  // Expect Empty nicknames and AppHmiTypes
   EXPECT_EQ(0u, app_nicknames.size());
   EXPECT_EQ(0u, app_hmi_types.size());
 
@@ -523,7 +523,7 @@ TEST_F(PolicyManagerImplTest2, GetInitialAppData_ExpectReceivedConsentCorrect) {
   for (uint32_t i = 0; i < nick_names_size; ++i) {
     EXPECT_EQ(app_nicknames1[i], appNicknames[i].asString());
   }
-  // Check AppHMITypes match
+  // Check AppHmiTypes match
   for (uint32_t i = 0; i < app_hmi_types_size; ++i) {
     EXPECT_EQ(app_hmi_types1[i], appHmiTypes[i].asString());
   }

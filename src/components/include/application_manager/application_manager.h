@@ -478,10 +478,10 @@ class ApplicationManager {
    * @return SUCCESS, if allowed, otherwise result code of check
    */
   virtual mobile_apis::Result::eType CheckPolicyPermissions(
-            const ApplicationSharedPtr app,
-            const std::string& function_id,
-            const RPCParams& rpc_params,
-            CommandParametersPermissions* params_permissions = NULL) = 0;
+      const ApplicationSharedPtr app,
+      const std::string& function_id,
+      const RPCParams& rpc_params,
+      CommandParametersPermissions* params_permissions = NULL) = 0;
 
   /**
    * @brief IsApplicationForbidden allows to distinguish if application is

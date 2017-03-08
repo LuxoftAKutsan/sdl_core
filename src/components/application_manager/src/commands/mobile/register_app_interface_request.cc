@@ -921,7 +921,7 @@ mobile_apis::Result::eType RegisterAppInterfaceRequest::CheckWithPolicyData() {
   // If AppHMIType is not included in policy - allow any type
   if (!app_hmi_types.empty()) {
     if (message[strings::msg_params].keyExists(strings::app_hmi_type)) {
-      // If AppHMITypes are partially same, the system should allow those listed
+      // If AppHmiTypes are partially same, the system should allow those listed
       // in the policy table and send warning info on missed values
       smart_objects::SmartArray app_types =
           *(message[strings::msg_params][strings::app_hmi_type].asArray());
@@ -931,13 +931,13 @@ mobile_apis::Result::eType RegisterAppInterfaceRequest::CheckWithPolicyData() {
       std::for_each(app_types.begin(), app_types.end(), checker);
       if (!log.empty()) {
         response_info_ =
-            "Following AppHMITypes are not present in policy "
+            "Following AppHmiTypes are not present in policy "
             "table:" +
             log;
         result_checking_app_hmi_type_ = mobile_apis::Result::WARNINGS;
       }
     }
-    // Replace AppHMITypes in request with values allowed by policy table
+    // Replace AppHmiTypes in request with values allowed by policy table
     message[strings::msg_params][strings::app_hmi_type] =
         smart_objects::SmartObject(smart_objects::SmartType_Array);
 

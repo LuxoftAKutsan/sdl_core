@@ -55,6 +55,8 @@ class CacheManager : public CacheManagerInterface {
   CacheManager();
   ~CacheManager();
 
+  const policy_table::Strings& GetGroups(const PTString& app_id);
+
   /**
    * @brief Check if specified RPC for specified application
    * has permission to be executed in specified HMI Level
@@ -65,7 +67,7 @@ class CacheManager : public CacheManagerInterface {
    * @return CheckPermissionResult containing flag if HMI Level is allowed
    * and list of allowed params.
    */
-  virtual void CheckPermissions(const PTString& app_id,
+  virtual void CheckPermissions(const policy_table::Strings& groups,
                                 const PTString& hmi_level,
                                 const PTString& rpc,
                                 CheckPermissionResult& result);

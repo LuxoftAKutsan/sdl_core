@@ -89,7 +89,8 @@ class MockPolicyListener : public ::policy::PolicyListener {
                void(const std::string& device_id,
                     const std::string& policy_app_id,
                     const std::string& hmi_level));
-  MOCK_CONST_METHOD0(GetRegisteredLinks, std::map<std::string, std::string>());
+  MOCK_CONST_METHOD1(GetRegisteredLinks,
+                     void(std::map<std::string, std::string>&));
 };
 
 }  // namespace policy_test

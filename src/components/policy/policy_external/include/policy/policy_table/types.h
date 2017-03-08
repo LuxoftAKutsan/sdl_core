@@ -68,7 +68,7 @@ typedef Array<Enum<HmiLevel>, 0, 4> HmiLevels;
 
 typedef Array<Enum<Parameter>, 0, 100> Parameters;
 
-typedef Map<RpcParameters, 0, 50> Rpc;
+typedef Map<RpcParameters, 0, 65535> Rpc;
 
 typedef Array<String<10, 65535>, 1, 3> URL;
 
@@ -80,7 +80,7 @@ typedef uint8_t NumberOfNotificationsType;
 typedef Map<Integer<NumberOfNotificationsType, 0, 255>, 0, 6>
     NumberOfNotificationsPerMinute;
 
-typedef Array<Integer<uint16_t, 1, 1000>, 0, 10> SecondsBetweenRetries;
+typedef Array<Integer<uint16_t, 1, 1000>, 0, 5> SecondsBetweenRetries;
 
 typedef Map<MessageString, 0, 600> Languages;
 
