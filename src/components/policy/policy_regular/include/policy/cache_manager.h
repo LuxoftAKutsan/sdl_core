@@ -609,7 +609,7 @@ class CacheManager : public CacheManagerInterface {
    *
    * @param file_name the preloaded policy table JSON file.
    */
-  void MergePreloadPT(const std::string& file_name);
+  bool MergePreloadPT(const std::string& file_name);
 
   /**
    * @brief MergeMC allows to merge ModuleConfig section by definite rules.
