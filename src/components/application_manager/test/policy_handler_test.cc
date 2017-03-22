@@ -261,6 +261,7 @@ class PolicyHandlerTest : public ::testing::Test {
     hmi_types.push_back(hmi_type);
     return hmi_types;
   }
+
 };
 
 namespace {
