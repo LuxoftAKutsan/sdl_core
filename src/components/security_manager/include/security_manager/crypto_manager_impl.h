@@ -122,6 +122,7 @@ class CryptoManagerImpl : public CryptoManager {
   virtual bool IsCertificateUpdateRequired() const OVERRIDE;
   virtual const CryptoManagerSettings& get_settings() const OVERRIDE;
 
+
  private:
   bool set_certificate(const std::string& cert_data);
 

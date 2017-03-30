@@ -198,7 +198,7 @@ class ProtocolHandlerImplTest : public ::testing::Test {
                                          NEW_SESSION_ID,
                                          start_service,
                                          callback_protection_flag,
-                                         _))
+                                         _, _))
         .
         // Return sessions start success
         WillOnce(DoAll(NotifyTestAsyncWaiter(waiter), Return(session_id)));
@@ -353,7 +353,7 @@ TEST_F(ProtocolHandlerImplTest,
                                NEW_SESSION_ID,
                                AnyOf(kControl, kRpc, kAudio, kMobileNav, kBulk),
                                PROTECTION_OFF,
-                               _))
+                               _, _))
       .Times(call_times)
       .
       // Return sessions start rejection
@@ -409,7 +409,7 @@ TEST_F(ProtocolHandlerImplTest, StartSession_Protected_SessionObserverReject) {
                                NEW_SESSION_ID,
                                AnyOf(kControl, kRpc, kAudio, kMobileNav, kBulk),
                                callback_protection_flag,
-                               _))
+                               _, _))
       .Times(call_times)
       .
       // Return sessions start rejection
@@ -453,7 +453,7 @@ TEST_F(ProtocolHandlerImplTest,
   EXPECT_CALL(
       session_observer_mock,
       OnSessionStartedCallback(
-          connection_id, NEW_SESSION_ID, start_service, PROTECTION_OFF, _))
+          connection_id, NEW_SESSION_ID, start_service, PROTECTION_OFF, _, _))
       .
       // Return sessions start success
       WillOnce(DoAll(NotifyTestAsyncWaiter(&waiter), Return(session_id)));
@@ -578,7 +578,7 @@ TEST_F(ProtocolHandlerImplTest, SecurityEnable_StartSessionProtocoloV1) {
   EXPECT_CALL(
       session_observer_mock,
       OnSessionStartedCallback(
-          connection_id, NEW_SESSION_ID, start_service, PROTECTION_OFF, _))
+          connection_id, NEW_SESSION_ID, start_service, PROTECTION_OFF, _, _))
       .
       // Return sessions start success
       WillOnce(DoAll(NotifyTestAsyncWaiter(waiter), Return(session_id)));
@@ -621,7 +621,7 @@ TEST_F(ProtocolHandlerImplTest, SecurityEnable_StartSessionUnprotected) {
   EXPECT_CALL(
       session_observer_mock,
       OnSessionStartedCallback(
-          connection_id, NEW_SESSION_ID, start_service, PROTECTION_OFF, _))
+          connection_id, NEW_SESSION_ID, start_service, PROTECTION_OFF, _, _))
       .
       // Return sessions start success
       WillOnce(DoAll(NotifyTestAsyncWaiter(&waiter), Return(session_id)));
@@ -654,7 +654,7 @@ TEST_F(ProtocolHandlerImplTest, SecurityEnable_StartSessionProtected_Fail) {
   EXPECT_CALL(
       session_observer_mock,
       OnSessionStartedCallback(
-          connection_id, NEW_SESSION_ID, start_service, PROTECTION_ON, _))
+          connection_id, NEW_SESSION_ID, start_service, PROTECTION_ON, _, _))
       .
       // Return sessions start success
       WillOnce(DoAll(NotifyTestAsyncWaiter(&waiter), Return(session_id)));
@@ -696,7 +696,7 @@ TEST_F(ProtocolHandlerImplTest,
   EXPECT_CALL(
       session_observer_mock,
       OnSessionStartedCallback(
-          connection_id, NEW_SESSION_ID, start_service, PROTECTION_ON, _))
+          connection_id, NEW_SESSION_ID, start_service, PROTECTION_ON, _, _))
       .
       // Return sessions start success
       WillOnce(DoAll(NotifyTestAsyncWaiter(&waiter), Return(session_id)));
@@ -751,7 +751,7 @@ TEST_F(ProtocolHandlerImplTest,
   EXPECT_CALL(
       session_observer_mock,
       OnSessionStartedCallback(
-          connection_id, NEW_SESSION_ID, start_service, PROTECTION_ON, _))
+          connection_id, NEW_SESSION_ID, start_service, PROTECTION_ON, _, _))
       .
       // Return sessions start success
       WillOnce(DoAll(NotifyTestAsyncWaiter(&waiter), Return(session_id)));
@@ -831,7 +831,7 @@ TEST_F(ProtocolHandlerImplTest,
   EXPECT_CALL(
       session_observer_mock,
       OnSessionStartedCallback(
-          connection_id, NEW_SESSION_ID, start_service, PROTECTION_ON, _))
+          connection_id, NEW_SESSION_ID, start_service, PROTECTION_ON, _, _))
       .
       // Return sessions start success
       WillOnce(DoAll(NotifyTestAsyncWaiter(&waiter), Return(session_id)));
@@ -916,7 +916,7 @@ TEST_F(
   EXPECT_CALL(
       session_observer_mock,
       OnSessionStartedCallback(
-          connection_id, NEW_SESSION_ID, start_service, PROTECTION_ON, _))
+          connection_id, NEW_SESSION_ID, start_service, PROTECTION_ON, _, _))
       .
       // Return sessions start success
       WillOnce(DoAll(NotifyTestAsyncWaiter(&waiter), Return(session_id)));
