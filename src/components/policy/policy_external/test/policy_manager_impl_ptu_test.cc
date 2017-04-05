@@ -53,7 +53,7 @@ using ::testing::Return;
 using ::testing::ReturnRef;
 
 TEST_F(PolicyManagerImplTest,
-       DISABLED_TiggerPTUForNaviAppInCaseNoCertificateExistsInPolicyTable) {
+       TiggerPTUForNaviAppInCaseNoCertificateExistsInPolicyTable) {
   EXPECT_CALL(*cache_manager_, GetDeviceConsent(_))
       .WillOnce(Return(kDeviceAllowed));
   const uint32_t type = 0;
