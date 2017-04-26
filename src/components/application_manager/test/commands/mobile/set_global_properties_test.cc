@@ -122,7 +122,7 @@ class SetGlobalPropertiesRequestTest
     return msg;
   }
 
-MessageSharedPtr CreateFullParamsUISO() {
+  MessageSharedPtr CreateFullParamsUISO() {
     MessageSharedPtr msg = CreateMessage(smart_objects::SmartType_Map);
     (*msg)[am::strings::params][am::strings::connection_key] = kConnectionKey;
     smart_objects::SmartObject menu_params =
@@ -146,7 +146,7 @@ MessageSharedPtr CreateFullParamsUISO() {
     return msg;
   }
 
-MessageSharedPtr CreateMsgParams() {
+  MessageSharedPtr CreateMsgParams() {
     MessageSharedPtr msg = CreateMessage();
     (*msg)[am::strings::params][am::strings::connection_key] = kConnectionKey;
     (*msg)[am::strings::msg_params][am::strings::app_id] = kAppId;
@@ -186,7 +186,7 @@ MessageSharedPtr CreateMsgParams() {
     }
     return msg;
   }
-void OnEventUISetupHelper(MessageSharedPtr msg,
+  void OnEventUISetupHelper(MessageSharedPtr msg,
                             SharedPtr<SetGlobalPropertiesRequest> command) {
     SmartObject vr_help_title("yes");
     SmartObject vr_help_array(smart_objects::SmartType_Array);
@@ -207,7 +207,7 @@ void OnEventUISetupHelper(MessageSharedPtr msg,
 
     command->Run();
   }
- void OnEventTTSSetupHelper(MessageSharedPtr msg,
+  void OnEventTTSSetupHelper(MessageSharedPtr msg,
                              SharedPtr<SetGlobalPropertiesRequest> command) {
     SmartObject help_prompt(smart_objects::SmartType_Array);
     help_prompt[0][am::strings::text] = "Help_Prompt_One";
@@ -311,7 +311,7 @@ void OnEventUISetupHelper(MessageSharedPtr msg,
           (*result_to_mobile)[strings::msg_params][strings::info].asString());
     }
   }
-void EmptyExpectationsSetupHelper() {
+  void EmptyExpectationsSetupHelper() {
     EXPECT_CALL(*mock_app_, set_vr_help_title(_)).Times(0);
     EXPECT_CALL(*mock_app_, set_vr_help(_)).Times(0);
     EXPECT_CALL(*mock_app_, vr_help_title()).Times(0);
@@ -374,7 +374,7 @@ void EmptyExpectationsSetupHelper() {
 
     command->Run();
   }
-void ResultCommandExpectations(MessageSharedPtr msg,
+  void ResultCommandExpectations(MessageSharedPtr msg,
                                  const std::string& info) {
     EXPECT_EQ((*msg)[am::strings::msg_params][am::strings::success].asBool(),
               true);
@@ -481,7 +481,7 @@ TEST_F(
       am::HmiInterfaces::STATE_AVAILABLE;
   const bool success = true;
   ON_CALL(mock_message_helper_, HMIToMobileResult(ui_hmi_response))
-          .WillByDefault(Return(mobile_response));
+      .WillByDefault(Return(mobile_response));
   EXPECT_CALL(*mock_app_, UpdateHash());
   CheckExpectations(ui_hmi_response,
                     tts_hmi_response,
