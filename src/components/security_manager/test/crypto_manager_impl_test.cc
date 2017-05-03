@@ -119,7 +119,6 @@ class CryptoManagerTest : public testing::Test {
 
   security_manager::CryptoManager* crypto_manager_;
   static std::string certificate_data_base64_;
-
   NiceMock<security_manager_test::MockCryptoManagerSettings>*
       mock_security_manager_settings_;
 };

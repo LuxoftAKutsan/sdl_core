@@ -1074,8 +1074,8 @@ TEST_F(PolicyHandlerTest, PTExchangeAtUserRequest) {
   // Arrange
   ChangePolicyManagerToMock();
   // Check expectations
-  EXPECT_CALL(*mock_policy_manager_, ForcePTExchange());
-  EXPECT_CALL(mock_message_helper_, SendUpdateSDLResponse(_, _, _)).Times(0);
+  EXPECT_CALL(*mock_policy_manager_, ForcePTExchangeAtUserRequest());
+  EXPECT_CALL(mock_message_helper_, SendUpdateSDLResponse(_, _, _));
   // Act
   const uint32_t correlation_id = 2;
   policy_handler_.PTExchangeAtUserRequest(correlation_id);
@@ -2173,7 +2173,13 @@ TEST_F(PolicyHandlerTest,
   sync_primitives::Lock wait_hmi_lock_first;
   sync_primitives::AutoLock auto_lock_first(wait_hmi_lock_first);
   WaitAsync waiter_first(kCallsCount_, kTimeout_);
-
+#ifdef EXTERNAL_PROPRIETARY_MODE
+  EXPECT_CALL(*mock_policy_manager_, SetUserConsentForApp(_, _))
+      .WillOnce(NotifyAsync(&waiter_first));
+#else
+  EXPECT_CALL(*mock_policy_manager_, SetUserConsentForApp(_))
+      .WillOnce(NotifyAsync(&waiter_first));
+#endif
   ExternalConsentStatusItem item(1u, 1u, kStatusOn);
   ExternalConsentStatus external_consent_status;
   external_consent_status.insert(item);
@@ -2188,6 +2194,7 @@ TEST_F(PolicyHandlerTest,
 
   EXPECT_CALL(*mock_policy_manager_,
               SetExternalConsentStatus(external_consent_status)).Times(0);
+
   policy_handler_.OnAppPermissionConsent(
       kConnectionKey_, permissions, external_consent_status);
 #else
@@ -2231,7 +2238,7 @@ TEST_F(PolicyHandlerTest,
       .WillByDefault(Return(true));
   EXPECT_CALL(*mock_policy_manager_,
               SetExternalConsentStatus(external_consent_status))
-      .WillOnce(Return(true));
+          .WillOnce(Return(true));
   policy_handler_.OnAppPermissionConsent(
       invalid_connection_key, permissions, external_consent_status);
 #else
@@ -2270,9 +2277,6 @@ TEST_F(PolicyHandlerTest,
 #ifdef EXTERNAL_PROPRIETARY_MODE
   ON_CALL(*mock_policy_manager_, IsNeedToUpdateExternalConsentStatus(_))
       .WillByDefault(Return(false));
-  EXPECT_CALL(*mock_policy_manager_,
-              SetExternalConsentStatus(external_consent_status))
-      .WillOnce(Return(true));
   policy_handler_.OnAppPermissionConsent(
       invalid_connection_key, permissions, external_consent_status);
 #else
