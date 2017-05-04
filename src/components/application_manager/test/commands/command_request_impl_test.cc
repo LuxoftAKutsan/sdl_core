@@ -173,6 +173,10 @@ TEST_F(CommandRequestImplTest,
 
   CommandPtr command = CreateCommand<UCommandRequestImpl>(msg);
 
+  MockAppPtr app = CreateMockApp();
+  ON_CALL(app_mngr_, application(command->connection_key()))
+      .WillByDefault(Return(app));
+
   MessageSharedPtr dummy_msg(CreateMessage());
   EXPECT_CALL(*mock_message_helper_, CreateNegativeResponse(_, _, _, _))
       .WillOnce(Return(dummy_msg));
