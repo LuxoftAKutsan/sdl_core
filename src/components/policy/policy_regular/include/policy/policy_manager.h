@@ -38,6 +38,7 @@
 
 #include "utils/callable.h"
 #include "policy/policy_types.h"
+#include "policy/policy_table/types.h"
 #include "policy/policy_listener.h"
 #include "policy/usage_statistics/statistics_manager.h"
 
@@ -110,7 +111,8 @@ class PolicyManager : public usage_statistics::StatisticsManager {
    * @param CheckPermissionResult containing flag if HMI Level is allowed
    * and list of allowed params.
    */
-  virtual void CheckPermissions(const PTString& app_id,
+  virtual void CheckPermissions(const PTString& device_id,
+                                const PTString& app_id,
                                 const PTString& hmi_level,
                                 const PTString& rpc,
                                 const RPCParams& rpc_params,
@@ -356,7 +358,9 @@ class PolicyManager : public usage_statistics::StatisticsManager {
    * @param Application id assigned by Ford to the application
    * @return function that will notify update manager about new application
    */
-  virtual StatusNotifier AddApplication(const std::string& application_id) = 0;
+  virtual StatusNotifier AddApplication(
+      const std::string& application_id,
+      const rpc::policy_table_interface_base::AppHmiTypes& hmi_types) = 0;
 
   /**
    * @brief Removes unpaired device records and related records from DB
@@ -454,6 +458,14 @@ class PolicyManager : public usage_statistics::StatisticsManager {
    * @return The certificate in PKCS#7 format.
    */
   virtual std::string RetrieveCertificate() const = 0;
+
+  /**
+   * @brief HasCertificate check whether policy table has certificate
+   * int module_config section.
+   *
+   * @return true in case certificate exists, false otherwise
+   */
+  virtual bool HasCertificate() const = 0;
 
   virtual const PolicySettings& get_settings() const = 0;
 
