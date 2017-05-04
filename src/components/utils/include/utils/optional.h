@@ -29,41 +29,47 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef SRC_COMPONENTS_INCLUDE__TEST_MEDIA_MANAGER_MOCK_MEDIA_MANAGER_H_
-#define SRC_COMPONENTS_INCLUDE__TEST_MEDIA_MANAGER_MOCK_MEDIA_MANAGER_H_
-
-#include <gmock/gmock.h>
-#include <stdint.h>
-#include <string>
-#include "media_manager/media_manager.h"
-#include "media_manager/mock_media_manager_settings.h"
-
-namespace test {
-namespace components {
-namespace media_manager_test {
-
-class MockMediaManager : public ::media_manager::MediaManager {
+#ifndef SRC_COMPONENTS_UTILS_INCLUDE_UTILS_OPTIONAL_H_
+#define SRC_COMPONENTS_UTILS_INCLUDE_UTILS_OPTIONAL_H_
+namespace optional {
+template <typename Type>
+class Optional {
  public:
-  MOCK_METHOD1(PlayA2DPSource, void(int32_t application_key));
-  MOCK_METHOD1(StopA2DPSource, void(int32_t application_key));
-  MOCK_METHOD3(StartMicrophoneRecording,
-               void(int32_t application_key,
-                    const std::string& outputFileName,
-                    int32_t duration));
-  MOCK_METHOD1(StopMicrophoneRecording, void(int32_t application_key));
-  MOCK_METHOD2(StartStreaming,
-               void(int32_t application_key,
-                    protocol_handler::ServiceType service_type));
-  MOCK_METHOD2(StopStreaming,
-               void(int32_t application_key,
-                    protocol_handler::ServiceType service_type));
-  MOCK_METHOD2(FramesProcessed,
-               void(int32_t application_key, int32_t frame_number));
-  MOCK_CONST_METHOD0(settings, ::media_manager::MediaManagerSettings&());
+  typedef Optional<Type> OptionalImpl;
+  // Methods
+  Optional() : value_state_(false) {}
+  explicit Optional(const Type& value) {
+    this->value_state_ = true;
+    value_ = value;
+  }
+  OptionalImpl& operator=(Type new_val) {
+    this->value_state_ = true;
+    value_ = new_val;
+    return *this;
+  }
+  OptionalImpl& operator=(const OptionalImpl& new_val) {
+    this->value_ = new_val.value_;
+    if (new_val.is_initialized()) {
+      this->value_state_ = new_val.value_state_;
+    }
+    return *this;
+  }
+  const Type& operator*() const {
+    return value_;
+  }
+  operator Type() const {
+    return value_;
+  }
+  const Type& asType() const {
+    return value_;
+  }
+  bool is_initialized() const {
+    return value_state_;
+  }
+
+ private:
+  Type value_;
+  bool value_state_;
 };
-
-}  // namespace media_manager_test
-}  // namespace components
-}  // namespace test
-
-#endif  // SRC_COMPONENTS_INCLUDE__TEST_MEDIA_MANAGER_MOCK_MEDIA_MANAGER_SETTINGS_H_
+}
+#endif  // SRC_COMPONENTS_UTILS_INCLUDE_UTILS_OPTIONAL_H_

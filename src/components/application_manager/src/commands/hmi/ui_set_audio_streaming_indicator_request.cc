@@ -29,41 +29,20 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef SRC_COMPONENTS_INCLUDE__TEST_MEDIA_MANAGER_MOCK_MEDIA_MANAGER_H_
-#define SRC_COMPONENTS_INCLUDE__TEST_MEDIA_MANAGER_MOCK_MEDIA_MANAGER_H_
 
-#include <gmock/gmock.h>
-#include <stdint.h>
-#include <string>
-#include "media_manager/media_manager.h"
-#include "media_manager/mock_media_manager_settings.h"
+#include "application_manager/commands/hmi/ui_set_audio_streaming_indicator_request.h"
+namespace application_manager {
+namespace commands {
 
-namespace test {
-namespace components {
-namespace media_manager_test {
+UISetAudioStreamingIndicatorRequest::UISetAudioStreamingIndicatorRequest(
+    const MessageSharedPtr& message, ApplicationManager& application_manager)
+    : RequestToHMI(message, application_manager) {}
 
-class MockMediaManager : public ::media_manager::MediaManager {
- public:
-  MOCK_METHOD1(PlayA2DPSource, void(int32_t application_key));
-  MOCK_METHOD1(StopA2DPSource, void(int32_t application_key));
-  MOCK_METHOD3(StartMicrophoneRecording,
-               void(int32_t application_key,
-                    const std::string& outputFileName,
-                    int32_t duration));
-  MOCK_METHOD1(StopMicrophoneRecording, void(int32_t application_key));
-  MOCK_METHOD2(StartStreaming,
-               void(int32_t application_key,
-                    protocol_handler::ServiceType service_type));
-  MOCK_METHOD2(StopStreaming,
-               void(int32_t application_key,
-                    protocol_handler::ServiceType service_type));
-  MOCK_METHOD2(FramesProcessed,
-               void(int32_t application_key, int32_t frame_number));
-  MOCK_CONST_METHOD0(settings, ::media_manager::MediaManagerSettings&());
-};
+void UISetAudioStreamingIndicatorRequest::Run() {
+  LOG4CXX_AUTO_TRACE(logger_);
 
-}  // namespace media_manager_test
-}  // namespace components
-}  // namespace test
+  SendRequest();
+}
 
-#endif  // SRC_COMPONENTS_INCLUDE__TEST_MEDIA_MANAGER_MOCK_MEDIA_MANAGER_SETTINGS_H_
+}  // namespace commands
+}  // namespace application_manager

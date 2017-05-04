@@ -29,41 +29,37 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef SRC_COMPONENTS_INCLUDE__TEST_MEDIA_MANAGER_MOCK_MEDIA_MANAGER_H_
-#define SRC_COMPONENTS_INCLUDE__TEST_MEDIA_MANAGER_MOCK_MEDIA_MANAGER_H_
 
-#include <gmock/gmock.h>
-#include <stdint.h>
-#include <string>
-#include "media_manager/media_manager.h"
-#include "media_manager/mock_media_manager_settings.h"
+#ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_HMI_UI_SET_AUDIO_STREAMING_INDICATOR_RESPONSE_H_
+#define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_HMI_UI_SET_AUDIO_STREAMING_INDICATOR_RESPONSE_H_
 
-namespace test {
-namespace components {
-namespace media_manager_test {
+#include "application_manager/commands/hmi/response_from_hmi.h"
+namespace application_manager {
+namespace commands {
 
-class MockMediaManager : public ::media_manager::MediaManager {
+/**
+ * @brief UISetAudioStreamingIndicatorResponse command class
+ **/
+class UISetAudioStreamingIndicatorResponse : public ResponseFromHMI {
  public:
-  MOCK_METHOD1(PlayA2DPSource, void(int32_t application_key));
-  MOCK_METHOD1(StopA2DPSource, void(int32_t application_key));
-  MOCK_METHOD3(StartMicrophoneRecording,
-               void(int32_t application_key,
-                    const std::string& outputFileName,
-                    int32_t duration));
-  MOCK_METHOD1(StopMicrophoneRecording, void(int32_t application_key));
-  MOCK_METHOD2(StartStreaming,
-               void(int32_t application_key,
-                    protocol_handler::ServiceType service_type));
-  MOCK_METHOD2(StopStreaming,
-               void(int32_t application_key,
-                    protocol_handler::ServiceType service_type));
-  MOCK_METHOD2(FramesProcessed,
-               void(int32_t application_key, int32_t frame_number));
-  MOCK_CONST_METHOD0(settings, ::media_manager::MediaManagerSettings&());
+  /**
+   * @brief UISetAudioStreamingIndicatorResponse class constructor
+   * @param message Incoming SmartObject message
+   * @param application_manager contains application manager instance
+   **/
+  UISetAudioStreamingIndicatorResponse(const MessageSharedPtr& message,
+                                       ApplicationManager& application_manager);
+
+  /**
+   * @brief Execute command
+   **/
+  void Run() OVERRIDE;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(UISetAudioStreamingIndicatorResponse);
 };
 
-}  // namespace media_manager_test
-}  // namespace components
-}  // namespace test
+}  // namespace commands
+}  // namespace application_manager
 
-#endif  // SRC_COMPONENTS_INCLUDE__TEST_MEDIA_MANAGER_MOCK_MEDIA_MANAGER_SETTINGS_H_
+#endif  // SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_HMI_UI_SET_AUDIO_STREAMING_INDICATOR_RESPONSE_H_

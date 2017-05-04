@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2013, Ford Motor Company
+ Copyright (c) 2017, Ford Motor Company
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -31,77 +31,54 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_MOBILE_ALERT_MANEUVER_REQUEST_H_
-#define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_MOBILE_ALERT_MANEUVER_REQUEST_H_
+#ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_MOBILE_SET_AUDIO_STREAMING_INDICATOR_REQUEST_H_
+#define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_MOBILE_SET_AUDIO_STREAMING_INDICATOR_REQUEST_H_
 
 #include "application_manager/commands/command_request_impl.h"
-#include "application_manager/commands/pending.h"
-#include "interfaces/MOBILE_API.h"
-#include "utils/macro.h"
-
 namespace application_manager {
-
 namespace commands {
 
 /**
- * @brief AlertManeuverRequest command class
+ * @brief SetAudioStreamingIndicatorRequest command class
  **/
-class AlertManeuverRequest : public CommandRequestImpl {
+class SetAudioStreamingIndicatorRequest : public CommandRequestImpl {
  public:
   /**
-   * @brief AlertManeuverRequest class constructor
-   *
+   * @brief SetAudioStreamingIndicatorRequest class constructor
    * @param message Incoming SmartObject message
    **/
-  AlertManeuverRequest(const MessageSharedPtr& message,
-                       ApplicationManager& application_manager);
-
-  /**
-   * @brief AlertManeuverRequest class destructor
-   **/
-  virtual ~AlertManeuverRequest();
+  SetAudioStreamingIndicatorRequest(const MessageSharedPtr& message,
+                                    ApplicationManager& application_manager);
 
   /**
    * @brief Execute command
    **/
-  virtual void Run();
+  void Run() OVERRIDE;
 
   /**
    * @brief Interface method that is called whenever new event received
-   *
    * @param event The received event
    */
-  virtual void on_event(const event_engine::Event& event);
+  void on_event(const event_engine::Event& event) OVERRIDE;
+
+  /**
+   *  @brief Function is called by RequestController when request execution time
+   * has exceed it's limit
+   */
+  void onTimeOut() OVERRIDE;
 
  private:
   /**
-   * @brief Prepare parameters for  sending to mobile application
-   * @param result_code contains result code for sending to mobile application
-   * @param return_info contains resulting info for sending to mobile
-   * application
-   * @return result for sending to mobile application.
+   *  @brief Process result from HMI.
+   * @param message contains message from HMI.
    */
-  bool PrepareResponseParameters(mobile_apis::Result::eType& result_code,
-                                 std::string& return_info);
-  /**
-   * @brief Checks alert maneuver params(ttsChunks, ...).
-   * When type is String there is a check on the contents \t\n \\t \\n
-   * @return if alert maneuver contains \t\n \\t \\n return TRUE,
-   * FALSE otherwise
-   */
-  bool IsWhiteSpaceExist();
+  void ProcessResultFromHMI(const smart_objects::SmartObject& message);
 
-  hmi_apis::Common_Result::eType tts_speak_result_code_;
-  hmi_apis::Common_Result::eType navi_alert_maneuver_result_code_;
-  std::string info_navi_;
-  std::string info_tts_;
-  Pending pending_requests_;
-  bool is_tts_chunks_exist_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlertManeuverRequest);
+  mobile_apis::AudioStreamingIndicator::eType audio_streaming_indicator_;
+  DISALLOW_COPY_AND_ASSIGN(SetAudioStreamingIndicatorRequest);
 };
 
 }  // namespace commands
 }  // namespace application_manager
 
-#endif  // SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_MOBILE_ALERT_MANEUVER_REQUEST_H_
+#endif  // SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_MOBILE_SET_AUDIO_STREAMING_INDICATOR_REQUEST_H_

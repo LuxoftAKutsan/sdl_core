@@ -37,6 +37,7 @@ const char* success = "success";
 const char* sync_msg_version = "syncMsgVersion";
 const char* major_version = "majorVersion";
 const char* minor_version = "minorVersion";
+const char* patch_version = "patchVersion";
 const char* app_name = "appName";
 const char* ngn_media_screen_app_name = "ngnMediaScreenAppName";
 const char* vr_synonyms = "vrSynonyms";
@@ -277,6 +278,7 @@ const char* is_suscribed = "isSubscribed";
 const char* message_data = "messageData";
 
 const char* delivery_mode = "deliveryMode";
+const char* audio_streaming_indicator = "audioStreamingIndicator";
 }  // namespace strings
 
 namespace json {
