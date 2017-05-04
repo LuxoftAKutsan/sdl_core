@@ -685,11 +685,7 @@ TEST_F(HMICommandsNotificationsTest,
 
   int32_t connection_id = -1;
   EXPECT_CALL(app_mngr_, GetPolicyHandler());
-#ifdef EXTERNAL_PROPRIETARY_MODE
-  EXPECT_CALL(policy_interface_, OnAppPermissionConsent(_, _, _))
-#else
   EXPECT_CALL(policy_interface_, OnAppPermissionConsent(_, _))
-#endif
       .WillOnce(GetArg(&connection_id));
   command->Run();
   EXPECT_EQ(0, connection_id);
@@ -713,11 +709,7 @@ TEST_F(HMICommandsNotificationsTest,
   int32_t connection_id = -1;
   policy::PermissionConsent permission_consent;
   EXPECT_CALL(app_mngr_, GetPolicyHandler());
-#ifdef EXTERNAL_PROPRIETARY_MODE
-  EXPECT_CALL(policy_interface_, OnAppPermissionConsent(_, _, _))
-#else
   EXPECT_CALL(policy_interface_, OnAppPermissionConsent(_, _))
-#endif
       .WillOnce(
           GetConnectIdPermissionConsent(&connection_id, &permission_consent));
   command->Run();
@@ -751,11 +743,7 @@ TEST_F(HMICommandsNotificationsTest,
   int32_t connection_id = -1;
   policy::PermissionConsent permission_consent;
   EXPECT_CALL(app_mngr_, GetPolicyHandler());
-#ifdef EXTERNAL_PROPRIETARY_MODE
-  EXPECT_CALL(policy_interface_, OnAppPermissionConsent(_, _, _))
-#else
   EXPECT_CALL(policy_interface_, OnAppPermissionConsent(_, _))
-#endif
       .WillOnce(
           GetConnectIdPermissionConsent(&connection_id, &permission_consent));
   command->Run();
@@ -793,11 +781,7 @@ TEST_F(HMICommandsNotificationsTest,
   int32_t connection_id = -1;
   policy::PermissionConsent permission_consent;
   EXPECT_CALL(app_mngr_, GetPolicyHandler());
-#ifdef EXTERNAL_PROPRIETARY_MODE
-  EXPECT_CALL(policy_interface_, OnAppPermissionConsent(_, _, _))
-#else
   EXPECT_CALL(policy_interface_, OnAppPermissionConsent(_, _))
-#endif
       .WillOnce(
           GetConnectIdPermissionConsent(&connection_id, &permission_consent));
   command->Run();

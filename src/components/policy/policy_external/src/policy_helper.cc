@@ -123,12 +123,8 @@ bool operator!=(const policy_table::ApplicationParams& first,
 CheckAppPolicy::CheckAppPolicy(
     PolicyManagerImpl* pm,
     const utils::SharedPtr<policy_table::Table> update,
-    const utils::SharedPtr<policy_table::Table> snapshot,
-    CheckAppPolicyResults& out_results)
-    : pm_(pm)
-    , update_(update)
-    , snapshot_(snapshot)
-    , out_results_(out_results) {}
+    const utils::SharedPtr<policy_table::Table> snapshot)
+    : pm_(pm), update_(update), snapshot_(snapshot) {}
 
 bool policy::CheckAppPolicy::HasRevokedGroups(
     const policy::AppPoliciesValueType& app_policy,
@@ -266,6 +262,37 @@ bool CheckAppPolicy::IsKnownAppication(
   return !(current_policies.end() == current_policies.find(application_id));
 }
 
+void policy::CheckAppPolicy::NotifySystem(
+    const policy::AppPoliciesValueType& app_policy) const {
+  pm_->listener()->OnPendingPermissionChange(app_policy.first);
+}
+
+void CheckAppPolicy::SendPermissionsToApp(
+    const AppPoliciesValueType& app_policy) const {
+  const std::string app_id = app_policy.first;
+
+  const std::string device_id = pm_->GetCurrentDeviceId(app_id);
+  if (device_id.empty()) {
+    LOG4CXX_WARN(logger_,
+                 "Couldn't find device info for application id: " << app_id);
+    return;
+  }
+  std::vector<FunctionalGroupPermission> group_permissons;
+  pm_->GetPermissionsForApp(device_id, app_id, group_permissons);
+
+  Permissions notification_data;
+  pm_->PrepareNotificationData(update_->policy_table.functional_groupings,
+                               app_policy.second.groups,
+                               group_permissons,
+                               notification_data);
+
+  LOG4CXX_INFO(logger_, "Send notification for application_id: " << app_id);
+  pm_->listener()->OnPermissionsUpdated(
+      app_id,
+      notification_data,
+      policy_table::EnumToJsonString(app_policy.second.default_hmi));
+}
+
 bool CheckAppPolicy::IsAppRevoked(
     const AppPoliciesValueType& app_policy) const {
   LOG4CXX_AUTO_TRACE(logger_);
@@ -294,11 +321,6 @@ bool CheckAppPolicy::NicknamesMatch(
   return true;
 }
 
-void CheckAppPolicy::AddResult(const std::string& app_id,
-                               PermissionsCheckResult result) {
-  out_results_.insert(std::make_pair(app_id, result));
-}
-
 bool CheckAppPolicy::operator()(const AppPoliciesValueType& app_policy) {
   const std::string app_id = app_policy.first;
 
@@ -310,13 +332,13 @@ bool CheckAppPolicy::operator()(const AppPoliciesValueType& app_policy) {
 
   if (!IsPredefinedApp(app_policy) && IsAppRevoked(app_policy)) {
     SetPendingPermissions(app_policy, RESULT_APP_REVOKED);
-    AddResult(app_id, RESULT_APP_REVOKED);
+    NotifySystem(app_policy);
     return true;
   }
 
   if (!IsPredefinedApp(app_policy) && !NicknamesMatch(app_policy)) {
     SetPendingPermissions(app_policy, RESULT_NICKNAME_MISMATCH);
-    AddResult(app_id, RESULT_NICKNAME_MISMATCH);
+    NotifySystem(app_policy);
     return true;
   }
 
@@ -324,14 +346,13 @@ bool CheckAppPolicy::operator()(const AppPoliciesValueType& app_policy) {
 
   if (!IsPredefinedApp(app_policy) && IsRequestTypeChanged(app_policy)) {
     SetPendingPermissions(app_policy, RESULT_REQUEST_TYPE_CHANGED);
-    AddResult(app_id, RESULT_REQUEST_TYPE_CHANGED);
+    NotifySystem(app_policy);
   }
 
   if (RESULT_NO_CHANGES == result) {
     LOG4CXX_INFO(logger_,
                  "Permissions for application:" << app_id
                                                 << " wasn't changed.");
-    AddResult(app_id, result);
     return true;
   }
 
@@ -341,9 +362,13 @@ bool CheckAppPolicy::operator()(const AppPoliciesValueType& app_policy) {
 
   if (!IsPredefinedApp(app_policy) && RESULT_CONSENT_NOT_REQIURED != result) {
     SetPendingPermissions(app_policy, result);
-    AddResult(app_id, result);
+    NotifySystem(app_policy);
   }
 
+  // Don't sent notification for predefined apps (e.g. default, device etc.)
+  if (!IsPredefinedApp(app_policy)) {
+    SendPermissionsToApp(app_policy);
+  }
   return true;
 }
 
@@ -414,7 +439,8 @@ void policy::CheckAppPolicy::SetPendingPermissions(
   pm_->app_permissions_diff_lock_.Release();
 }
 
-PermissionsCheckResult CheckAppPolicy::CheckPermissionsChanges(
+policy::CheckAppPolicy::PermissionsCheckResult
+policy::CheckAppPolicy::CheckPermissionsChanges(
     const policy::AppPoliciesValueType& app_policy) const {
   bool has_revoked_groups = HasRevokedGroups(app_policy);
 

@@ -74,8 +74,6 @@ class MockPolicyListener : public PolicyListener {
   MOCK_METHOD1(OnCertificateUpdated, void(const std::string&));
   MOCK_CONST_METHOD2(SendOnAppPermissionsChanged,
                      void(const AppPermissions&, const std::string&));
-  MOCK_CONST_METHOD1(GetRegisteredLinks,
-                     void(std::map<std::string, std::string>&));
 };
 
 }  // namespace policy

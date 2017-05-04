@@ -49,7 +49,6 @@ include_directories(
   ${COMPONENTS_DIR}/telemetry_monitor/include
   ${POLICY_PATH}/include/
   ${POLICY_GLOBAL_INCLUDE_PATH}/
-  ${COMPONENTS_DIR}/rpc_base/include/
   ${COMPONENTS_DIR}/resumption/include
   ${COMPONENTS_DIR}/dbus/include
   ${CMAKE_BINARY_DIR}/src/components

@@ -131,14 +131,8 @@ class SQLPTExtRepresentation : public SQLPTRepresentation,
                                 const std::string& functional_group_name) const;
 
   virtual bool SetVINValue(const std::string& value);
-  bool SaveExternalConsentStatus(const ExternalConsentStatus& status) const;
-  ExternalConsentStatus GetExternalConsentStatus() const;
 
  private:
-  enum ExternalConsentEntitiesType {
-    kExternalConsentEntitiesTypeOn,
-    kExternalConsentEntitiesTypeOff
-  };
   void GatherModuleMeta(policy_table::ModuleMeta* meta) const;
   void GatherPreconsentedGroup(const std::string& app_id,
                                policy_table::Strings* groups) const;
@@ -206,11 +200,6 @@ class SQLPTExtRepresentation : public SQLPTRepresentation,
    */
   bool IsMsgLanguagePresent(const std::string& message,
                             const std::string& language);
-
-  bool SaveExternalConsentEntities(
-      const int64_t group_id,
-      const policy_table::DisallowedByExternalConsentEntities& entities,
-      ExternalConsentEntitiesType type) const;
 };
 
 }  // namespace policy
