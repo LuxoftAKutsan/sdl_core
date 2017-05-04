@@ -2066,7 +2066,7 @@ ACTION_P(NotifyAsync, waiter) {
 }
 
 TEST_F(PolicyHandlerTest,
-       OnAppPermissionConsentInternal_ValidConnectionKey_SUCCESS) {
+       DISABLED_OnAppPermissionConsentInternal_ValidConnectionKey_SUCCESS) {
   ChangePolicyManagerToMock();
   const uint32_t device = 2u;
 

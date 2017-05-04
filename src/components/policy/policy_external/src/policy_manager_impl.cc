@@ -1235,6 +1235,15 @@ void PolicyManagerImpl::UpdateAppConsentWithExternalConsent(
     const std::string& application_id,
     const GroupsNames& allowed_groups,
     const GroupsNames& disallowed_groups) {
+  LOG4CXX_AUTO_TRACE(logger_);
+
+  if (allowed_groups.empty() && disallowed_groups.empty()) {
+    LOG4CXX_DEBUG(logger_,
+                  "Allowed and disallowed groups are empty, skipping update by "
+                  "external user consent.");
+    return;
+  }
+
   std::vector<FunctionalGroupPermission> current_permissions;
   GetUserConsentForApp(device_id, application_id, current_permissions);
 
@@ -1365,7 +1374,14 @@ bool PolicyManagerImpl::IsNeedToUpdateExternalConsentStatus(
 bool PolicyManagerImpl::SetExternalConsentStatus(
     const ExternalConsentStatus& status) {
   LOG4CXX_AUTO_TRACE(logger_);
+
+  if (status.empty()) {
+    LOG4CXX_INFO(logger_, "External consent status is empty, skipping update.");
+    return false;
+  }
+
   if (!cache_->SetExternalConsentStatus(status)) {
+    LOG4CXX_WARN(logger_, "Can't set external user consent status.");
     return false;
   }
 
