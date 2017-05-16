@@ -2394,7 +2394,6 @@ mobile_apis::Result::eType MessageHelper::VerifyImage(
   return result;
 }
 
-
 mobile_apis::Result::eType MessageHelper::VerifyImageVrHelpItems(
     smart_objects::SmartObject& message,
     ApplicationConstSharedPtr app,
