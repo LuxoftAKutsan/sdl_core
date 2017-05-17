@@ -1023,7 +1023,8 @@ StatusNotifier PolicyManagerImpl::AddApplication(
       LOG4CXX_DEBUG(logger_, "Certificate does not exist, scheduling update.");
       update_status_manager_.ScheduleUpdate();
     }
-    return utils::MakeShared<utils::CallNothing>();
+    return utils::MakeShared<CallStatusChange>(update_status_manager_,
+                                               device_consent);
   }
 }
 void PolicyManagerImpl::RemoveAppConsentForGroup(
