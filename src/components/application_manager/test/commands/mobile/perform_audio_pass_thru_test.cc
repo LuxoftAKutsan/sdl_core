@@ -147,12 +147,108 @@ class PerformAudioPassThruRequestTest
   void ResultCommandExpectations(MessageSharedPtr msg,
                                  const std::string& info) {
     EXPECT_EQ((*msg)[am::strings::msg_params][am::strings::success].asBool(),
+<<<<<<< HEAD
               true);
     EXPECT_EQ(
         (*msg)[am::strings::msg_params][am::strings::result_code].asInt(),
         static_cast<int32_t>(hmi_apis::Common_Result::UNSUPPORTED_RESOURCE));
     EXPECT_EQ((*msg)[am::strings::msg_params][am::strings::info].asString(),
               info);
+=======
+              success);
+    EXPECT_EQ((*msg)[am::strings::msg_params][am::strings::result_code].asInt(),
+              code);
+    if (info) {
+      EXPECT_EQ((*msg)[am::strings::msg_params][am::strings::info].asString(),
+                info);
+    }
+  }
+
+  void SetupIconParameter(MessageSharedPtr msg,
+                          const std::string& type,
+                          const std::string& value) {
+    smart_objects::SmartObject icon =
+        smart_objects::SmartObject(smart_objects::SmartType_Map);
+    icon[am::strings::type] = type;
+    icon[am::strings::value] = value;
+    (*msg)[am::strings::msg_params][am::strings::audio_pass_thru_icon] = icon;
+  }
+
+  void DefineHMIAvailable() {
+    DefineInterfaceAvailable(am::HmiInterfaces::HMI_INTERFACE_UI);
+    DefineInterfaceAvailable(am::HmiInterfaces::HMI_INTERFACE_TTS);
+  }
+
+  void DefineInterfaceAvailable(
+      const am::HmiInterfaces::InterfaceID interface) {
+    ON_CALL(hmi_interfaces_, GetInterfaceState(interface))
+        .WillByDefault(Return(am::HmiInterfaces::STATE_AVAILABLE));
+  }
+
+  void DefineHMILevelUIAvailable() {
+    ON_CALL(*mock_app_, hmi_level())
+        .WillByDefault(Return(mobile_apis::HMILevel::HMI_FULL));
+    ON_CALL(hmi_interfaces_, GetInterfaceFromFunction(_))
+        .WillByDefault(Return(am::HmiInterfaces::HMI_INTERFACE_UI));
+    DefineInterfaceAvailable(am::HmiInterfaces::HMI_INTERFACE_UI);
+  }
+
+  void SetHMIInterfaceState(const am::HmiInterfaces::InterfaceState ui_state,
+                            const am::HmiInterfaces::InterfaceState tts_state) {
+    ON_CALL(hmi_interfaces_,
+            GetInterfaceState(am::HmiInterfaces::HMI_INTERFACE_UI))
+        .WillByDefault(Return(ui_state));
+    ON_CALL(hmi_interfaces_,
+            GetInterfaceState(am::HmiInterfaces::HMI_INTERFACE_TTS))
+        .WillByDefault(Return(tts_state));
+  }
+
+  void CheckExpectations(const hmi_apis::Common_Result::eType ui_hmi_response,
+                         const hmi_apis::Common_Result::eType tts_hmi_response,
+                         const char* ui_info,
+                         const char* tts_info,
+                         const mobile_apis::Result::eType mobile_response,
+                         const char* mobile_info,
+                         const am::HmiInterfaces::InterfaceState ui_state,
+                         const am::HmiInterfaces::InterfaceState tts_state,
+                         const bool success) {
+    MessageSharedPtr mobile_msg = CreateMobileMessageSO();
+
+    utils::SharedPtr<PerformAudioPassThruRequest> command =
+        CreateCommand<PerformAudioPassThruRequest>(mobile_msg);
+
+    SetHMIInterfaceState(ui_state, tts_state);
+    ON_CALL(*mock_app_, hmi_level())
+        .WillByDefault(Return(mobile_apis::HMILevel::HMI_FULL));
+    ON_CALL(hmi_interfaces_, GetInterfaceFromFunction(_))
+        .WillByDefault(Return(am::HmiInterfaces::HMI_INTERFACE_UI));
+
+    command->Run();
+    MessageSharedPtr msg_ui = PrepareResponseFromHMI(ui_hmi_response, ui_info);
+    Event event_ui(hmi_apis::FunctionID::UI_PerformAudioPassThru);
+    event_ui.set_smart_object(*msg_ui);
+
+    MessageSharedPtr msg_tts =
+        PrepareResponseFromHMI(tts_hmi_response, tts_info);
+    Event event_tts(hmi_apis::FunctionID::TTS_Speak);
+    event_tts.set_smart_object(*msg_tts);
+
+    command->on_event(event_tts);
+
+    EXPECT_CALL(app_mngr_, EndAudioPassThrough()).WillOnce(Return(false));
+
+    MessageSharedPtr msg_mobile_response;
+    EXPECT_CALL(app_mngr_,
+                ManageMobileCommand(
+                    _, am::commands::Command::CommandOrigin::ORIGIN_SDL))
+        .WillOnce(DoAll(SaveArg<0>(&msg_mobile_response), Return(true)));
+    command->on_event(event_ui);
+
+    ResultCommandExpectations(msg_mobile_response,
+                              mobile_info,
+                              static_cast<int32_t>(mobile_response),
+                              success);
+>>>>>>> cd7a5b7... Fix component info send along with GENERIC_ERROR
   }
 
   sync_primitives::Lock lock_;
