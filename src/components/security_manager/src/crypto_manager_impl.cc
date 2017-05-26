@@ -402,6 +402,12 @@ void CryptoManagerImpl::InitCertExpTime() {
   strptime("1 Jan 1970 00:00:00", "%d %b %Y %H:%M:%S", &expiration_time_);
 }
 
+#ifdef BUILD_TESTS
+void CryptoManagerImpl::SetCertFutureExpTime(const std::string& time) {
+  strptime(time.c_str(), "%d %b %Y %H:%M:%S", &expiration_time_);
+}
+#endif  // BUILD_TESTS
+
 void CryptoManagerImpl::OnPTUFinished(const bool ptu_result) {}
 
 }  // namespace security_manager
