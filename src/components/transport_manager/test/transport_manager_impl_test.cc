@@ -569,8 +569,7 @@ TEST_F(TransportManagerImplTest, SendMessageToDevice_SendDone) {
   EXPECT_TRUE(waiter.WaitFor(1, kAsyncExpectationsTimeout));
 }
 
-TEST_F(TransportManagerImplTest,
-       DISABLED_SendMessageFailed_GetHandleSendFailed) {
+TEST_F(TransportManagerImplTest, SendMessageFailed_GetHandleSendFailed) {
   // Arrange
   HandleConnection();
 
