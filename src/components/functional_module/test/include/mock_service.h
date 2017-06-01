@@ -55,32 +55,27 @@ class MockService : public Service {
   MOCK_METHOD2(NotifyHMIAboutHMILevel,
                void(ApplicationSharedPtr app,
                     mobile_apis::HMILevel::eType level));
-  MOCK_METHOD5(CheckAccess,
+  MOCK_METHOD4(CheckAccess,
                TypeAccess(const ApplicationId& app_id,
-                          const SeatLocation& zone,
                           const std::string& module,
                           const std::string& rpc,
                           const std::vector<std::string>& params));
   MOCK_METHOD2(CheckModule,
                bool(const ApplicationId& app_id, const std::string& module));
-  MOCK_METHOD4(SetAccess,
+  MOCK_METHOD3(SetAccess,
                void(const ApplicationId& app_id,
-                    const SeatLocation& zone,
                     const std::string& module,
                     bool allowed));
   MOCK_METHOD1(ResetAccess, void(const ApplicationId& app_id));
-  MOCK_METHOD2(ResetAccess,
-               void(const SeatLocation& zone, const std::string& module));
+  MOCK_METHOD1(ResetAccess,
+               void(const std::string& module));
   MOCK_METHOD1(GetDeviceHandlerById, uint32_t(const std::string& device_id));
   MOCK_METHOD1(SetPrimaryDevice, void(const uint32_t dev_id));
   MOCK_METHOD0(ResetPrimaryDevice, void());
   MOCK_CONST_METHOD0(PrimaryDevice, uint32_t());
   MOCK_METHOD1(SetRemoteControl, void(bool enabled));
   MOCK_CONST_METHOD0(IsRemoteControlAllowed, bool());
-  MOCK_METHOD2(SetDeviceZone,
-               void(const uint32_t dev_id, const SeatLocation& zone));
-  MOCK_CONST_METHOD1(GetDeviceZone,
-                     const SeatLocationPtr(const uint32_t dev_id));
+
   MOCK_CONST_METHOD1(IsRemoteControlApplication,
                      bool(ApplicationSharedPtr app));
   MOCK_CONST_METHOD2(GetModuleTypes,
