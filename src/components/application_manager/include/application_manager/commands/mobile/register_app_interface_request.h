@@ -131,23 +131,6 @@ class RegisterAppInterfaceRequest : public CommandRequestImpl {
   */
   mobile_apis::Result::eType CheckCoincidence();
 
-  /*
-  * @brief Predicate for using with CheckCoincidence method to compare with VR
-  * synonym SO
-  *
-  * return TRUE if there is coincidence of VR, otherwise FALSE
-  */
-  struct CoincidencePredicateVR {
-    CoincidencePredicateVR(const custom_str::CustomString& newItem)
-        : newItem_(newItem) {}
-
-    bool operator()(const smart_objects::SmartObject& obj) {
-      const custom_str::CustomString& vr_synonym = obj.asCustomString();
-      return newItem_.CompareIgnoreCase(vr_synonym);
-    }
-    const custom_str::CustomString& newItem_;
-  };
-
   /**
    * @brief Check request parameters against policy table data
    * @return SUCCESS if check ok, otherwise return appropriate error code

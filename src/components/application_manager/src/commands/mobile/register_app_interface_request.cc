@@ -173,6 +173,24 @@ namespace application_manager {
 
 namespace commands {
 
+/*
+* @brief Predicate for using with CheckCoincidence method to compare with VR
+* synonym SO
+*
+* return TRUE if there is coincidence of VR, otherwise FALSE
+*/
+struct CoincidencePredicateVR {
+  CoincidencePredicateVR(const custom_str::CustomString& newItem)
+      : newItem_(newItem) {}
+
+  bool operator()(const smart_objects::SmartObject& obj) {
+    const custom_str::CustomString& vr_synonym = obj.asCustomString();
+    return newItem_.CompareIgnoreCase(vr_synonym);
+  }
+  const custom_str::CustomString& newItem_;
+};
+
+
 #ifdef SDL_REMOTE_CONTROL
 struct IsSameApp {
   IsSameApp(bool is_remote_control,
@@ -203,7 +221,7 @@ struct IsSameApp {
 };
 
 struct IsSameAppId : public IsSameApp {
-  IsSameAppId(const std::string& app_id,
+  IsSameAppId(const custom_str::CustomString& app_id,
               bool is_remote_control,
               bool is_driver,
               ApplicationManager& application_manager)
@@ -221,7 +239,7 @@ struct IsSameAppId : public IsSameApp {
 };
 
 struct IsSameAppName : public IsSameApp {
-  IsSameAppName(const std::string& name,
+  IsSameAppName(const custom_str::CustomString& name,
                 const smart_objects::SmartArray* vr_synonyms,
                 bool is_remote_control,
                 bool is_driver,
@@ -282,15 +300,14 @@ struct IsSameAppId {
  private:
   const std::string app_id_;
 };
+
 struct IsSameAppName {
-  IsSameAppName(const std::string& name,
+  IsSameAppName(const custom_str::CustomString& name,
                 const smart_objects::SmartArray* vr_synonyms)
       : name_(name), matcher_(name_), vr_synonyms_(vr_synonyms) {}
   bool operator()(ApplicationSharedPtr other) const {
     const bool same = (name_ == other->name().AsMBString());
     if (same) {
-      LOG4CXX_AUTO_TRACE(logger_);
-      LOG4CXX_ERROR(logger_, "Application name is known already.");
       return true;
     }
 
@@ -300,9 +317,6 @@ struct IsSameAppName {
       if (std::find_if(other_vr_synonyms->begin(),
                        other_vr_synonyms->end(),
                        matcher_) != other_vr_synonyms->end()) {
-        LOG4CXX_AUTO_TRACE(logger_);
-
-        LOG4CXX_ERROR(logger_, "Application name is known already.");
         return true;
       }
     }
@@ -310,9 +324,6 @@ struct IsSameAppName {
     if (vr_synonyms_) {
       if (std::find_if(vr_synonyms_->begin(), vr_synonyms_->end(), matcher_) !=
           vr_synonyms_->end()) {
-        LOG4CXX_AUTO_TRACE(logger_);
-
-        LOG4CXX_ERROR(logger_, "vr_synonyms duplicated with app_name .");
         return true;
       }
     }
@@ -320,7 +331,7 @@ struct IsSameAppName {
   }
 
  private:
-  const std::string name_;
+  const custom_str::CustomString name_;
   CoincidencePredicateVR matcher_;
   const smart_objects::SmartArray* vr_synonyms_;
 };
