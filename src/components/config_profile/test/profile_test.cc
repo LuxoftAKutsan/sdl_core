@@ -744,6 +744,6 @@ TEST_F(ProfileTest, AppIconsFolder_DefaultValues_SUCCESS) {
             profile_.app_icons_folder_max_size());
 }
 
-}  // namespace profile
+}  // namespace profile_test
 }  // namespace components
 }  // namespace test
