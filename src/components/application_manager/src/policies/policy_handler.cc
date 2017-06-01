@@ -242,6 +242,7 @@ struct LinksCollector {
   std::map<std::string, std::string>& out_app_to_device_link_;
 };
 
+
 struct PermissionsConsolidator {
   void Consolidate(
       const std::vector<policy::FunctionalGroupPermission>& permissions) {
