@@ -230,6 +230,20 @@ ApplicationSharedPtr ApplicationManagerImpl::application(
   return FindApp(accessor, finder);
 }
 
+struct IsApplication {
+  IsApplication(connection_handler::DeviceHandle device_handle,
+                const std::string& policy_app_id)
+      : device_handle_(device_handle), policy_app_id_(policy_app_id) {}
+  bool operator()(const ApplicationSharedPtr app) const {
+    return app && app->device() == device_handle_ &&
+           app->policy_app_id() == policy_app_id_;
+  }
+
+ private:
+  connection_handler::DeviceHandle device_handle_;
+  const std::string& policy_app_id_;
+};
+
 ApplicationSharedPtr ApplicationManagerImpl::application_by_hmi_app(
     uint32_t hmi_app_id) const {
   HmiAppIdPredicate finder(hmi_app_id);
