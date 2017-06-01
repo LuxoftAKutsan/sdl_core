@@ -289,6 +289,10 @@ class ApplicationManager {
   virtual bool IsAppTypeExistsInFullOrLimited(
       ApplicationConstSharedPtr app) const = 0;
 
+  // TODO: Make RC to use StateCTRL APPLINK-31598
+  virtual void ChangeAppsHMILevel(uint32_t app_id,
+                                    mobile_apis::HMILevel::eType level) = 0;
+
   /**
    * @brief Sets default HMI level and configure application after its
    * registration
