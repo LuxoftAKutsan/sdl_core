@@ -410,7 +410,6 @@ set(LIBRARIES
   Utils
 )
 
-
 if(REMOTE_CONTROL)
     SET (LIBRARIES
       ${LIBRARIES}

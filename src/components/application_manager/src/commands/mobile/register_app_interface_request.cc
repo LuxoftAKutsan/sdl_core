@@ -235,7 +235,7 @@ struct IsSameAppId : public IsSameApp {
   }
 
  private:
-  const std::string app_id_;
+  const custom_str::CustomString app_id_;
 };
 
 struct IsSameAppName : public IsSameApp {
@@ -286,7 +286,7 @@ struct IsSameAppName : public IsSameApp {
   }
 
  private:
-  const std::string name_;
+  const custom_str::CustomString name_;
   CoincidencePredicateVR matcher_;
   const smart_objects::SmartArray* vr_synonyms_;
 };
@@ -1018,7 +1018,7 @@ mobile_apis::Result::eType RegisterAppInterfaceRequest::CheckCoincidence() {
       (*message_)[strings::msg_params];
 
   ApplicationSet accessor = application_manager_.applications().GetData();
-  ApplicationSetConstIt it = accessor.begin();
+
   const custom_str::CustomString& app_name =
       msg_params[strings::app_name].asCustomString();
 
@@ -1030,7 +1030,7 @@ mobile_apis::Result::eType RegisterAppInterfaceRequest::CheckCoincidence() {
 
   const std::string mobile_app_id =
       (*message_)[strings::msg_params][strings::app_id].asString();
-  IsSameAppName matcher(app_name.AsMBString(),
+  IsSameAppName matcher(app_name,
                         vr_synonyms,
                         IsRemoteControl(mobile_app_id),
                         IsDriverDevice(),
@@ -1206,7 +1206,7 @@ bool RegisterAppInterfaceRequest::IsApplicationWithSameAppIdRegistered() {
       application_manager_.applications().GetData();
 
 #ifdef SDL_REMOTE_CONTROL
-  IsSameAppId matcher(mobile_app_id.AsMBString(),
+  IsSameAppId matcher(mobile_app_id,
                       IsRemoteControl(mobile_app_id.AsMBString()),
                       IsDriverDevice(),
                       application_manager_);

@@ -34,6 +34,7 @@
 #include <string>
 #include "gmock/gmock.h"
 #include "application_manager/application.h"
+#include "application_manager/app_extension.h"
 #include "smart_objects/smart_object.h"
 #include "utils/custom_string.h"
 #include "application_manager/usage_statistics.h"
@@ -275,6 +276,35 @@ class MockApplication : public ::application_manager::Application {
   MOCK_CONST_METHOD0(bundle_id, const std::string&());
   MOCK_METHOD1(set_bundle_id, void(const std::string& bundle_id));
   MOCK_METHOD0(GetAvailableDiskSpace, uint32_t());
+
+#ifdef SDL_REMOTE_CONTROL
+  MOCK_METHOD1(set_system_context,
+               void(const application_manager::mobile_api::SystemContext::eType&
+                        system_context));
+  MOCK_METHOD1(
+      set_audio_streaming_state,
+      void(const application_manager::mobile_api::AudioStreamingState::eType&
+               state));
+  MOCK_METHOD1(IsSubscribedToInteriorVehicleData,
+               bool(smart_objects::SmartObject module));
+  MOCK_METHOD1(SubscribeToInteriorVehicleData,
+               bool(smart_objects::SmartObject module));
+  MOCK_METHOD1(UnsubscribeFromInteriorVehicleData,
+               bool(smart_objects::SmartObject module));
+  MOCK_METHOD1(
+      set_hmi_level,
+      void(const application_manager::mobile_api::HMILevel::eType& hmi_level));
+  MOCK_METHOD1(QueryInterface,
+               application_manager::AppExtensionPtr(
+                   application_manager::AppExtensionUID uid));
+  MOCK_METHOD1(AddExtension,
+               bool(application_manager::AppExtensionPtr extention));
+  MOCK_METHOD1(RemoveExtension, bool(application_manager::AppExtensionUID uid));
+  MOCK_METHOD0(RemoveExtensions, void());
+  MOCK_CONST_METHOD0(SubscribesIVI, const std::set<uint32_t>&());
+
+#endif  // SDL_REMOTE_CONTROL
+
   MOCK_METHOD1(set_mobile_app_id, void(const std::string& policy_app_id));
   MOCK_CONST_METHOD0(is_foreground, bool());
   MOCK_METHOD1(set_foreground, void(bool is_foreground));
