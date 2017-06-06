@@ -105,10 +105,10 @@ class AccessRemoteImpl : public AccessRemote {
   HMIList hmi_types_;
   SeatList seats_;
 
-#ifdef BUILD_TESTS
   friend struct Erase;
   friend struct IsTypeAccess;
 
+#ifdef BUILD_TESTS
   FRIEND_TEST(AccessRemoteImplTest, KeyMapTest);
   FRIEND_TEST(AccessRemoteImplTest, Allow);
   FRIEND_TEST(AccessRemoteImplTest, Deny);
