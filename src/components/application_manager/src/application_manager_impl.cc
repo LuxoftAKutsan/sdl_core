@@ -73,7 +73,7 @@
 #include "policy/usage_statistics/counter.h"
 #include "functional_module/plugin_manager.h"
 #include "application_manager/core_service.h"
-#endif
+#endif  // SDL_REMOTE_CONTROL
 
 namespace {
 int get_rand_from_range(uint32_t from = 0, int to = RAND_MAX) {
@@ -82,6 +82,8 @@ int get_rand_from_range(uint32_t from = 0, int to = RAND_MAX) {
 }
 
 namespace application_manager {
+
+log4cxx::LoggerPtr application_manager::ApplicationManagerImpl::logger_;
 
 namespace {
 

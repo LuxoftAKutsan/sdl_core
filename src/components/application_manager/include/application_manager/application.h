@@ -825,7 +825,7 @@ class Application : public virtual InitialApplicationData,
   virtual bool RemoveExtension(AppExtensionUID uid) = 0;
   virtual void RemoveExtensions() = 0;
   virtual const std::set<uint32_t>& SubscribesIVI() const = 0;
-#endif
+#endif  // SDL_REMOTE_CONTROL
 
  protected:
   mutable sync_primitives::Lock hmi_states_lock_;

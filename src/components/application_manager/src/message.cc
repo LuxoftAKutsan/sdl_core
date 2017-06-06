@@ -116,6 +116,10 @@ int32_t Message::function_id() const {
   return function_id_;
 }
 
+std::string Message::function_name() const {
+  return function_name_;
+}
+
 uint32_t Message::correlation_id() const {
   return correlation_id_;
 }
@@ -154,6 +158,10 @@ size_t Message::payload_size() const {
 
 void Message::set_function_id(int32_t id) {
   function_id_ = id;
+}
+
+void Message::set_function_name(const std::string& name) {
+  function_name_ = name;
 }
 
 void Message::set_correlation_id(int32_t id) {

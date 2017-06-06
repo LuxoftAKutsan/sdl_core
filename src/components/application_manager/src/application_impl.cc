@@ -77,6 +77,8 @@ CREATE_LOGGERPTR_GLOBAL(logger_, "ApplicationManager")
 
 namespace application_manager {
 
+log4cxx::LoggerPtr application_manager::ApplicationImpl::logger_;
+
 ApplicationImpl::ApplicationImpl(
     uint32_t application_id,
     const std::string& mobile_app_id,

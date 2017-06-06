@@ -47,6 +47,7 @@
 #include "application_manager/usage_statistics.h"
 #include "application_manager/hmi_state.h"
 #include "protocol_handler/protocol_handler.h"
+#include "log4cxx/logger.h"
 
 #include "connection_handler/device.h"
 #include "utils/lock.h"
