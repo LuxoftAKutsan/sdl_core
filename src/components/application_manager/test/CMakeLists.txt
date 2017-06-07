@@ -69,11 +69,13 @@ set(testSources
   ${AM_TEST_DIR}/application_state_test.cc
   ${AM_TEST_DIR}/usage_statistics_test.cc
   ${AM_TEST_DIR}/policy_handler_test.cc
-  ${AM_TEST_DIR}/rc_policy_handler_test.cc
   ${AM_TEST_DIR}/mock_message_helper.cc
  #${AM_TEST_DIR}/application_manager_impl_test.cc
-
 )
+
+if(REMOTE_CONTROL)
+  list(APPEND testSources ${AM_TEST_DIR}/rc_policy_handler_test.cc)
+endif(REMOTE_CONTROL)
 
 set (RequestController_SOURCES
   ${AM_TEST_DIR}/request_controller/request_controller_test.cc
