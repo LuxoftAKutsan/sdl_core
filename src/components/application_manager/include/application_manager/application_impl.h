@@ -461,10 +461,6 @@ class ApplicationImpl : public virtual Application,
   std::forward_list<smart_objects::SmartObject>
       subscribed_interior_vehicle_data_;
 
-#ifdef ENABLE_LOG
-  static log4cxx::LoggerPtr logger_;
-#endif  // ENABLE_LOG
-
   /**
    * @brief Defines number per time in seconds limits
    */

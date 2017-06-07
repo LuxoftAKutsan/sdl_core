@@ -83,8 +83,6 @@ int get_rand_from_range(uint32_t from = 0, int to = RAND_MAX) {
 
 namespace application_manager {
 
-log4cxx::LoggerPtr application_manager::ApplicationManagerImpl::logger_;
-
 namespace {
 
 DeviceTypes devicesType = {

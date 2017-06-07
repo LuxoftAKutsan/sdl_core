@@ -1465,9 +1465,6 @@ class ApplicationManagerImpl
   void ClearTTSGlobalPropertiesList();
 
  private:
-#ifdef ENABLE_LOG
-  static log4cxx::LoggerPtr logger_;
-#endif  // ENABLE_LOG
 
   const ApplicationManagerSettings& settings_;
   /**
