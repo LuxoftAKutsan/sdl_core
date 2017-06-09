@@ -99,7 +99,8 @@ class RegisterAppInterfaceRequestTest
   void InitBasicMessage() {
     (*msg_)[am::strings::params][am::strings::connection_key] = kConnectionKey;
     (*msg_)[am::strings::msg_params][am::strings::app_id] = kAppId;
-    (*msg_)[am::strings::msg_params][am::strings::app_name] = app_name_;
+    (*msg_)[am::strings::msg_params][am::strings::app_name] =
+        app_name_.AsMBString();
     (*msg_)[am::strings::msg_params][am::strings::language_desired] =
         kHmiLanguage;
     (*msg_)[am::strings::msg_params]
@@ -132,6 +133,12 @@ class RegisterAppInterfaceRequestTest
     ON_CALL(app_mngr_, IsHMICooperating()).WillByDefault(Return(true));
     ON_CALL(app_mngr_, GetPolicyHandler())
         .WillByDefault(ReturnRef(mock_policy_handler_));
+
+#ifdef SDL_REMOTE_CONTROL
+    ON_CALL(app_mngr_, GetPluginManager())
+        .WillByDefault(ReturnRef(plugin_mngr_));
+#endif  // SDL_REMOTE_CONTROL
+
     ON_CALL(app_mngr_, resume_controller())
         .WillByDefault(ReturnRef(mock_resume_crt_));
     ON_CALL(app_mngr_, connection_handler())
@@ -176,6 +183,9 @@ class RegisterAppInterfaceRequestTest
   const utils::custom_string::CustomString app_name_;
   sync_primitives::Lock lock_;
   am::ApplicationSet app_set_;
+#ifdef SDL_REMOTE_CONTROL
+  functional_modules::PluginManager plugin_mngr_;
+#endif  // SDL_REMOTE_CONTROL
 
   typedef IsNiceMock<policy_test::MockPolicyHandlerInterface,
                      kMocksAreNice>::Result MockPolicyHandlerInterface;
@@ -244,7 +254,7 @@ TEST_F(RegisterAppInterfaceRequestTest, Run_MinimalData_SUCCESS) {
       .WillOnce(Return(true));
   EXPECT_CALL(app_mngr_,
               ManageMobileCommand(_, am::commands::Command::ORIGIN_SDL))
-      .Times(2);
+      .Times(3);
   command_->Run();
 }
 
@@ -367,7 +377,7 @@ TEST_F(RegisterAppInterfaceRequestTest,
       .WillOnce(Return(true));
   EXPECT_CALL(app_mngr_,
               ManageMobileCommand(_, am::commands::Command::ORIGIN_SDL))
-      .Times(2);
+      .Times(3);
 
   command_->Run();
 }
@@ -420,7 +430,7 @@ TEST_F(RegisterAppInterfaceRequestTest,
 
   policy::StatusNotifier notify_upd_manager =
       utils::MakeShared<utils::CallNothing>();
-  ON_CALL(mock_policy_handler_, AddApplication(_,_))
+  ON_CALL(mock_policy_handler_, AddApplication(_, _))
       .WillByDefault(Return(notify_upd_manager));
 
   EXPECT_CALL(app_mngr_, RegisterApplication(msg_)).WillOnce(Return(mock_app));
@@ -453,7 +463,7 @@ TEST_F(RegisterAppInterfaceRequestTest,
     EXPECT_CALL(app_mngr_,
                 ManageMobileCommand(
                     CheckMobileResponseParameters(ui_hmi_capabilities), _));
-    EXPECT_CALL(app_mngr_, ManageMobileCommand(_, _));
+    EXPECT_CALL(app_mngr_, ManageMobileCommand(_, _)).Times(2);
   }
   command_->Run();
 }

@@ -1206,13 +1206,16 @@ bool RegisterAppInterfaceRequest::IsApplicationWithSameAppIdRegistered() {
       application_manager_.applications().GetData();
 
 #ifdef SDL_REMOTE_CONTROL
+  const bool is_rc = IsRemoteControl(mobile_app_id.AsMBString());
+  const bool is_driver_device = IsDriverDevice();
   IsSameAppId matcher(mobile_app_id,
-                      IsRemoteControl(mobile_app_id.AsMBString()),
-                      IsDriverDevice(),
+                      is_rc,
+                      is_driver_device,
                       application_manager_);
 
-  return std::find_if(applications.begin(), applications.end(), matcher) !=
-         applications.end();
+  const bool res = std::find_if(applications.begin(), applications.end(), matcher) !=
+          applications.end();
+  return res;
 #else
   ApplicationSetConstIt it = applications.begin();
   ApplicationSetConstIt it_end = applications.end();
@@ -1387,5 +1390,4 @@ RegisterAppInterfaceRequest::GetPolicyHandler() {
 }
 
 }  // namespace commands
-
 }  // namespace application_manager

@@ -266,6 +266,7 @@ MockMessageHelper* MockMessageHelper::message_helper_mock() {
   static MockMessageHelper message_helper_mock;
   return &message_helper_mock;
 }
+
 void MessageHelper::SendAllOnButtonSubscriptionNotificationsForApp(
     ApplicationConstSharedPtr app, ApplicationManager& app_mngr) {
   MockMessageHelper::message_helper_mock()
