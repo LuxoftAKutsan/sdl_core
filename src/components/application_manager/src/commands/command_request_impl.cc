@@ -32,11 +32,14 @@
 
 #include <algorithm>
 #include <string>
+#include <numeric>
 #include "utils/macro.h"
+#include "utils/make_shared.h"
 #include "application_manager/commands/command_request_impl.h"
 #include "application_manager/application_manager.h"
 #include "application_manager/message_helper.h"
 #include "smart_objects/smart_object.h"
+
 namespace application_manager {
 
 namespace commands {
@@ -106,19 +109,25 @@ const std::string CreateInfoForUnsupportedResult(
 
 bool CheckResultCode(const ResponseInfo& first, const ResponseInfo& second) {
   if (first.is_ok && second.is_unsupported_resource &&
-      second.interface_state == HmiInterfaces::STATE_NOT_AVAILABLE) {
+      HmiInterfaces::STATE_NOT_AVAILABLE != second.interface_state) {
     return true;
   }
   return false;
 }
 
-bool IsResultCodeUnsupported(const ResponseInfo& first,
-                             const ResponseInfo& second) {
-  return ((first.is_ok || first.is_invalid_enum) &&
-          second.is_unsupported_resource) ||
-         ((second.is_ok || second.is_invalid_enum) &&
-          first.is_unsupported_resource) ||
-         (first.is_unsupported_resource && second.is_unsupported_resource);
+bool IsResultCodeWarning(const ResponseInfo& first,
+                         const ResponseInfo& second) {
+  const bool first_is_ok_second_is_warn =
+      (first.is_ok || first.is_invalid_enum) &&
+      hmi_apis::Common_Result::WARNINGS == second.result_code;
+  const bool second_is_ok_first_is_warn =
+      (second.is_ok || second.is_invalid_enum) &&
+      hmi_apis::Common_Result::WARNINGS == first.result_code;
+  const bool both_warnings =
+      hmi_apis::Common_Result::WARNINGS == first.result_code &&
+      hmi_apis::Common_Result::WARNINGS == second.result_code;
+  return first_is_ok_second_is_warn || second_is_ok_first_is_warn ||
+         both_warnings;
 }
 
 struct DisallowedParamsInserter {
@@ -145,6 +154,42 @@ struct DisallowedParamsInserter {
   smart_objects::SmartObject& response_;
   mobile_apis::VehicleDataResultCode::eType code_;
 };
+
+ResponseInfo::ResponseInfo()
+    : result_code(hmi_apis::Common_Result::INVALID_ENUM)
+    , interface(HmiInterfaces::HMI_INTERFACE_INVALID_ENUM)
+    , interface_state(HmiInterfaces::STATE_NOT_RESPONSE)
+    , is_ok(false)
+    , is_unsupported_resource(false)
+    , is_invalid_enum(false) {}
+
+ResponseInfo::ResponseInfo(const hmi_apis::Common_Result::eType result,
+                           const HmiInterfaces::InterfaceID hmi_interface,
+                           ApplicationManager& application_manager)
+    : result_code(result)
+    , interface(hmi_interface)
+    , interface_state(HmiInterfaces::STATE_NOT_RESPONSE)
+    , is_ok(false)
+    , is_unsupported_resource(false)
+    , is_invalid_enum(false) {
+  using namespace helpers;
+
+  interface_state =
+      application_manager.hmi_interfaces().GetInterfaceState(hmi_interface);
+
+  is_ok = Compare<hmi_apis::Common_Result::eType, EQ, ONE>(
+      result_code,
+      hmi_apis::Common_Result::SUCCESS,
+      hmi_apis::Common_Result::WARNINGS,
+      hmi_apis::Common_Result::WRONG_LANGUAGE,
+      hmi_apis::Common_Result::RETRY,
+      hmi_apis::Common_Result::SAVED);
+
+  is_invalid_enum = hmi_apis::Common_Result::INVALID_ENUM == result_code;
+
+  is_unsupported_resource =
+      hmi_apis::Common_Result::UNSUPPORTED_RESOURCE == result_code;
+}
 
 CommandRequestImpl::CommandRequestImpl(const MessageSharedPtr& message,
                                        ApplicationManager& application_manager)
@@ -193,7 +238,7 @@ void CommandRequestImpl::onTimeOut() {
                                             function_id(),
                                             correlation_id(),
                                             mobile_api::Result::GENERIC_ERROR);
-
+  AddTimeOutComponentInfoToMessage(*response);
   application_manager_.ManageMobileCommand(response, ORIGIN_SDL);
 }
 
@@ -214,11 +259,9 @@ void CommandRequestImpl::SendResponse(
     current_state_ = kCompleted;
   }
 
-  smart_objects::SmartObjectSPtr result = new smart_objects::SmartObject;
-  if (!result) {
-    LOG4CXX_ERROR(logger_, "Memory allocation failed.");
-    return;
-  }
+  smart_objects::SmartObjectSPtr result =
+      utils::MakeShared<smart_objects::SmartObject>();
+
   smart_objects::SmartObject& response = *result;
 
   response[strings::params][strings::message_type] = MessageType::kResponse;
@@ -649,11 +692,11 @@ void CommandRequestImpl::RemoveDisallowedParameters() {
       parameters_permissions_.disallowed_params.end();
   for (; it_disallowed != it_disallowed_end; ++it_disallowed) {
     if (params.keyExists(*it_disallowed)) {
-      const std::string key = *it_disallowed;
-      params.erase(key);
-      removed_parameters_permissions_.disallowed_params.insert(key);
-      LOG4CXX_INFO(logger_,
-                   "Following parameter is disallowed by user: " << key);
+      removed_parameters_permissions_.disallowed_params.insert(*it_disallowed);
+      LOG4CXX_INFO(
+          logger_,
+          "Following parameter is disallowed by user: " << *it_disallowed);
+      params.erase(*it_disallowed);
     }
   }
 
@@ -664,11 +707,11 @@ void CommandRequestImpl::RemoveDisallowedParameters() {
       parameters_permissions_.undefined_params.end();
   for (; it_undefined != it_undefined_end; ++it_undefined) {
     if (params.keyExists(*it_undefined)) {
-      const std::string key = *it_undefined;
-      params.erase(key);
-      removed_parameters_permissions_.undefined_params.insert(key);
-      LOG4CXX_INFO(logger_,
-                   "Following parameter is disallowed by policy: " << key);
+      removed_parameters_permissions_.undefined_params.insert(*it_undefined);
+      LOG4CXX_INFO(
+          logger_,
+          "Following parameter is disallowed by policy: " << *it_undefined);
+      params.erase(*it_undefined);
     }
   }
 
@@ -777,43 +820,6 @@ bool CommandRequestImpl::PrepareResultForMobileResponse(
 
 bool CommandRequestImpl::PrepareResultForMobileResponse(
     ResponseInfo& out_first, ResponseInfo& out_second) const {
-  using namespace helpers;
-
-  out_first.is_ok = Compare<hmi_apis::Common_Result::eType, EQ, ONE>(
-      out_first.result_code,
-      hmi_apis::Common_Result::SUCCESS,
-      hmi_apis::Common_Result::WARNINGS,
-      hmi_apis::Common_Result::WRONG_LANGUAGE,
-      hmi_apis::Common_Result::RETRY,
-      hmi_apis::Common_Result::SAVED);
-
-  out_second.is_ok = Compare<hmi_apis::Common_Result::eType, EQ, ONE>(
-      out_second.result_code,
-      hmi_apis::Common_Result::SUCCESS,
-      hmi_apis::Common_Result::WARNINGS,
-      hmi_apis::Common_Result::WRONG_LANGUAGE,
-      hmi_apis::Common_Result::RETRY,
-      hmi_apis::Common_Result::SAVED);
-
-  out_first.is_invalid_enum =
-      hmi_apis::Common_Result::INVALID_ENUM == out_first.result_code;
-
-  out_second.is_invalid_enum =
-      hmi_apis::Common_Result::INVALID_ENUM == out_second.result_code;
-
-  out_first.is_unsupported_resource =
-      hmi_apis::Common_Result::UNSUPPORTED_RESOURCE == out_first.result_code;
-
-  out_second.is_unsupported_resource =
-      hmi_apis::Common_Result::UNSUPPORTED_RESOURCE == out_second.result_code;
-
-  out_first.interface_state =
-      application_manager_.hmi_interfaces().GetInterfaceState(
-          out_first.interface);
-  out_second.interface_state =
-      application_manager_.hmi_interfaces().GetInterfaceState(
-          out_second.interface);
-
   bool result = (out_first.is_ok && out_second.is_ok) ||
                 (out_second.is_invalid_enum && out_first.is_ok) ||
                 (out_first.is_invalid_enum && out_second.is_ok);
@@ -838,6 +844,8 @@ mobile_apis::Result::eType CommandRequestImpl::PrepareResultCodeForResponse(
   mobile_apis::Result::eType result_code = mobile_apis::Result::INVALID_ENUM;
   if (IsResultCodeUnsupported(first, second)) {
     result_code = mobile_apis::Result::UNSUPPORTED_RESOURCE;
+  } else if (IsResultCodeWarning(first, second)) {
+    result_code = mobile_apis::Result::WARNINGS;
   } else {
     // If response contains erroneous result code SDL need return erroneus
     // result code.
@@ -860,6 +868,104 @@ mobile_apis::Result::eType CommandRequestImpl::PrepareResultCodeForResponse(
 const CommandParametersPermissions& CommandRequestImpl::parameters_permissions()
     const {
   return parameters_permissions_;
+}
+
+void CommandRequestImpl::StartAwaitForInterface(
+    const HmiInterfaces::InterfaceID interface_id) {
+  sync_primitives::AutoLock lock(awaiting_response_interfaces_lock_);
+  awaiting_response_interfaces_.insert(interface_id);
+}
+
+bool CommandRequestImpl::IsInterfaceAwaited(
+    const HmiInterfaces::InterfaceID& interface_id) const {
+  sync_primitives::AutoLock lock(awaiting_response_interfaces_lock_);
+  std::set<HmiInterfaces::InterfaceID>::const_iterator it =
+      awaiting_response_interfaces_.find(interface_id);
+  return (it != awaiting_response_interfaces_.end());
+}
+
+void CommandRequestImpl::EndAwaitForInterface(
+    const HmiInterfaces::InterfaceID& interface_id) {
+  sync_primitives::AutoLock lock(awaiting_response_interfaces_lock_);
+  std::set<HmiInterfaces::InterfaceID>::const_iterator it =
+      awaiting_response_interfaces_.find(interface_id);
+  if (it != awaiting_response_interfaces_.end()) {
+    awaiting_response_interfaces_.erase(it);
+  } else {
+    LOG4CXX_WARN(logger_,
+                 "EndAwaitForInterface called on interface \
+                    which was not put into await state: "
+                     << interface_id);
+  }
+}
+
+bool CommandRequestImpl::IsResultCodeUnsupported(
+    const ResponseInfo& first, const ResponseInfo& second) const {
+  const bool first_ok_second_unsupported =
+      (first.is_ok || first.is_invalid_enum) && second.is_unsupported_resource;
+  const bool scond_ok_first_unsupported =
+      (second.is_ok || second.is_invalid_enum) && first.is_unsupported_resource;
+  const bool both_unsupported =
+      first.is_unsupported_resource && second.is_unsupported_resource;
+  return first_ok_second_unsupported || scond_ok_first_unsupported ||
+         both_unsupported;
+}
+
+std::string GetComponentNameFromInterface(
+    const HmiInterfaces::InterfaceID& interface) {
+  switch (interface) {
+    case HmiInterfaces::HMI_INTERFACE_Buttons:
+      return "Buttons";
+    case HmiInterfaces::HMI_INTERFACE_BasicCommunication:
+      return "BasicCommunication";
+    case HmiInterfaces::HMI_INTERFACE_VR:
+      return "VR";
+    case HmiInterfaces::HMI_INTERFACE_TTS:
+      return "TTS";
+    case HmiInterfaces::HMI_INTERFACE_UI:
+      return "UI";
+    case HmiInterfaces::HMI_INTERFACE_Navigation:
+      return "Navigation";
+    case HmiInterfaces::HMI_INTERFACE_VehicleInfo:
+      return "VehicleInfo";
+    case HmiInterfaces::HMI_INTERFACE_SDL:
+      return "SDL";
+    default:
+      return "Unknown type";
+  }
+}
+
+const std::string InfoInterfaceSeparator(
+    const std::string& sum, const HmiInterfaces::InterfaceID container_value) {
+  return sum.empty()
+             ? GetComponentNameFromInterface(container_value)
+             : sum + ", " + GetComponentNameFromInterface(container_value);
+}
+
+void CommandRequestImpl::AddTimeOutComponentInfoToMessage(
+    smart_objects::SmartObject& response) const {
+  using NsSmartDeviceLink::NsSmartObjects::SmartObject;
+  LOG4CXX_AUTO_TRACE(logger_);
+
+  sync_primitives::AutoLock lock(awaiting_response_interfaces_lock_);
+  if (awaiting_response_interfaces_.empty()) {
+    LOG4CXX_ERROR(logger_, "No interfaces awaiting, info param is empty");
+    return;
+  }
+
+  const std::string not_responding_interfaces_string =
+      std::accumulate(awaiting_response_interfaces_.begin(),
+                      awaiting_response_interfaces_.end(),
+                      std::string(""),
+                      InfoInterfaceSeparator);
+  LOG4CXX_DEBUG(
+      logger_,
+      "Not responding interfaces string: " << not_responding_interfaces_string);
+  if (!not_responding_interfaces_string.empty()) {
+    const std::string component_info =
+        not_responding_interfaces_string + " component does not respond";
+    response[strings::msg_params][strings::info] = component_info;
+  }
 }
 
 }  // namespace commands
