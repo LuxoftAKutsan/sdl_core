@@ -73,7 +73,8 @@ class GetWayPointsRequestTest
     : public CommandRequestTest<CommandsTestMocks::kIsNice> {
  public:
   GetWayPointsRequestTest()
-      : message_helper_mock_(*am::MockMessageHelper::message_helper_mock()) {
+      : message_helper_mock_(*am::MockMessageHelper::message_helper_mock())
+      , mock_app_(CreateMockApp()) {
     Mock::VerifyAndClearExpectations(&message_helper_mock_);
   }
 
@@ -89,7 +90,6 @@ class GetWayPointsRequestTest
     command_sptr_ =
         CreateCommand<application_manager::commands::GetWayPointsRequest>(
             message_);
-    mock_app_ = CreateMockApp();
     ON_CALL(app_mngr_, application(_)).WillByDefault(Return(mock_app_));
 
     ON_CALL(message_helper_mock_, HMIToMobileResult(_))
@@ -212,6 +212,8 @@ TEST_F(GetWayPointsRequestTest,
       hmi_apis::Common_Result::SUCCESS;
 
   event.set_smart_object(*message_);
+  EXPECT_CALL(message_helper_mock_, HMIToMobileResult(_))
+      .WillOnce(Return(mobile_apis::Result::SUCCESS));
 
   CallOnEvent caller(*command_sptr_, event);
 
@@ -246,14 +248,20 @@ TEST_F(GetWayPointsRequestOnEventTest, OnEvent_WrongEventId_UNSUCCESS) {
 }
 
 TEST_F(GetWayPointsRequestOnEventTest, OnEvent_Expect_SUCCESS_Case1) {
+  EXPECT_CALL(message_helper_mock_, HMIToMobileResult(_))
+      .WillOnce(Return(mobile_apis::Result::SUCCESS));
   CheckOnEventResponse("0", SUCCESS, true);
 }
 
 TEST_F(GetWayPointsRequestOnEventTest, OnEvent_Expect_SUCCESS_Case2) {
+  EXPECT_CALL(message_helper_mock_, HMIToMobileResult(_))
+      .WillOnce(Return(mobile_apis::Result::SUCCESS));
   CheckOnEventResponse("", SUCCESS, true);
 }
 
 TEST_F(GetWayPointsRequestOnEventTest, OnEvent_Expect_SUCCESS_Case3) {
+  EXPECT_CALL(message_helper_mock_, HMIToMobileResult(_))
+      .WillOnce(Return(mobile_apis::Result::SUCCESS));
   CheckOnEventResponse("test", SUCCESS, true);
 }
 
