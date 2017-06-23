@@ -177,7 +177,7 @@ void PerformAudioPassThruRequest::on_event(const event_engine::Event& event) {
     return;
   }
 
-  ResponseParams response_params = PrepareResponseParameters();
+  const ResponseParams response_params = PrepareResponseParameters();
 
   SendResponse(
       response_params.success,
@@ -196,7 +196,7 @@ PerformAudioPassThruRequest::PrepareResponseParameters() {
                                 HmiInterfaces::HMI_INTERFACE_TTS,
                                 application_manager_);
 
-  // Note(dtrunov): According to requirment APPLINK-19591
+  // Note(dtrunov): According to requirment "WARNINGS, success:true on getting UNSUPPORTED_RESOURCE for "ttsChunks"
   if (ui_perform_info.is_ok && tts_perform_info.is_unsupported_resource &&
       HmiInterfaces::STATE_AVAILABLE == tts_perform_info.interface_state) {
     response_params_.result_code = mobile_apis::Result::WARNINGS;
