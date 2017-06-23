@@ -61,6 +61,7 @@ using am::commands::DeleteCommandRequest;
 using am::commands::MessageSharedPtr;
 using am::event_engine::Event;
 using am::MockMessageHelper;
+using am::MockHmiInterfaces;
 
 typedef SharedPtr<DeleteCommandRequest> DeleteCommandPtr;
 

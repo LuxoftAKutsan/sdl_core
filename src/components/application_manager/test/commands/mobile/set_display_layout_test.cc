@@ -182,7 +182,6 @@ TEST_F(SetDisplayLayoutRequestTest, Run_InvalidApp_UNSUCCESS) {
   MessageSharedPtr msg(CreateMessage(smart_objects::SmartType_Map));
   (*msg)[am::strings::params][am::strings::connection_key] = kConnectionKey;
   CommandPtr command(CreateCommand<SetDisplayLayoutRequest>(msg));
-
   MockAppPtr invalid_mock_app;
   EXPECT_CALL(app_mngr_, application(kConnectionKey))
       .WillOnce(Return(invalid_mock_app));
@@ -237,7 +236,6 @@ TEST_F(SetDisplayLayoutRequestTest, OnEvent_SUCCESS) {
   (*msg)[am::strings::params][am::hmi_response::code] =
       hmi_apis::Common_Result::SUCCESS;
   (*msg)[am::strings::msg_params][am::hmi_response::display_capabilities] = 0;
-  (*msg)[am::strings::params][am::strings::connection_key] = kConnectionKey;
   event.set_smart_object(*msg);
 
   MockHMICapabilities hmi_capabilities;
@@ -245,23 +243,22 @@ TEST_F(SetDisplayLayoutRequestTest, OnEvent_SUCCESS) {
   (*dispaly_capabilities_msg)[am::hmi_response::templates_available] =
       "templates_available";
 
-  EXPECT_CALL(mock_message_helper_, HMIToMobileResult(_))
-      .WillOnce(Return(mobile_apis::Result::SUCCESS));
-
   EXPECT_CALL(app_mngr_, hmi_capabilities())
       .WillOnce(ReturnRef(hmi_capabilities));
 
   EXPECT_CALL(hmi_capabilities, display_capabilities())
       .WillOnce(Return(dispaly_capabilities_msg.get()));
+
   ON_CALL(mock_message_helper_,
-          HMIToMobileResult(hmi_apis::Common_Result::eType::SUCCESS))
-      .WillByDefault(Return(am::mobile_api::Result::SUCCESS));
+          HMIToMobileResult(hmi_apis::Common_Result::SUCCESS))
+      .WillByDefault(Return(mobile_apis::Result::SUCCESS));
+
   EXPECT_CALL(
       app_mngr_,
       ManageMobileCommand(MobileResultCodeIs(mobile_result::SUCCESS),
                           am::commands::Command::CommandOrigin::ORIGIN_SDL));
 
-  CommandPtr command(CreateCommand<SetDisplayLayoutRequest>(msg));
+  CommandPtr command(CreateCommand<SetDisplayLayoutRequest>());
   command->on_event(event);
 }
 

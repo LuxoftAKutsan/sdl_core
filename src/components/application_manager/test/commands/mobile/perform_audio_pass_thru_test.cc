@@ -215,10 +215,10 @@ TEST_F(PerformAudioPassThruRequestTest,
 
   ON_CALL(mock_hmi_interfaces_,
           GetInterfaceState(am::HmiInterfaces::HMI_INTERFACE_UI))
-      .WillByDefault(Return(am::HmiInterfaces::STATE_NOT_AVAILABLE));
+      .WillByDefault(Return(am::HmiInterfaces::STATE_AVAILABLE));
   ON_CALL(mock_hmi_interfaces_,
           GetInterfaceState(am::HmiInterfaces::HMI_INTERFACE_TTS))
-      .WillByDefault(Return(am::HmiInterfaces::STATE_NOT_AVAILABLE));
+      .WillByDefault(Return(am::HmiInterfaces::STATE_AVAILABLE));
 
   MessageSharedPtr response_msg_tts =
       CreateMessage(smart_objects::SmartType_Map);
@@ -590,7 +590,7 @@ TEST_F(PerformAudioPassThruRequestTest,
 }
 
 TEST_F(PerformAudioPassThruRequestTest,
-       OnEvent_PAPTunsupportedResource_CorrectInfo) {
+       DISABLED_OnEvent_PAPTunsupportedResource_CorrectInfo) {
   const std::string return_info = "Unsupported phoneme type sent in a prompt";
 
   am::event_engine::Event event_speak(hmi_apis::FunctionID::TTS_Speak);
