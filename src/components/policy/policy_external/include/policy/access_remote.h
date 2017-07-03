@@ -29,8 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef SRC_COMPONENTS_POLICY_SRC_POLICY_INCLUDE_POLICY_ACCESS_REMOTE_H_
-#define SRC_COMPONENTS_POLICY_SRC_POLICY_INCLUDE_POLICY_ACCESS_REMOTE_H_
+#ifndef SRC_COMPONENTS_POLICY_POLICY_EXTERNAL_INCLUDE_POLICY_ACCESS_REMOTE_H_
+#define SRC_COMPONENTS_POLICY_POLICY_EXTERNAL_INCLUDE_POLICY_ACCESS_REMOTE_H_
 
 #include <vector>
 #include <ostream>
@@ -41,31 +41,6 @@
 namespace policy_table = ::rpc::policy_table_interface_base;
 
 namespace policy {
-
-struct SeatLocation {
-  int col, row, level;
-  int colspan, rowspan, levelspan;
-};
-inline bool operator<(const SeatLocation& x, const SeatLocation& y) {
-  return (x.col < y.col) || (x.col == y.col && x.row < y.row) ||
-         (x.col == y.col && x.row == y.row && x.level < y.level);
-}
-inline bool operator==(const SeatLocation& x, const SeatLocation& y) {
-  return x.col == y.col && x.row == y.row && x.level == y.level;
-}
-inline bool operator==(const SeatLocation& x,
-                       const policy_table::InteriorZone& y) {
-  return x == SeatLocation{y.col, y.row, y.level};
-}
-inline bool operator==(const policy_table::InteriorZone& x,
-                       const SeatLocation& y) {
-  return y == x;
-}
-inline std::ostream& operator<<(std::ostream& output, const SeatLocation& x) {
-  output << "Interior zone(col:" << x.col << ", row:" << x.row
-         << ", level:" << x.level << ")";
-  return output;
-}
 
 enum TypeAccess { kDisallowed, kAllowed, kManual };
 inline std::ostream& operator<<(std::ostream& output, TypeAccess x) {
@@ -103,17 +78,15 @@ inline std::ostream& operator<<(std::ostream& output, const Subject& who) {
 
 struct Object {
   policy_table::ModuleType module;
-  SeatLocation zone;
 };
 inline bool operator<(const Object& x, const Object& y) {
-  return x.module < y.module || (x.module == y.module && x.zone < y.zone);
+  return x.module < y.module;
 }
 inline bool operator==(const Object& x, const Object& y) {
-  return x.module == y.module && x.zone == y.zone;
+  return x.module == y.module;
 }
 inline std::ostream& operator<<(std::ostream& output, const Object& what) {
-  output << "Object(module:" << EnumToJsonString(what.module) << ", "
-         << what.zone << ")";
+  output << "Object(module:" << EnumToJsonString(what.module) << ")";
   return output;
 }
 
@@ -166,14 +139,14 @@ class AccessRemote {
   /**
    * Allows access subject to object
    * @param who subject is dev_id and app_id
-   * @param what object is group_id and zone
+   * @param what object is group_id
    */
   virtual void Allow(const Subject& who, const Object& what) = 0;
 
   /**
    * Denies access subject to object
    * @param who subject is dev_id and app_id
-   * @param what object is group_id and zone
+   * @param what object is group_id
    */
   virtual void Deny(const Subject& who, const Object& what) = 0;
 
@@ -185,7 +158,7 @@ class AccessRemote {
 
   /**
    * Resets access to object for all subjects
-   * @param what object is group and zone
+   * @param what object is group
    */
   virtual void Reset(const Object& what) = 0;
 
@@ -197,7 +170,7 @@ class AccessRemote {
   /**
    * Checks access subject to object
    * @param who subject is dev_id and app_id
-   * @param what object is group_id and zone
+   * @param what object is group_id
    * @return allowed if access was given, disallowed if access was denied
    * manual if need to ask driver
    */
@@ -258,22 +231,6 @@ class AccessRemote {
   virtual bool IsAppReverse(const Subject& who) = 0;
 
   /**
-   * Gets device zone
-   * @param device_id unique identifier of device
-   * @return device zone if device has zone otherwise 0
-   */
-  virtual const SeatLocation* GetDeviceZone(
-      const std::string& device_id) const = 0;
-
-  /**
-   * Sets device zone
-   * @param device_id unique identifier of device
-   * @param zone device zone
-   */
-  virtual void SetDeviceZone(const std::string& device_id,
-                             const SeatLocation& zone) = 0;
-
-  /**
    * Gets all allowed module types
    * @param app_id unique identifier of application
    * @param list of allowed module types
@@ -285,4 +242,4 @@ class AccessRemote {
 
 }  // namespace policy
 
-#endif  // SRC_COMPONENTS_POLICY_SRC_POLICY_INCLUDE_POLICY_ACCESS_REMOTE_H_
+#endif  // SRC_COMPONENTS_POLICY_POLICY_EXTERNAL_INCLUDE_POLICY_ACCESS_REMOTE_H_

@@ -29,8 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef SRC_COMPONENTS_POLICY_SRC_POLICY_INCLUDE_POLICY_ACCESS_REMOTE_IMPL_H_
-#define SRC_COMPONENTS_POLICY_SRC_POLICY_INCLUDE_POLICY_ACCESS_REMOTE_IMPL_H_
+#ifndef SRC_COMPONENTS_POLICY_POLICY_EXTERNAL_INCLUDE_POLICY_ACCESS_REMOTE_IMPL_H_
+#define SRC_COMPONENTS_POLICY_POLICY_EXTERNAL_INCLUDE_POLICY_ACCESS_REMOTE_IMPL_H_
 
 #include <map>
 #include "policy/policy_table/types.h"
@@ -75,9 +75,6 @@ class AccessRemoteImpl : public AccessRemote {
                                     const std::string& app_id,
                                     FunctionalIdType& group_types);
   virtual bool IsAppReverse(const Subject& who);
-  virtual const SeatLocation* GetDeviceZone(const std::string& device_id) const;
-  virtual void SetDeviceZone(const std::string& device_id,
-                             const SeatLocation& zone);
   virtual bool GetModuleTypes(const std::string& policy_app_id,
                               std::vector<std::string>* modules);
 
@@ -85,7 +82,6 @@ class AccessRemoteImpl : public AccessRemote {
   typedef std::map<Subject, TypeAccess> AccessControlRow;
   typedef std::map<Object, AccessControlRow> AccessControlList;
   typedef std::map<Subject, policy_table::AppHMITypes> HMIList;
-  typedef std::map<std::string, SeatLocation> SeatList;
   inline void set_enabled(bool value);
   inline bool country_consent() const;
   const policy_table::AppHMITypes& HmiTypes(const Subject& who);
@@ -103,11 +99,11 @@ class AccessRemoteImpl : public AccessRemote {
   bool enabled_;
   AccessControlList acl_;
   HMIList hmi_types_;
-  SeatList seats_;
 
   friend struct Erase;
   friend struct IsTypeAccess;
 
+#ifdef BUILD_TESTS
   FRIEND_TEST(AccessRemoteImplTest, KeyMapTest);
   FRIEND_TEST(AccessRemoteImplTest, Allow);
   FRIEND_TEST(AccessRemoteImplTest, Deny);
@@ -122,9 +118,9 @@ class AccessRemoteImpl : public AccessRemote {
   FRIEND_TEST(AccessRemoteImplTest, SetDefaultHmiTypes);
   FRIEND_TEST(AccessRemoteImplTest, GetGroups);
   FRIEND_TEST(AccessRemoteImplTest, CheckParameters);
-  FRIEND_TEST(AccessRemoteImplTest, GetDeviceZone);
+#endif  // BUILD_TESTS
 };
 
 }  // namespace policy
 
-#endif  // SRC_COMPONENTS_POLICY_SRC_POLICY_INCLUDE_POLICY_ACCESS_REMOTE_IMPL_H_
+#endif  // SRC_COMPONENTS_POLICY_POLICY_EXTERNAL_INCLUDE_POLICY_ACCESS_REMOTE_IMPL_H_
