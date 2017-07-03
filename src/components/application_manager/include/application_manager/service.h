@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Ford Motor Company
+ * Copyright (c) 2017, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@ namespace application_manager {
 enum TypeAccess { kNone, kDisallowed, kAllowed, kManual };
 
 typedef std::string PluginFunctionID;
-
 /**
  * @brief Interface to core service
  */
@@ -63,7 +62,6 @@ class Service {
   /**
    * Checks access to requested equipment of vehicle
    * @param app_id id of application
-   * @param zone interior zone to control
    * @param module type
    * @param rpc name of rpc
    * @param params parameters list
@@ -87,7 +85,6 @@ class Service {
   /**
    * Sets access to functional group which contains given RPC for application
    * @param app_id id of application
-   * @param zone interior zone
    * @param module type
    * @param allowed true if driver has given access
    */
@@ -103,7 +100,6 @@ class Service {
 
   /**
    * Resets access by module and interior zone for all applications
-   * @param zone interior zone
    * @param module type
    */
   virtual void ResetAccess(const std::string& module) = 0;
@@ -115,13 +111,21 @@ class Service {
    */
   virtual uint32_t GetDeviceHandlerById(const std::string& device_id) = 0;
 
+  /**
+   * Sets device as primary device
+   * @param dev_id ID device
+   */
+  virtual void SetPrimaryDevice(const uint32_t dev_id) = 0;
 
   /**
-   * Sets device zone
-   * @param dev_id ID device
-   * @param zone device zone
+   * Resets driver's device
    */
-  virtual void SetDeviceZone(const uint32_t dev_id) = 0;
+  virtual void ResetPrimaryDevice() = 0;
+
+  /**
+   * Return id of primary device
+   */
+  virtual uint32_t PrimaryDevice() const = 0;
 
   /**
    * Sets mode of remote control (on/off)

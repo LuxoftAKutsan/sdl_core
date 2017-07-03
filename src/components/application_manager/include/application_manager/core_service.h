@@ -68,23 +68,21 @@ class CoreService : public Service {
    * @param msg message to cut disallowed parameters
    * @return result according by mobile API
    */
-  virtual mobile_apis::Result::eType CheckPolicyPermissions(MessagePtr msg);
+  mobile_apis::Result::eType CheckPolicyPermissions(MessagePtr msg) FINAL;
 
   /**
    * Checks access to requested equipment of vehicle
    * @param app_id id of application
-   * @param zone interior zone to control
    * @param module type
    * @param rpc name of rpc
    * @param params parameters list
    * @return return allowed if access exist,
    * manual if need to send question to driver otherwise disallowed
    */
-  virtual TypeAccess CheckAccess(const ApplicationId& app_id,
-                                 const SeatLocation& zone,
-                                 const std::string& module,
-                                 const std::string& rpc,
-                                 const std::vector<std::string>& params);
+  TypeAccess CheckAccess(const ApplicationId& app_id,
+                         const std::string& module,
+                         const std::string& rpc,
+                         const std::vector<std::string>& params) FINAL;
 
   /**
    * Checks access to module for application
@@ -92,129 +90,110 @@ class CoreService : public Service {
    * @param module type
    * @return true if module is allowed for application
    */
-  virtual bool CheckModule(const ApplicationId& app_id,
-                           const std::string& module);
+  bool CheckModule(const ApplicationId& app_id,
+                   const std::string& module) FINAL;
 
   /**
    * Sets access to functional group which contains given RPC for application
    * @param app_id id of application
-   * @param zone interior zone
    * @param module type
    * @param allowed true if driver has given access
    */
-  virtual void SetAccess(const ApplicationId& app_id,
-                         const SeatLocation& zone,
-                         const std::string& module,
-                         bool allowed);
+  void SetAccess(const ApplicationId& app_id,
+                 const std::string& module,
+                 bool allowed) FINAL;
 
   /**
    * Resets access by group name for all applications
    * @param group_name group name
-   * @param zone zone control
    */
-  virtual void ResetAccess(const ApplicationId& app_id);
+  void ResetAccess(const ApplicationId& app_id) FINAL;
 
   /**
-   * Resets access by group name for all applications
-   * @param zone interior zone
+   * Resets access by module type for all applications
    * @param module type
    */
-  virtual void ResetAccess(const SeatLocation& zone, const std::string& module);
+  void ResetAccess(const std::string& module) FINAL;
 
   /**
    * Gets device handler for device with certain ID
    * @param device_id the ID of the connected device
    * @return device handler if device with requested ID was found
    */
-  virtual uint32_t GetDeviceHandlerById(const std::string& device_id) OVERRIDE;
+  uint32_t GetDeviceHandlerById(const std::string& device_id) FINAL;
 
   /**
    * Sets device as primary device
    * @param dev_id ID device
    */
-  virtual void SetPrimaryDevice(const uint32_t dev_id);
+  void SetPrimaryDevice(const uint32_t dev_id) FINAL;
 
   /**
    * Resets driver's device
    */
-  virtual void ResetPrimaryDevice();
+  void ResetPrimaryDevice() FINAL;
 
   /**
    * Return id of primary device
    */
-  uint32_t PrimaryDevice() const;
-
-  /**
-   * Sets device zone
-   * @param dev_id ID device
-   * @param zone device zone
-   */
-  void SetDeviceZone(const uint32_t dev_id, const SeatLocation& zone);
-
-  /**
-   * Gets device zone
-   * @param dev_id ID device
-   * @return device zone is unknown otherwise 0
-   */
-  const SeatLocationPtr GetDeviceZone(const uint32_t dev_id) const;
+  uint32_t PrimaryDevice() const FINAL;
 
   /**
    * Sets mode of remote control (on/off)
    * @param enabled true if remote control is turned on
    */
-  virtual void SetRemoteControl(bool enabled);
+  void SetRemoteControl(bool enabled) FINAL;
 
   /**
    * @brief Is Remote Control allowed by Policy and User
    */
-  virtual bool IsRemoteControlAllowed() const;
+  bool IsRemoteControlAllowed() const FINAL;
 
   /**
    * Checks if application has remote control functions
    * @param app application
    * @return true if application has remote control functions
    */
-  virtual bool IsRemoteControlApplication(ApplicationSharedPtr app) const;
+  bool IsRemoteControlApplication(ApplicationSharedPtr app) const FINAL;
 
   /**
    * @brief Get pointer to application by application id
    * @param app_id application id
    * return pointer to application
    */
-  virtual ApplicationSharedPtr GetApplication(ApplicationId app_id);
+  ApplicationSharedPtr GetApplication(ApplicationId app_id) FINAL;
 
   /**
    * @brief Send message to HMI
    * @param message Message to HMI
    */
-  virtual void SendMessageToHMI(const MessagePtr& message);
+  void SendMessageToHMI(const MessagePtr& message) FINAL;
 
   /**
    * @brief Send message to mobile device
    * @param message Message to mobile
    */
-  virtual void SendMessageToMobile(const MessagePtr& message);
+  void SendMessageToMobile(const MessagePtr& message) FINAL;
 
   /**
    * @brief Returns unique correlation ID for next HMI request
    *
    * @return Unique correlation ID
    */
-  virtual uint32_t GetNextCorrelationID();
+  uint32_t GetNextCorrelationID() FINAL;
 
   /**
    * @brief Returns all applications
    *
    * @return List with shared pointers to applications
    */
-  virtual std::vector<ApplicationSharedPtr> GetApplications(
-      AppExtensionUID uid);
+  std::vector<ApplicationSharedPtr> GetApplications(AppExtensionUID uid) FINAL;
 
   /**
    * @brief Subscribes to notification from HMI
    * @param hmi_notification string with notification name
    */
-  virtual void SubscribeToHMINotification(const std::string& hmi_notification);
+  void SubscribeToHMINotification(const std::string& hmi_notification) FINAL;
 
   /**
    * @brief Change hmi level of app and notify it
@@ -222,7 +201,7 @@ class CoreService : public Service {
    * @param level New HMI level of app
    */
   void ChangeNotifyHMILevel(ApplicationSharedPtr app,
-                            mobile_apis::HMILevel::eType level);
+                            mobile_apis::HMILevel::eType level) FINAL;
 
   /**
    * @brief Notify HMI about app changing HMI Level
@@ -231,7 +210,7 @@ class CoreService : public Service {
    * @param level New HMI level of app
    */
   void NotifyHMIAboutHMILevel(ApplicationSharedPtr app,
-                              mobile_apis::HMILevel::eType level);
+                              mobile_apis::HMILevel::eType level) FINAL;
 
   /**
    * Gets all allowed module types
@@ -240,7 +219,7 @@ class CoreService : public Service {
    * @return true if application has allowed modules
    */
   bool GetModuleTypes(const std::string& policy_app_id,
-                      std::vector<std::string>* modules) const;
+                      std::vector<std::string>* modules) const FINAL;
 
  private:
   bool AreParametersAllowed(MessagePtr msg,
