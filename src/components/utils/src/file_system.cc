@@ -71,14 +71,8 @@ size_t file_system::DirectorySize(const std::string& path) {
   int32_t return_code = 0;
   DIR* directory = NULL;
 
-#ifndef __QNXNTO__
   struct dirent dir_element_;
   struct dirent* dir_element = &dir_element_;
-#else
-  char* direntbuffer = new char[offsetof(struct dirent, d_name) +
-                                pathconf(path.c_str(), _PC_NAME_MAX) + 1];
-  struct dirent* dir_element = new (direntbuffer) dirent;
-#endif
   struct dirent* result = NULL;
   struct stat file_info = {0};
   directory = opendir(path.c_str());
@@ -100,9 +94,6 @@ size_t file_system::DirectorySize(const std::string& path) {
     }
   }
   closedir(directory);
-#ifdef __QNXNTO__
-  delete[] direntbuffer;
-#endif
   return size;
 }
 
@@ -305,15 +296,8 @@ std::vector<std::string> file_system::ListFiles(
 
   int32_t return_code = 0;
   DIR* directory = NULL;
-#ifndef __QNXNTO__
   struct dirent dir_element_;
   struct dirent* dir_element = &dir_element_;
-#else
-  char* direntbuffer =
-      new char[offsetof(struct dirent, d_name) +
-               pathconf(directory_name.c_str(), _PC_NAME_MAX) + 1];
-  struct dirent* dir_element = new (direntbuffer) dirent;
-#endif
   struct dirent* result = NULL;
 
   directory = opendir(directory_name.c_str());
@@ -332,11 +316,6 @@ std::vector<std::string> file_system::ListFiles(
 
     closedir(directory);
   }
-
-#ifdef __QNXNTO__
-  delete[] direntbuffer;
-#endif
-
   return listFiles;
 }
 
@@ -409,14 +388,18 @@ bool file_system::CreateFile(const std::string& path) {
   }
 }
 
-uint64_t file_system::GetFileModificationTime(const std::string& path) {
+struct timespec file_system::GetFileModificationTime(const std::string& path) {
   struct stat info;
   stat(path.c_str(), &info);
+  struct timespec modification_time = {0, 0};
 #ifndef __QNXNTO__
-  return static_cast<uint64_t>(info.st_mtim.tv_nsec);
+  modification_time.tv_sec = info.st_mtim.tv_sec;
+  modification_time.tv_nsec = info.st_mtim.tv_nsec;
 #else
-  return static_cast<uint64_t>(info.st_mtime);
+  modification_time.tv_sec = info.st_mtime;
+  modification_time.tv_nsec = info.st_mtimensec;
 #endif
+  return modification_time;
 }
 
 bool file_system::CopyFile(const std::string& src, const std::string& dst) {
