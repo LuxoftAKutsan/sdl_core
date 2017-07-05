@@ -55,17 +55,6 @@ class CacheManager : public CacheManagerInterface {
   explicit CacheManager(bool in_memory);
   ~CacheManager();
 
-  /**
-   * @brief GetConsentsPriority provides priority for group consents
-   * i.e. which consents take priority for group - user consent or external
-   * consent based on timestamps
-   * @param device_id Device id
-   * @param application_id Application id
-   * @return Container with group consents priorities
-   */
-  ConsentPriorityType GetConsentsPriority(
-      const std::string& device_id, const std::string& application_id) const;
-
   const policy_table::Strings& GetGroups(const PTString& app_id);
 
   /**
@@ -879,17 +868,6 @@ class CacheManager : public CacheManagerInterface {
   void ProcessUpdate(const policy_table::ApplicationPolicies::const_iterator
                          initial_policy_iter);
 
-  /**
-   * @brief ConsentsSame checks whether external consents contain
-   * same groups+consent combinations as permission groups
-   * @param external_consent_groups External consents
-   * @param permissions Permissions
-   * @return true if all values from permissions have been found in external
-   * consents container
-   */
-  bool ConsentsSame(const policy_table::ConsentGroups& external_consent_groups,
-                    const PermissionConsent& permissions) const;
-
   class BackgroundBackuper : public threads::ThreadDelegate {
     friend class CacheManager;
 
@@ -914,6 +892,15 @@ class CacheManager : public CacheManagerInterface {
   sync_primitives::Lock backuper_locker_;
   BackgroundBackuper* backuper_;
   const PolicySettings* settings_;
+
+  friend class AccessRemoteImpl;
+
+#ifdef BUILD_TESTS
+  FRIEND_TEST(AccessRemoteImplTest, CheckModuleType);
+  FRIEND_TEST(AccessRemoteImplTest, EnableDisable);
+  FRIEND_TEST(AccessRemoteImplTest, GetGroups);
+  FRIEND_TEST(AccessRemoteImplTest, CheckParameters);
+#endif  // BUILD_TESTS
 };
 }  // namespace policy
 #endif  // SRC_COMPONENTS_POLICY_POLICY_EXTERNAL_INCLUDE_POLICY_CACHE_MANAGER_H_

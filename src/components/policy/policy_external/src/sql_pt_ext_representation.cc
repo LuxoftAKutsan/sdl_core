@@ -563,26 +563,17 @@ bool SQLPTExtRepresentation::GatherConsumerFriendlyMessages(
       msg.message_code = query.GetString(7);
 
       std::string language = query.GetString(6);
-      if (!msg.tts.empty()) {
-        *(*messages->messages)[msg.message_code].languages[language].tts =
-            msg.tts;
-      }
-      if (!msg.label.empty()) {
-        *(*messages->messages)[msg.message_code].languages[language].label =
-            msg.label;
-      }
-      if (!msg.line1.empty()) {
-        *(*messages->messages)[msg.message_code].languages[language].line1 =
-            msg.line1;
-      }
-      if (!msg.line2.empty()) {
-        *(*messages->messages)[msg.message_code].languages[language].line2 =
-            msg.line2;
-      }
-      if (!msg.text_body.empty()) {
-        *(*messages->messages)[msg.message_code].languages[language].textBody =
-            msg.text_body;
-      }
+
+      *(*messages->messages)[msg.message_code].languages[language].tts =
+          msg.tts;
+      *(*messages->messages)[msg.message_code].languages[language].label =
+          msg.label;
+      *(*messages->messages)[msg.message_code].languages[language].line1 =
+          msg.line1;
+      *(*messages->messages)[msg.message_code].languages[language].line2 =
+          msg.line2;
+      *(*messages->messages)[msg.message_code].languages[language].textBody =
+          msg.text_body;
     }
   } else {
     LOG4CXX_WARN(logger_, "Incorrect statement for select friendly messages.");
@@ -1018,7 +1009,6 @@ void SQLPTExtRepresentation::GatherConsentGroup(
     policy_table::EnumFromJsonString(query.GetString(4), &input);
     *app_consent_records->input = input;
     *app_consent_records->time_stamp = query.GetString(5);
-    app_consent_records->consent_last_updated = query.GetInteger(6);
   }
   if (!query.Reset()) {
     return;
@@ -1044,7 +1034,6 @@ void SQLPTExtRepresentation::GatherConsentGroup(
     external_consent_status_groups[query.GetString(2)] = query.GetBoolean(3);
     policy_table::Input input;
     policy_table::EnumFromJsonString(query.GetString(4), &input);
-    app_consent_records->ext_consent_last_updated = query.GetInteger(6);
   }
 }
 
@@ -1152,7 +1141,6 @@ bool SQLPTExtRepresentation::SaveConsentGroup(
             4,
             std::string(policy_table::EnumToJsonString(*(it->second.input))));
         query.Bind(5, std::string(*(it->second.time_stamp)));
-        query.Bind(6, (it->second.consent_last_updated));
         LOG4CXX_INFO(logger_,
                      "Device:"
                          << "time stamp "
@@ -1186,7 +1174,6 @@ bool SQLPTExtRepresentation::SaveConsentGroup(
       query.Bind(
           4, std::string(policy_table::EnumToJsonString(*(it->second.input))));
       query.Bind(5, std::string(*(it->second.time_stamp)));
-      query.Bind(6, (it->second.ext_consent_last_updated));
       LOG4CXX_INFO(logger_,
                    "Device:"
                        << "time stamp " << std::string(*(it->second.time_stamp))
@@ -1523,23 +1510,13 @@ bool SQLPTExtRepresentation::SaveMessageString(
     return false;
   }
 
-  if (strings.tts.is_initialized()) {
-    query.Bind(0, *strings.tts);
-  }
-  if (strings.label.is_initialized()) {
-    query.Bind(1, *strings.label);
-  }
-  if (strings.line1.is_initialized()) {
-    query.Bind(2, *strings.line1);
-  }
-  if (strings.line2.is_initialized()) {
-    query.Bind(3, *strings.line2);
-  }
+  query.Bind(0, *strings.tts);
+  query.Bind(1, *strings.label);
+  query.Bind(2, *strings.line1);
+  query.Bind(3, *strings.line2);
   query.Bind(4, lang);
   query.Bind(5, type);
-  if (strings.textBody.is_initialized()) {
-    query.Bind(6, *strings.textBody);
-  }
+  query.Bind(6, *strings.textBody);
 
   if (!query.Exec() || !query.Reset()) {
     LOG4CXX_WARN(logger_, "Incorrect insert into message.");

@@ -56,6 +56,7 @@ const std::string kDefaultDeviceConnectionType = "UNKNOWN";
  */
 const std::string kPreDataConsentId = "pre_DataConsent";
 const std::string kDefaultId = "default";
+const std::string kPreConsentPassengersRC = "pre_consent_passengersRC";
 const std::string kDeviceId = "device";
 const std::string kPrimary = "rc_primaryDevice";
 
@@ -488,19 +489,6 @@ enum PermissionsCheckResult {
  */
 typedef std::set<std::pair<std::string, PermissionsCheckResult> >
     CheckAppPolicyResults;
-
-/**
- * @brief The ConsentPriorityType enum defined types of priority for group
- * consents i.e. done by user or by external consents
- */
-enum ConsentPriorityType { kUserConsentPrio, kExternalConsentPrio };
-
-/**
- * @brief The ConsentProcessingPolicy enum defines policy for existing consents
- * update i.e. based on user/external consents timestamps or overriden by
- * external consents
- */
-enum ConsentProcessingPolicy { kTimestampBased, kExternalConsentBased };
 
 }  //  namespace policy
 
