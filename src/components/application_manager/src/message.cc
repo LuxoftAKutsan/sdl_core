@@ -116,11 +116,15 @@ int32_t Message::function_id() const {
   return function_id_;
 }
 
-int32_t Message::correlation_id() const {
+std::string Message::function_name() const {
+  return function_name_;
+}
+
+uint32_t Message::correlation_id() const {
   return correlation_id_;
 }
 
-int32_t Message::connection_key() const {
+uint32_t Message::connection_key() const {
   return connection_key_;
 }
 
@@ -156,6 +160,10 @@ void Message::set_function_id(int32_t id) {
   function_id_ = id;
 }
 
+void Message::set_function_name(const std::string& name) {
+  function_name_ = name;
+}
+
 void Message::set_correlation_id(int32_t id) {
   correlation_id_ = id;
 }
@@ -177,7 +185,6 @@ void Message::set_binary_data(BinaryData* data) {
   if (binary_data_) {
     delete binary_data_;
   }
-
   binary_data_ = data;
 }
 

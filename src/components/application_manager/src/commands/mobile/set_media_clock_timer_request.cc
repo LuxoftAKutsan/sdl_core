@@ -92,11 +92,13 @@ void SetMediaClockRequest::on_event(const event_engine::Event& event) {
           result_code, HmiInterfaces::HMI_INTERFACE_UI);
       std::string response_info;
       GetInfo(message, response_info);
+      const smart_objects::SmartObject* msg_params =
+          &(message[strings::msg_params]);
 
       SendResponse(result,
                    MessageHelper::HMIToMobileResult(result_code),
                    response_info.empty() ? NULL : response_info.c_str(),
-                   &(message[strings::msg_params]));
+                   msg_params);
       break;
     }
     default: {

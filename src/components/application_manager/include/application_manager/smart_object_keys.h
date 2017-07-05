@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2013, Ford Motor Company
+ Copyright (c) 2017, Ford Motor Company
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -104,6 +104,7 @@ extern const char* cmd_id;
 extern const char* menu_params;
 extern const char* menu_title;
 extern const char* menu_icon;
+extern const char* sub_menu_icon;
 extern const char* keyboard_properties;
 extern const char* vr_commands;
 extern const char* position;
@@ -156,6 +157,7 @@ extern const char* hours;
 extern const char* minutes;
 extern const char* seconds;
 extern const char* update_mode;
+extern const char* enable_seek;
 extern const char* trigger_source;
 extern const char* hmi_level;
 extern const char* activate_app_hmi_level;
@@ -167,6 +169,7 @@ extern const char* audio_pass_thru_capabilities;
 extern const char* pcm_stream_capabilities;
 extern const char* audio_pass_thru_icon;
 extern const char* way_points;
+extern const char* device_rank;
 
 // PutFile
 extern const char* sync_file_name;
@@ -261,6 +264,7 @@ extern const char* phone_call;
 extern const char* sdl_version;
 extern const char* system_software_version;
 extern const char* priority;
+extern const char* steering_wheel_location;
 
 // resuming
 extern const char* application_commands;
@@ -310,7 +314,6 @@ extern const char* is_suscribed;
 extern const char* message_data;
 
 extern const char* delivery_mode;
-
 extern const char* audio_streaming_indicator;
 
 // keys for default parameters loaded from hmi_capabilities.json:
@@ -404,6 +407,7 @@ extern const char* method_name;
 extern const char* keyboard_layout;
 extern const char* limited_character_list;
 extern const char* auto_complete_text;
+extern const char* auto_complete_list;
 extern const char* file;
 extern const char* file_name;
 extern const char* retry;

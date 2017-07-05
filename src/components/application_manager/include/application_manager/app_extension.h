@@ -29,52 +29,30 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "application_manager/commands/hmi/ui_get_capabilities_response.h"
+
+#ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_APP_EXTENSION_H_
+#define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_APP_EXTENSION_H_
+
+#include "utils/shared_ptr.h"
 
 namespace application_manager {
 
-namespace commands {
+typedef int AppExtensionUID;
 
-UIGetCapabilitiesResponse::UIGetCapabilitiesResponse(
-    const MessageSharedPtr& message, ApplicationManager& application_manager)
-    : ResponseFromHMI(message, application_manager) {}
-
-UIGetCapabilitiesResponse::~UIGetCapabilitiesResponse() {}
-
-void UIGetCapabilitiesResponse::Run() {
-  LOG4CXX_AUTO_TRACE(logger_);
-
-  HMICapabilities& hmi_capabilities = application_manager_.hmi_capabilities();
-
-  const smart_objects::SmartObject& msg_params =
-      (*message_)[strings::msg_params];
-
-  if (msg_params.keyExists(hmi_response::display_capabilities)) {
-    hmi_capabilities.set_display_capabilities(
-        msg_params[hmi_response::display_capabilities]);
+class AppExtension {
+ public:
+  explicit AppExtension(AppExtensionUID uid) : kUid_(uid) {}
+  virtual ~AppExtension() {}
+  AppExtensionUID uid() const {
+    return kUid_;
   }
 
-  if (msg_params.keyExists(hmi_response::hmi_zone_capabilities)) {
-    hmi_capabilities.set_hmi_zone_capabilities(
-        msg_params[hmi_response::hmi_zone_capabilities]);
-  }
+ private:
+  const AppExtensionUID kUid_;
+};
 
-  if (msg_params.keyExists(hmi_response::soft_button_capabilities)) {
-    hmi_capabilities.set_soft_button_capabilities(
-        msg_params[hmi_response::soft_button_capabilities]);
-  }
+typedef utils::SharedPtr<AppExtension> AppExtensionPtr;
 
-  if (msg_params.keyExists(strings::audio_pass_thru_capabilities)) {
-    hmi_capabilities.set_audio_pass_thru_capabilities(
-        msg_params[strings::audio_pass_thru_capabilities]);
-  }
+}  //  namespace application_manager
 
-  if (msg_params.keyExists(strings::hmi_capabilities)) {
-    hmi_capabilities.set_ui_hmi_capabilities(
-        msg_params[strings::hmi_capabilities]);
-  }
-}
-
-}  // namespace commands
-
-}  // namespace application_manager
+#endif  // SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_APP_EXTENSION_H_

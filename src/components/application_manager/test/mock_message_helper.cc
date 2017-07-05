@@ -220,6 +220,29 @@ void MessageHelper::SendPolicyUpdate(const std::string& file_path,
       file_path, timeout, retries, app_mngr);
 }
 
+void MessageHelper::SendActivateAppToHMI(
+    uint32_t const app_id,
+    ApplicationManager& application_manager,
+    hmi_apis::Common_HMILevel::eType level,
+    bool send_policy_priority) {
+  MockMessageHelper::message_helper_mock()->SendActivateAppToHMI(
+      app_id, application_manager, level, send_policy_priority);
+}
+
+void MessageHelper::SendHMIStatusNotification(
+    const Application& application_impl,
+    ApplicationManager& application_manager,
+    mobile_apis::DeviceRank::eType rank) {
+  MockMessageHelper::message_helper_mock()->SendHMIStatusNotification(
+      application_impl, application_manager, rank);
+}
+
+mobile_api::DeviceRank::eType MessageHelper::StringToDeviceRank(
+    const std::string& device_rank) {
+  return MockMessageHelper::message_helper_mock()->StringToDeviceRank(
+      device_rank);
+}
+
 void MessageHelper::SendUpdateSDLResponse(const std::string& result,
                                           uint32_t correlation_id,
                                           ApplicationManager& app_mngr) {
@@ -243,6 +266,7 @@ MockMessageHelper* MockMessageHelper::message_helper_mock() {
   static MockMessageHelper message_helper_mock;
   return &message_helper_mock;
 }
+
 void MessageHelper::SendAllOnButtonSubscriptionNotificationsForApp(
     ApplicationConstSharedPtr app, ApplicationManager& app_mngr) {
   MockMessageHelper::message_helper_mock()
@@ -291,6 +315,14 @@ mobile_apis::Result::eType MessageHelper::VerifyImage(
     ApplicationConstSharedPtr app,
     ApplicationManager& app_mngr) {
   return MockMessageHelper::message_helper_mock()->VerifyImage(
+      message, app, app_mngr);
+}
+
+mobile_apis::Result::eType MessageHelper::VerifyImageApplyPath(
+    smart_objects::SmartObject& message,
+    ApplicationConstSharedPtr app,
+    ApplicationManager& app_mngr) {
+  return MockMessageHelper::message_helper_mock()->VerifyImageApplyPath(
       message, app, app_mngr);
 }
 

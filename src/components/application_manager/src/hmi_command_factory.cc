@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2013, Ford Motor Company
+ Copyright (c) 2017, Ford Motor Company
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -276,9 +276,11 @@
 #include "application_manager/commands/hmi/on_tts_reset_timeout_notification.h"
 #include "application_manager/commands/hmi/dial_number_request.h"
 #include "application_manager/commands/hmi/dial_number_response.h"
+#include "utils/make_shared.h"
 
-CREATE_LOGGERPTR_GLOBAL(logger_, "ApplicationManager")
 namespace application_manager {
+
+CREATE_LOGGERPTR_GLOBAL(logger_, "ApplicationManager");
 
 CommandSharedPtr HMICommandFactory::CreateCommand(
     const commands::MessageSharedPtr& message,

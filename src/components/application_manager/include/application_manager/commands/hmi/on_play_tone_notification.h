@@ -29,52 +29,45 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "application_manager/commands/hmi/ui_get_capabilities_response.h"
+
+#ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_HMI_ON_PLAY_TONE_NOTIFICATION_H_
+#define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_HMI_ON_PLAY_TONE_NOTIFICATION_H_
+
+#include "application_manager/commands/hmi/notification_to_hmi.h"
 
 namespace application_manager {
 
 namespace commands {
 
-UIGetCapabilitiesResponse::UIGetCapabilitiesResponse(
-    const MessageSharedPtr& message, ApplicationManager& application_manager)
-    : ResponseFromHMI(message, application_manager) {}
+/**
+ * @brief OnPlayToneNotification command class
+ **/
+class OnPlayToneNotification : public NotificationToHMI {
+ public:
+  /**
+   * @brief OnPlayToneNotification class constructor
+   *
+   * @param message Incoming SmartObject message
+   **/
+  explicit OnPlayToneNotification(const MessageSharedPtr& message,
+                                  ApplicationManager& app_mngr);
 
-UIGetCapabilitiesResponse::~UIGetCapabilitiesResponse() {}
+  /**
+   * @brief OnPlayToneNotification class destructor
+   **/
+  virtual ~OnPlayToneNotification();
 
-void UIGetCapabilitiesResponse::Run() {
-  LOG4CXX_AUTO_TRACE(logger_);
+  /**
+   * @brief Execute command
+   **/
+  virtual void Run();
 
-  HMICapabilities& hmi_capabilities = application_manager_.hmi_capabilities();
-
-  const smart_objects::SmartObject& msg_params =
-      (*message_)[strings::msg_params];
-
-  if (msg_params.keyExists(hmi_response::display_capabilities)) {
-    hmi_capabilities.set_display_capabilities(
-        msg_params[hmi_response::display_capabilities]);
-  }
-
-  if (msg_params.keyExists(hmi_response::hmi_zone_capabilities)) {
-    hmi_capabilities.set_hmi_zone_capabilities(
-        msg_params[hmi_response::hmi_zone_capabilities]);
-  }
-
-  if (msg_params.keyExists(hmi_response::soft_button_capabilities)) {
-    hmi_capabilities.set_soft_button_capabilities(
-        msg_params[hmi_response::soft_button_capabilities]);
-  }
-
-  if (msg_params.keyExists(strings::audio_pass_thru_capabilities)) {
-    hmi_capabilities.set_audio_pass_thru_capabilities(
-        msg_params[strings::audio_pass_thru_capabilities]);
-  }
-
-  if (msg_params.keyExists(strings::hmi_capabilities)) {
-    hmi_capabilities.set_ui_hmi_capabilities(
-        msg_params[strings::hmi_capabilities]);
-  }
-}
+ private:
+  DISALLOW_COPY_AND_ASSIGN(OnPlayToneNotification);
+};
 
 }  // namespace commands
 
 }  // namespace application_manager
+
+#endif  // SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_COMMANDS_HMI_ON_PLAY_TONE_NOTIFICATION_H_

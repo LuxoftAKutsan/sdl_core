@@ -179,6 +179,12 @@ TEST_F(HMICapabilitiesTest, LoadCapabilitiesFromFile) {
   }
   EXPECT_TRUE(hmi_capabilities_test->LoadCapabilitiesFromFile());
 
+  // Check ui hmiCapabilities
+  const smart_objects::SmartObject ui_hmi_capabilities =
+      hmi_capabilities_test->ui_hmi_capabilities();
+  EXPECT_FALSE(ui_hmi_capabilities[strings::navigation].asBool());
+  EXPECT_TRUE(ui_hmi_capabilities[strings::phone_call].asBool());
+
   // Check active languages
   EXPECT_EQ(hmi_apis::Common_Language::EN_US,
             hmi_capabilities_test->active_ui_language());
