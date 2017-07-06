@@ -36,8 +36,10 @@
 #include <string>
 #include <vector>
 
+#include "policy/policy_table/types.h"
+#include "policy/pt_representation.h"
 #include "utils/shared_ptr.h"
-#include "usage_statistics/counter.h"
+#include "policy/usage_statistics/counter.h"
 #include "policy/policy_types.h"
 #include "policy/policy_settings.h"
 
@@ -48,18 +50,6 @@ namespace policy {
 class CacheManagerInterface {
  public:
   virtual ~CacheManagerInterface() {}
-
-  /**
-   * @brief GetConsentsPriority provides priorities for group consents
-   * i.e. which consents take priority for group - user consent or external
-   * consent based on timestamps
-   * @param device_id Device id
-   * @param application_id Application id
-   * @return Container with group consents priorities
-   */
-  virtual ConsentPriorityType GetConsentsPriority(
-      const std::string& device_id,
-      const std::string& application_id) const = 0;
 
   virtual const policy_table::Strings& GetGroups(const PTString& app_id) = 0;
 

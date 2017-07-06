@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2013, Ford Motor Company
+ Copyright (c) 2017, Ford Motor Company
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -131,23 +131,6 @@ class RegisterAppInterfaceRequest : public CommandRequestImpl {
   */
   mobile_apis::Result::eType CheckCoincidence();
 
-  /*
-  * @brief Predicate for using with CheckCoincidence method to compare with VR
-  * synonym SO
-  *
-  * return TRUE if there is coincidence of VR, otherwise FALSE
-  */
-  struct CoincidencePredicateVR {
-    CoincidencePredicateVR(const custom_str::CustomString& newItem)
-        : newItem_(newItem) {}
-
-    bool operator()(const smart_objects::SmartObject& obj) {
-      const custom_str::CustomString& vr_synonym = obj.asCustomString();
-      return newItem_.CompareIgnoreCase(vr_synonym);
-    }
-    const custom_str::CustomString& newItem_;
-  };
-
   /**
    * @brief Check request parameters against policy table data
    * @return SUCCESS if check ok, otherwise return appropriate error code
@@ -185,6 +168,10 @@ class RegisterAppInterfaceRequest : public CommandRequestImpl {
   void SendSubscribeCustomButtonNotification();
 
  private:
+#ifdef SDL_REMOTE_CONTROL
+  bool IsRemoteControl(const std::string& mobile_app_id) const;
+  bool IsDriverDevice() const;
+#endif  // SDL_REMOTE_CONTROL
   std::string response_info_;
   mobile_apis::Result::eType result_checking_app_hmi_type_;
 

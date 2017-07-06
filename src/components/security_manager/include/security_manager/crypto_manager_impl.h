@@ -121,12 +121,17 @@ class CryptoManagerImpl : public CryptoManager {
   std::string LastError() const OVERRIDE;
   virtual bool IsCertificateUpdateRequired() const OVERRIDE;
   virtual const CryptoManagerSettings& get_settings() const OVERRIDE;
+#ifdef BUILD_TESTS
+  virtual void SetCertFutureExpTime(const std::string& time) OVERRIDE;
+#endif  // BUILD_TESTS
+  void OnPTUFinished(const bool ptu_result) OVERRIDE;
 
  private:
   bool set_certificate(const std::string& cert_data);
 
   int pull_number_from_buf(char* buf, int* idx);
   void asn1_time_to_tm(ASN1_TIME* time);
+  void InitCertExpTime();
 
   const utils::SharedPtr<const CryptoManagerSettings> settings_;
   SSL_CTX* context_;

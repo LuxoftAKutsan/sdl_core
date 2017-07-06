@@ -45,7 +45,9 @@ include_directories(
   ${COMPONENTS_DIR}/resumption/include/
   ${COMPONENTS_DIR}/utils/include/
   ${POLICY_PATH}/include/
+  ${COMPONENTS_DIR}/policy/policy_regular/test/include
   ${POLICY_PATH}/policy/test/include/
+  ${POLICY_GLOBAL_INCLUDE_PATH}/
   ${POLICY_MOCK_INCLUDE_PATH}/
   ${COMPONENTS_DIR}/media_manager/include/
   ${COMPONENTS_DIR}/security_manager/include/
@@ -69,8 +71,11 @@ set(testSources
   ${AM_TEST_DIR}/policy_handler_test.cc
   ${AM_TEST_DIR}/mock_message_helper.cc
  #${AM_TEST_DIR}/application_manager_impl_test.cc
-
 )
+
+if(REMOTE_CONTROL)
+  list(APPEND testSources ${AM_TEST_DIR}/rc_policy_handler_test.cc)
+endif(REMOTE_CONTROL)
 
 set (RequestController_SOURCES
   ${AM_TEST_DIR}/request_controller/request_controller_test.cc
