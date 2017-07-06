@@ -124,13 +124,4 @@ bool MessageHelper::ValidateDeviceInfo(const Json::Value& value) {
          value[message_params::kName].isString();
 }
 
-bool MessageHelper::ValidateInteriorZone(const Json::Value& value) {
-  return value.isObject() && value.isMember(message_params::kCol) &&
-         value[message_params::kCol].isInt() &&
-         value.isMember(message_params::kRow) &&
-         value[message_params::kRow].isInt() &&
-         value.isMember(message_params::kLevel) &&
-         value[message_params::kLevel].isInt();
-}
-
 }  // namespace can_cooperation
