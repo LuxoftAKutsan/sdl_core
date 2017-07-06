@@ -43,7 +43,7 @@ TEST(VehicleCapabilities, Load) {
 TEST(VehicleCapabilities, GetCapabilities) {
   VehicleCapabilities caps;
   ASSERT_EQ(Json::ValueType::arrayValue, caps.capabilities().type());
-  ASSERT_TRUE(6 == caps.capabilities().size());
+  ASSERT_TRUE(2 == caps.capabilities().size());
 }
 
 

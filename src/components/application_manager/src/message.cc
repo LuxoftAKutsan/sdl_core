@@ -190,7 +190,7 @@ void Message::set_binary_data(BinaryData* data) {
     delete binary_data_;
   }
 
-  binary_data_ = data;
+  binary_data_ = new BinaryData(*data);
 }
 
 void Message::set_json_message(const std::string& json_message) {
