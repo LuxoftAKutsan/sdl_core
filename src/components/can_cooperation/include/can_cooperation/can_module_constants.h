@@ -147,7 +147,6 @@ const char kActionCode[] = "actionCode";
 */
 
 // GetInteriorVehicleDataCapabilities request
-const char kZone[] = "zone";
 const char kModuleTypes[] = "moduleTypes";
 // GetInteriorVehicleDataCapabilities request
 
@@ -188,25 +187,11 @@ const char kName[] = "name";
 const char kRank[] = "deviceRank";
 // RC.OnDriverRankChanged notification
 
-// RC.OnDriverLocationChanged notification
-const char kDeviceLocation[] = "deviceLocation";
-// RC.OnDriverLocationChanged notification
-
 // ButtonPress request
-// const char kZone[]          = "zone";
 const char kModuleType[] = "moduleType";
 const char kButtonName[] = "buttonName";
 const char kButtonPressMode[] = "buttonPressMode";
 // ButtonPress request
-
-// InteriorZone struct
-const char kCol[] = "col";
-const char kRow[] = "row";
-const char kLevel[] = "level";
-const char kColspan[] = "colspan";
-const char kRowspan[] = "rowspan";
-const char kLevelspan[] = "levelspan";
-// InteriorZone struct
 
 // RdsData struct
 const char kPS[] = "PS";
