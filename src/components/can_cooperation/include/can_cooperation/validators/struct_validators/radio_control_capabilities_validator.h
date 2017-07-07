@@ -30,8 +30,8 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SRC_COMPONENTS_CAN_COOPERATION_INCLUDE_CAN_COOPERATION_VALIDATORS_BUTTON_PRESS_REQUEST_VALIDATOR_H_
-#define SRC_COMPONENTS_CAN_COOPERATION_INCLUDE_CAN_COOPERATION_VALIDATORS_BUTTON_PRESS_REQUEST_VALIDATOR_H_
+#ifndef SRC_COMPONENTS_CAN_COOPERATION_INCLUDE_CAN_COOPERATION_VALIDATORS_STRUCT_VALIDATORS_RADIO_CONTROL_CAPABILITIES_VALIDATOR_H_
+#define SRC_COMPONENTS_CAN_COOPERATION_INCLUDE_CAN_COOPERATION_VALIDATORS_STRUCT_VALIDATORS_RADIO_CONTROL_CAPABILITIES_VALIDATOR_H_
 
 #include "can_cooperation/validators/validator.h"
 #include "utils/macro.h"
@@ -41,32 +41,30 @@ namespace can_cooperation {
 namespace validators {
 
 /**
- * @brief ButtonPressRequestValidator class
+ * @brief RadioControlCapabilitiesValidator class
  */
-class ButtonPressRequestValidator : public Validator {
+class RadioControlCapabilitiesValidator : public Validator {
  public:
-  ButtonPressRequestValidator();
+  RadioControlCapabilitiesValidator();
+
   /**
- * @brief Validate json with message params
- *
- * @param json_string string with message params(fake params will be cut off)
- * @param outgoing_json outgoing json
- *
- * @return validation result
- */
+   * @brief Validate json with message params
+   *
+   * @param json incoming json
+   * @param outgoing_json outgoing json where is param will be copied after
+   *verification
+   *
+   * @return validation result
+   */
   ValidationResult Validate(const Json::Value& json,
                             Json::Value& outgoing_json);
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ButtonPressRequestValidator);
-
-  ValidationScope module_type_;
-  ValidationScope button_name_;
-  ValidationScope button_press_mode_;
+  DISALLOW_COPY_AND_ASSIGN(RadioControlCapabilitiesValidator);
 };
 
 }  // namespace valdiators
 
 }  // namespace can_cooperation
 
-#endif  // SRC_COMPONENTS_CAN_COOPERATION_INCLUDE_CAN_COOPERATION_VALIDATORS_BUTTON_PRESS_REQUEST_VALIDATOR_H_
+#endif  // SRC_COMPONENTS_CAN_COOPERATION_INCLUDE_CAN_COOPERATION_VALIDATORS_STRUCT_VALIDATORS_RADIO_CONTROL_CAPABILITIES_VALIDATOR_H_

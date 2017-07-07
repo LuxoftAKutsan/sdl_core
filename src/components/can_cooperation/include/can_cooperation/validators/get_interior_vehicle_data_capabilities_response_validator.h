@@ -30,8 +30,8 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SRC_COMPONENTS_CAN_COOPERATION_INCLUDE_CAN_COOPERATION_VALIDATORS_BUTTON_PRESS_REQUEST_VALIDATOR_H_
-#define SRC_COMPONENTS_CAN_COOPERATION_INCLUDE_CAN_COOPERATION_VALIDATORS_BUTTON_PRESS_REQUEST_VALIDATOR_H_
+#ifndef SRC_COMPONENTS_CAN_COOPERATION_INCLUDE_CAN_COOPERATION_VALIDATORS_GET_INTERIOR_VEHICLE_DATA_CAPABILITIES_RESPONSE_VALIDATOR_H_
+#define SRC_COMPONENTS_CAN_COOPERATION_INCLUDE_CAN_COOPERATION_VALIDATORS_GET_INTERIOR_VEHICLE_DATA_CAPABILITIES_RESPONSE_VALIDATOR_H_
 
 #include "can_cooperation/validators/validator.h"
 #include "utils/macro.h"
@@ -41,32 +41,34 @@ namespace can_cooperation {
 namespace validators {
 
 /**
- * @brief ButtonPressRequestValidator class
+ * @brief GetInteriorVehicleDataCapabilitiesResponseValidator class
  */
-class ButtonPressRequestValidator : public Validator {
+class GetInteriorVehicleDataCapabilitiesResponseValidator : public Validator {
  public:
-  ButtonPressRequestValidator();
   /**
- * @brief Validate json with message params
- *
- * @param json_string string with message params(fake params will be cut off)
- * @param outgoing_json outgoing json
- *
- * @return validation result
- */
+   * @brief GetInteriorVehicleDataCapabilitiesResponseValidator constructor
+   */
+  GetInteriorVehicleDataCapabilitiesResponseValidator();
+
+  /**
+   * @brief Validate json with message params
+   *
+   * @param json_string string with message params(fake params will be cut off)
+   * @param outgoing_json outgoing json
+   *
+   * @return validation result
+   */
   ValidationResult Validate(const Json::Value& json,
                             Json::Value& outgoing_json);
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ButtonPressRequestValidator);
+  DISALLOW_COPY_AND_ASSIGN(GetInteriorVehicleDataCapabilitiesResponseValidator);
 
   ValidationScope module_type_;
-  ValidationScope button_name_;
-  ValidationScope button_press_mode_;
 };
 
 }  // namespace valdiators
 
 }  // namespace can_cooperation
 
-#endif  // SRC_COMPONENTS_CAN_COOPERATION_INCLUDE_CAN_COOPERATION_VALIDATORS_BUTTON_PRESS_REQUEST_VALIDATOR_H_
+#endif  // SRC_COMPONENTS_CAN_COOPERATION_INCLUDE_CAN_COOPERATION_VALIDATORS_GET_INTERIOR_VEHICLE_DATA_CAPABILITIES_RESPONSE_VALIDATOR_H_

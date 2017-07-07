@@ -30,43 +30,41 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SRC_COMPONENTS_CAN_COOPERATION_INCLUDE_CAN_COOPERATION_VALIDATORS_BUTTON_PRESS_REQUEST_VALIDATOR_H_
-#define SRC_COMPONENTS_CAN_COOPERATION_INCLUDE_CAN_COOPERATION_VALIDATORS_BUTTON_PRESS_REQUEST_VALIDATOR_H_
-
-#include "can_cooperation/validators/validator.h"
-#include "utils/macro.h"
+#include "can_cooperation/validators/struct_validators/radio_control_capabilities_validator.h"
+#include "can_cooperation/can_module_constants.h"
 
 namespace can_cooperation {
 
 namespace validators {
 
-/**
- * @brief ButtonPressRequestValidator class
- */
-class ButtonPressRequestValidator : public Validator {
- public:
-  ButtonPressRequestValidator();
-  /**
- * @brief Validate json with message params
- *
- * @param json_string string with message params(fake params will be cut off)
- * @param outgoing_json outgoing json
- *
- * @return validation result
- */
-  ValidationResult Validate(const Json::Value& json,
-                            Json::Value& outgoing_json);
+CREATE_LOGGERPTR_GLOBAL(logger_, "RadioControlCapabilitiesValidator")
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ButtonPressRequestValidator);
+using namespace message_params;
 
-  ValidationScope module_type_;
-  ValidationScope button_name_;
-  ValidationScope button_press_mode_;
-};
+RadioControlCapabilitiesValidator::RadioControlCapabilitiesValidator() {}
+
+ValidationResult RadioControlCapabilitiesValidator::Validate(
+    const Json::Value& json, Json::Value& outgoing_json) {
+  LOG4CXX_AUTO_TRACE(logger_);
+
+  if (!json.isObject()) {
+    LOG4CXX_ERROR(logger_, "RadioControlCapabilities must be struct");
+    return INVALID_DATA;
+  }
+
+  ValidationResult result = ValidateSimpleValues(json, outgoing_json);
+
+  if (result != ValidationResult::SUCCESS) {
+    return result;
+  }
+
+  if (!outgoing_json.size()) {
+    return INVALID_DATA;
+  }
+
+  return result;
+}
 
 }  // namespace valdiators
 
 }  // namespace can_cooperation
-
-#endif  // SRC_COMPONENTS_CAN_COOPERATION_INCLUDE_CAN_COOPERATION_VALIDATORS_BUTTON_PRESS_REQUEST_VALIDATOR_H_

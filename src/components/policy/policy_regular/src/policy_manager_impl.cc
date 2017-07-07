@@ -89,7 +89,8 @@ PolicyManagerImpl::PolicyManagerImpl()
     , retry_sequence_url_(0, 0, "")
     , wrong_ptu_update_received_(false)
     , send_on_update_sent_out_(false)
-    , trigger_ptu_(false) {}
+    , trigger_ptu_(false) {
+}
 
 void PolicyManagerImpl::set_listener(PolicyListener* listener) {
   listener_ = listener;
@@ -391,7 +392,13 @@ void PolicyManagerImpl::CheckPermissions(const PTString& device_id,
                "CheckPermissions for " << app_id << " and rpc " << rpc
                                        << " for " << hmi_level << " level.");
 
+#ifdef SDL_REMOTE_CONTROL
+  Subject who = {device_id, app_id};
+  const policy_table::Strings& groups = access_remote_->GetGroups(who);
+#else   // SDL_REMOTE_CONTROL
   const policy_table::Strings& groups = cache_->GetGroups(app_id);
+#endif  // SDL_REMOTE_CONTROL
+
   cache_->CheckPermissions(groups, hmi_level, rpc, result);
   if (cache_->IsApplicationRevoked(app_id)) {
     // SDL must be able to notify mobile side with its status after app has
@@ -1165,7 +1172,7 @@ void PolicyManagerImpl::RetrySequence() {
   timer_retry_sequence_.Start(timeout, timer::kPeriodic);
 }
 
-#if SDL_REMOTE_CONTROL
+#ifdef SDL_REMOTE_CONTROL
 void PolicyManagerImpl::SetDefaultHmiTypes(const std::string& application_id,
                                            const std::vector<int>& hmi_types) {
   LOG4CXX_INFO(logger_, "SetDefaultHmiTypes");
@@ -1238,8 +1245,7 @@ TypeAccess PolicyManagerImpl::CheckDriverConsent(
     return TypeAccess::kDisallowed;
   }
 
-    return access_remote_->Check(who, what);
-
+  return access_remote_->Check(who, what);
 }
 
 void PolicyManagerImpl::SetAccess(const PTString& dev_id,
