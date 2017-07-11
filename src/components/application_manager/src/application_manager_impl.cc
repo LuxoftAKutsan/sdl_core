@@ -2093,7 +2093,7 @@ bool ApplicationManagerImpl::ConvertSOtoMessage(
 
 bool ApplicationManagerImpl::ValidateMessageBySchema(const Message& message) {
   smart_objects::SmartObject so;
-  return ConvertMessageToSO(message, so);
+  return ConvertMessageToSO(message, so );
 }
 
 utils::SharedPtr<Message> ApplicationManagerImpl::ConvertRawMsgToMessage(
