@@ -96,13 +96,15 @@ void MediaManagerImpl::set_mock_mic_recorder(MediaAdapterImpl* media_adapter) {
 
 #endif  // EXTENDED_MEDIA_MODE
 
-void MediaManagerImpl::set_mock_streamer(protocol_handler::ServiceType stype,
-                                         MediaAdapterImpl* mock_stream) {
+void MediaManagerImpl::set_mock_streamer(
+    protocol_handler::ServiceType stype,
+    ::utils::SharedPtr<MediaAdapterImpl> mock_stream) {
   streamer_[stype] = mock_stream;
 }
 
 void MediaManagerImpl::set_mock_streamer_listener(
-    protocol_handler::ServiceType stype, MediaAdapterListener* mock_stream) {
+    protocol_handler::ServiceType stype,
+    ::utils::SharedPtr<MediaAdapterListener> mock_stream) {
   streamer_listener_[stype] = mock_stream;
 }
 
@@ -114,8 +116,6 @@ void MediaManagerImpl::Init() {
 
 #if defined(EXTENDED_MEDIA_MODE)
   LOG4CXX_INFO(logger_, "Called Init with default configuration.");
-  a2dp_player_ =
-      new A2DPSourcePlayerAdapter(protocol_handler_->get_session_observer());
   from_mic_recorder_ = new FromMicRecorderAdapter();
 #endif
 
@@ -157,6 +157,14 @@ void MediaManagerImpl::Init() {
 
 void MediaManagerImpl::PlayA2DPSource(int32_t application_key) {
   LOG4CXX_AUTO_TRACE(logger_);
+
+#if defined(EXTENDED_MEDIA_MODE)
+  if (!a2dp_player_ && protocol_handler_) {
+    a2dp_player_ =
+        new A2DPSourcePlayerAdapter(protocol_handler_->get_session_observer());
+  }
+#endif
+
   if (a2dp_player_) {
     a2dp_player_->StartActivity(application_key);
   }

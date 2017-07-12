@@ -56,9 +56,7 @@ void OnButtonPressNotification::Run() {
 
   const bool is_app_id_exists =
       (*message_)[strings::msg_params].keyExists(strings::app_id);
-  const ApplicationSharedPtr app =
-      application_manager_.application(
-          (*message_)[strings::msg_params][strings::app_id].asUInt());
+  ApplicationSharedPtr app;
 
   // CUSTOM_BUTTON notification
   if (static_cast<uint32_t>(mobile_apis::ButtonName::CUSTOM_BUTTON) == btn_id) {
@@ -68,8 +66,12 @@ void OnButtonPressNotification::Run() {
       return;
     }
 
+    app = application_manager_.application(
+        (*message_)[strings::msg_params][strings::app_id].asUInt());
+
     // custom_button_id is mandatory for CUSTOM_BUTTON notification
-    if (false == (*message_)[strings::msg_params].keyExists(
+    if (false ==
+        (*message_)[strings::msg_params].keyExists(
             hmi_response::custom_button_id)) {
       LOG4CXX_ERROR(logger_,
                     "CUSTOM_BUTTON OnButtonPress without custom_button_id.");
@@ -92,6 +94,15 @@ void OnButtonPressNotification::Run() {
       return;
     }
 
+    // Send ButtonPress notification only in HMI_FULL or HMI_LIMITED mode
+    if ((mobile_api::HMILevel::HMI_FULL != app->hmi_level()) &&
+        (mobile_api::HMILevel::HMI_LIMITED != app->hmi_level())) {
+      LOG4CXX_WARN(logger_,
+                   "CUSTOM_BUTTON OnButtonPress notification is allowed only "
+                       << "in FULL or LIMITED hmi level");
+      return;
+    }
+
     SendButtonPress(app);
     return;
   }
@@ -99,7 +110,8 @@ void OnButtonPressNotification::Run() {
   const std::vector<ApplicationSharedPtr>& subscribed_apps =
       application_manager_.applications_by_button(btn_id);
 
-  std::vector<ApplicationSharedPtr>::const_iterator it = subscribed_apps.begin();
+  std::vector<ApplicationSharedPtr>::const_iterator it =
+      subscribed_apps.begin();
   for (; subscribed_apps.end() != it; ++it) {
     ApplicationSharedPtr subscribed_app = *it;
     if (!subscribed_app) {
@@ -115,11 +127,17 @@ void OnButtonPressNotification::Run() {
                        << "in FULL or LIMITED hmi level");
       continue;
     }
-    // if "app_id" absent send notification only in HMI_FULL mode
-    if (is_app_id_exists || subscribed_app->IsFullscreen()) {
-    SendButtonPress(subscribed_app);
+    // if "appID" is present, send it to named app only if its FULL or
+    // LIMITED
+    if (app.valid()) {
+      if (app->app_id() == subscribed_app->app_id()) {
+        SendButtonPress(subscribed_app);
+      }
+    } else if (subscribed_app->IsFullscreen()) {
+      // if No "appID" - send it FULL apps only.
+      SendButtonPress(subscribed_app);
+    }
   }
-}
 }
 
 void OnButtonPressNotification::SendButtonPress(ApplicationConstSharedPtr app) {

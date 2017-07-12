@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_H_
-#define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_H_
+#ifndef SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_APPLICATION_MANAGER_IMPL_H_
+#define SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_APPLICATION_MANAGER_IMPL_H_
 
 #include <stdint.h>
 #include <vector>
@@ -39,6 +39,7 @@
 #include <set>
 #include <deque>
 #include <algorithm>
+#include <memory>
 
 #include "application_manager/hmi_command_factory.h"
 #include "application_manager/application_manager.h"
@@ -49,13 +50,16 @@
 #include "application_manager/resumption/resume_ctrl.h"
 #include "application_manager/vehicle_info_data.h"
 #include "application_manager/state_controller_impl.h"
+#include "application_manager/app_launch/app_launch_data.h"
 #include "application_manager/application_manager_settings.h"
 #include "application_manager/event_engine/event_dispatcher_impl.h"
+#include "application_manager/hmi_interfaces_impl.h"
 
 #include "protocol_handler/protocol_observer.h"
 #include "protocol_handler/protocol_handler.h"
 #include "hmi_message_handler/hmi_message_observer.h"
 #include "hmi_message_handler/hmi_message_sender.h"
+#include "application_manager/policies/policy_handler_interface.h"
 #include "application_manager/policies/policy_handler_observer.h"
 #include "connection_handler/connection_handler.h"
 #include "connection_handler/connection_handler_observer.h"
@@ -88,13 +92,7 @@
 #include "utils/lock.h"
 #include "utils/data_accessor.h"
 #include "utils/timer.h"
-
-namespace NsSmartDeviceLink {
-namespace NsSmartObjects {
-class SmartObject;
-}
-}
-namespace smart_objects = NsSmartDeviceLink::NsSmartObjects;
+#include "smart_objects/smart_object.h"
 
 namespace threads {
 class Thread;
@@ -190,7 +188,6 @@ typedef std::queue<AudioData> RawAudioDataQueue;
 typedef threads::MessageLoopThread<RawAudioDataQueue> AudioPassThruQueue;
 }
 CREATE_LOGGERPTR_GLOBAL(logger_, "ApplicationManager")
-typedef std::vector<std::string> RPCParams;
 typedef utils::SharedPtr<timer::Timer> TimerSPtr;
 
 class ApplicationManagerImpl
@@ -262,6 +259,75 @@ class ApplicationManagerImpl
 
   void SendHMIStatusNotification(
       const utils::SharedPtr<Application> app) OVERRIDE;
+
+#ifdef SDL_REMOTE_CONTROL
+  ApplicationSharedPtr application(
+      const std::string& device_id,
+      const std::string& policy_app_id) const OVERRIDE;
+
+  AppSharedPtrs applications_by_interior_vehicle_data(
+      smart_objects::SmartObject moduleDescription) OVERRIDE;
+
+  uint32_t GetDeviceHandle(uint32_t connection_key) OVERRIDE;
+  /**
+   * @brief ChangeAppsHMILevel the function that will change application's
+   * hmi level.
+   *
+   * @param app_id id of the application whose hmi level should be changed.
+   *
+   * @param level new hmi level for certain application.
+   */
+  void ChangeAppsHMILevel(uint32_t app_id, mobile_apis::HMILevel::eType level);
+  /**
+   * @brief MakeAppNotAudible allows to make certain application not audible.
+   *
+   * @param app_id applicatin's id whose audible state should be changed.
+   */
+  void MakeAppNotAudible(uint32_t app_id);
+
+  /**
+   * @brief MakeAppFullScreen allows ti change application's properties
+   * in order to make it full screen.
+   *
+   * @param app_id the id of application which should be in full screen  mode.
+   *
+   * @return true if operation was success, false otherwise.
+   */
+  bool MakeAppFullScreen(uint32_t app_id);
+
+  /**
+   * @brief Subscribes to notification from HMI
+   * @param hmi_notification string with notification name
+   */
+  void SubscribeToHMINotification(const std::string& hmi_notification) OVERRIDE;
+
+  /**
+   * @brief Checks HMI level and returns true if audio streaming is allowed
+   */
+  bool IsAudioStreamingAllowed(uint32_t connection_key) const OVERRIDE;
+
+  /**
+   * @brief Checks HMI level and returns true if video streaming is allowed
+   */
+  bool IsVideoStreamingAllowed(uint32_t connection_key) const OVERRIDE;
+
+  void Erase(ApplicationSharedPtr app_to_remove) {
+    app_to_remove->RemoveExtensions();
+    applications_.erase(app_to_remove);
+  }
+
+  virtual functional_modules::PluginManager& GetPluginManager() OVERRIDE {
+    return plugin_manager_;
+  }
+
+  std::vector<std::string> devices(
+      const std::string& policy_app_id) const OVERRIDE;
+
+  virtual void SendPostMessageToMobile(const MessagePtr& message) OVERRIDE;
+
+  virtual void SendPostMessageToHMI(const MessagePtr& message) OVERRIDE;
+#endif  // SDL_REMOTE_CONTROL
+
   /**
    * @brief Checks if application with the same HMI type
    *        (media, voice communication or navi) exists
@@ -317,8 +383,8 @@ class ApplicationManagerImpl
 
   void OnApplicationRegistered(ApplicationSharedPtr app) OVERRIDE;
 
-  HMICapabilities& hmi_capabilities();
-  const HMICapabilities& hmi_capabilities() const;
+  HMICapabilities& hmi_capabilities() OVERRIDE;
+  const HMICapabilities& hmi_capabilities() const OVERRIDE;
 
   /**
    * @brief ProcessQueryApp executes logic related to QUERY_APP system request.
@@ -510,6 +576,67 @@ class ApplicationManagerImpl
     }
     state_ctrl_.SetRegularState(app, new_state, SendActivateApp);
   }
+
+  /**
+   * @brief Checks, if given RPC is allowed at current HMI level for specific
+   * application in policy table
+   * @param app Application
+   * @param hmi_level Current HMI level of application
+   * @param function_id FunctionID of RPC
+   * @param params_permissions Permissions for RPC parameters (e.g.
+   * SubscribeVehicleData) defined in policy table
+   * @return SUCCESS, if allowed, otherwise result code of check
+   */
+  mobile_apis::Result::eType CheckPolicyPermissions(
+      const ApplicationSharedPtr app,
+      const std::string& function_id,
+      const RPCParams& rpc_params,
+      CommandParametersPermissions* params_permissions = NULL) OVERRIDE;
+
+  /**
+   * @brief IsApplicationForbidden allows to distinguish if application is
+   * not allowed to register, becuase of spaming.
+   *
+   * @param connection_key the conection key ofthe required application
+   *
+   * @param mobile_app_id application's mobile(policy) identifier.
+   *
+   * @return true in case application is allowed to register, false otherwise.
+   */
+  bool IsApplicationForbidden(uint32_t connection_key,
+                              const std::string& mobile_app_id);
+
+  struct ApplicationsAppIdSorter {
+    bool operator()(const ApplicationSharedPtr lhs,
+                    const ApplicationSharedPtr rhs) {
+      return lhs->app_id() < rhs->app_id();
+    }
+  };
+
+  struct ApplicationsMobileAppIdSorter {
+    bool operator()(const ApplicationSharedPtr lhs,
+                    const ApplicationSharedPtr rhs) {
+      if (lhs->policy_app_id() == rhs->policy_app_id()) {
+        return lhs->device() < rhs->device();
+      }
+      return lhs->policy_app_id() < rhs->policy_app_id();
+    }
+  };
+
+  // typedef for Applications list
+  typedef std::set<ApplicationSharedPtr, ApplicationsAppIdSorter> ApplictionSet;
+
+  typedef std::set<ApplicationSharedPtr, ApplicationsPolicyAppIdSorter>
+      AppsWaitRegistrationSet;
+
+  // typedef for Applications list iterator
+  typedef ApplictionSet::iterator ApplictionSetIt;
+
+  // typedef for Applications list const iterator
+  typedef ApplictionSet::const_iterator ApplictionSetConstIt;
+
+  DataAccessor<AppsWaitRegistrationSet> apps_waiting_for_registration() const;
+  ApplicationConstSharedPtr waiting_app(const uint32_t hmi_id) const;
 
   /**
    * @brief SetState Change regular audio state
@@ -708,8 +835,11 @@ class ApplicationManagerImpl
    * @brief TerminateRequest forces termination of request
    * @param connection_key - application id of request
    * @param corr_id correlation id of request
+   * @param function_id function id of request
    */
-  void TerminateRequest(uint32_t connection_key, uint32_t corr_id) OVERRIDE;
+  void TerminateRequest(const uint32_t connection_key,
+                        const uint32_t corr_id,
+                        const int32_t function_id) OVERRIDE;
   // Overriden ProtocolObserver method
   void OnMessageReceived(
       const ::protocol_handler::RawMessagePtr message) OVERRIDE;
@@ -741,12 +871,12 @@ class ApplicationManagerImpl
   // Overriden SecurityManagerListener method
   bool OnHandshakeDone(
       uint32_t connection_key,
-      security_manager::SSLContext::HandshakeResult result) OVERRIDE FINAL;
+      security_manager::SSLContext::HandshakeResult result) OVERRIDE;
 
-  void OnCertificateUpdateRequired() OVERRIDE FINAL;
+  void OnCertificateUpdateRequired() OVERRIDE;
 
   security_manager::SSLContext::HandshakeContext GetHandshakeContext(
-      uint32_t key) const OVERRIDE FINAL;
+      uint32_t key) const OVERRIDE;
 #endif  // ENABLE_SECURITY
 
   /**
@@ -839,7 +969,11 @@ class ApplicationManagerImpl
   * @return Resume Controller
   */
   resumption::ResumeCtrl& resume_controller() OVERRIDE {
-    return resume_ctrl_;
+    return *resume_ctrl_.get();
+  }
+
+  HmiInterfaces& hmi_interfaces() OVERRIDE {
+    return hmi_interfaces_;
   }
 
   /**
@@ -940,24 +1074,14 @@ class ApplicationManagerImpl
   protocol_handler::ProtocolHandler& protocol_handler() const OVERRIDE;
 
   virtual policy::PolicyHandlerInterface& GetPolicyHandler() OVERRIDE {
-    return policy_handler_;
+    return *policy_handler_;
   }
-  /**
-   * @brief Checks, if given RPC is allowed at current HMI level for specific
-   * application in policy table
-   * @param policy_app_id Application id
-   * @param hmi_level Current HMI level of application
-   * @param function_id FunctionID of RPC
-   * @param params_permissions Permissions for RPC parameters (e.g.
-   * SubscribeVehicleData) defined in policy table
-   * @return SUCCESS, if allowed, otherwise result code of check
-   */
-  mobile_apis::Result::eType CheckPolicyPermissions(
-      const std::string& policy_app_id,
-      mobile_apis::HMILevel::eType hmi_level,
-      mobile_apis::FunctionID::eType function_id,
-      const RPCParams& rpc_params,
-      CommandParametersPermissions* params_permissions = NULL) OVERRIDE;
+
+  virtual const policy::PolicyHandlerInterface& GetPolicyHandler()
+      const OVERRIDE {
+    return *policy_handler_;
+  }
+
   /*
    * @brief Function Should be called when Low Voltage is occured
    */
@@ -983,13 +1107,6 @@ class ApplicationManagerImpl
 
   policy::DeviceConsent GetUserConsentForDevice(
       const std::string& device_id) const OVERRIDE;
-
-  struct ApplicationsAppIdSorter {
-    bool operator()(const ApplicationSharedPtr lhs,
-                    const ApplicationSharedPtr rhs) {
-      return lhs->app_id() < rhs->app_id();
-    }
-  };
 
   // typedef for Applications list
   typedef std::set<std::string> ForbiddenApps;
@@ -1102,6 +1219,8 @@ class ApplicationManagerImpl
   const ApplicationManagerSettings& get_settings() const OVERRIDE;
   virtual event_engine::EventDispatcher& event_dispatcher() OVERRIDE;
 
+  app_launch::AppLaunchCtrl& app_launch_ctrl() OVERRIDE;
+
  private:
   /**
    * @brief PullLanguagesInfo allows to pull information about languages.
@@ -1138,6 +1257,9 @@ class ApplicationManagerImpl
                           smart_objects::SmartObject& output);
   bool ConvertSOtoMessage(const smart_objects::SmartObject& message,
                           Message& output);
+
+  bool ValidateMessageBySchema(const Message& message) OVERRIDE;
+
   utils::SharedPtr<Message> ConvertRawMsgToMessage(
       const ::protocol_handler::RawMessagePtr message);
 
@@ -1386,9 +1508,31 @@ class ApplicationManagerImpl
 
   hmi_message_handler::HMIMessageHandler* hmi_handler_;
   connection_handler::ConnectionHandler* connection_handler_;
-  policy::PolicyHandler policy_handler_;
+  std::auto_ptr<policy::PolicyHandlerInterface> policy_handler_;
   protocol_handler::ProtocolHandler* protocol_handler_;
   request_controller::RequestController request_ctrl_;
+
+#ifdef SDL_REMOTE_CONTROL
+  functional_modules::PluginManager plugin_manager_;
+
+  /**
+   * @brief Map contains apps with HMI state before incoming call
+   * After incoming call ends previous HMI state must restore
+   *
+   */
+  struct AppState {
+    AppState(const mobile_apis::HMILevel::eType& level,
+             const mobile_apis::AudioStreamingState::eType& streaming_state,
+             const mobile_apis::SystemContext::eType& context)
+        : hmi_level(level)
+        , audio_streaming_state(streaming_state)
+        , system_context(context) {}
+
+    mobile_apis::HMILevel::eType hmi_level;
+    mobile_apis::AudioStreamingState::eType audio_streaming_state;
+    mobile_apis::SystemContext::eType system_context;
+  };
+#endif  // SDL_REMOTE_CONTROL
 
   hmi_apis::HMI_API* hmi_so_factory_;
   mobile_apis::MOBILE_API* mobile_so_factory_;
@@ -1409,7 +1553,7 @@ class ApplicationManagerImpl
   // Thread that pumps messages audio pass thru to mobile.
   impl::AudioPassThruQueue audio_pass_thru_messages_;
 
-  HMICapabilities hmi_capabilities_;
+  std::auto_ptr<HMICapabilities> hmi_capabilities_;
   // The reason of HU shutdown
   mobile_api::AppInterfaceUnregisteredReason::eType unregister_reason_;
 
@@ -1418,7 +1562,9 @@ class ApplicationManagerImpl
    * about persistent application data on disk, and save session ID for resuming
    * application in case INGITION_OFF or MASTER_RESSET
    */
-  resumption::ResumeCtrl resume_ctrl_;
+  std::auto_ptr<resumption::ResumeCtrl> resume_ctrl_;
+
+  HmiInterfacesImpl hmi_interfaces_;
 
   NaviServiceStatusMap navi_service_status_;
   std::deque<uint32_t> navi_app_to_stop_;
@@ -1430,6 +1576,8 @@ class ApplicationManagerImpl
   sync_primitives::Lock timer_pool_lock_;
   sync_primitives::Lock stopping_application_mng_lock_;
   StateControllerImpl state_ctrl_;
+  std::auto_ptr<app_launch::AppLaunchData> app_launch_dto_;
+  std::auto_ptr<app_launch::AppLaunchCtrl> app_launch_ctrl_;
 
 #ifdef TELEMETRY_MONITOR
   AMTelemetryObserver* metric_observer_;
@@ -1440,6 +1588,8 @@ class ApplicationManagerImpl
   Timer tts_global_properties_timer_;
 
   bool is_low_voltage_;
+
+  uint32_t apps_size_;
 
   volatile bool is_stopping_;
 
@@ -1460,4 +1610,4 @@ inline bool ApplicationManagerImpl::all_apps_allowed() const {
 
 }  // namespace application_manager
 
-#endif  // SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_H_
+#endif  // SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_APPLICATION_MANAGER_IMPL_H_

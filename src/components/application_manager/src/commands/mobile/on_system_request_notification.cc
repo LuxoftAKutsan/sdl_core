@@ -78,21 +78,24 @@ void OnSystemRequestNotification::Run() {
   }
 
   if (RequestType::PROPRIETARY == request_type) {
-/* According to requirements:
-   "If the requestType = PROPRIETARY, add to mobile API fileType = JSON
-    If the requestType = HTTP, add to mobile API fileType = BINARY"
-   Also in Genivi SDL we don't save the PT to file - we put it directly in
-   binary_data */
+    /* According to requirements:
+       "If the requestType = PROPRIETARY, add to mobile API fileType = JSON
+        If the requestType = HTTP, add to mobile API fileType = BINARY"
+       Also in Genivi SDL we don't save the PT to file - we put it directly in
+       binary_data */
 
-#ifdef EXTENDED_POLICY
     const std::string filename =
         (*message_)[strings::msg_params][strings::file_name].asString();
-
     BinaryMessage binary_data;
     file_system::ReadBinaryFile(filename, binary_data);
+#if defined(PROPRIETARY_MODE)
     AddHeader(binary_data);
+#endif  // PROPRIETARY_MODE
+
+#if defined(PROPRIETARY_MODE) || defined(EXTERNAL_PROPRIETARY_MODE)
     (*message_)[strings::params][strings::binary_data] = binary_data;
-#endif
+#endif  // PROPRIETARY_MODE
+
     (*message_)[strings::msg_params][strings::file_type] = FileType::JSON;
   } else if (RequestType::HTTP == request_type) {
     (*message_)[strings::msg_params][strings::file_type] = FileType::BINARY;
@@ -101,10 +104,11 @@ void OnSystemRequestNotification::Run() {
   SendNotification();
 }
 
-#ifdef EXTENDED_POLICY
+#ifdef PROPRIETARY_MODE
 void OnSystemRequestNotification::AddHeader(BinaryMessage& message) const {
   LOG4CXX_AUTO_TRACE(logger_);
-  const int timeout = application_manager_.GetPolicyHandler().TimeoutExchange();
+  const uint32_t timeout =
+      application_manager_.GetPolicyHandler().TimeoutExchangeSec();
 
   size_t content_length;
   char size_str[24];
@@ -119,14 +123,14 @@ void OnSystemRequestNotification::AddHeader(BinaryMessage& message) const {
   }
 
   std::string policy_table_string = std::string(message.begin(), message.end());
-  
-  /* The Content-Length to be sent in the HTTP Request header should be 
-  calculated before additional escape characters are added to the 
-  policy table string. The mobile proxy will remove the escape 
+
+  /* The Content-Length to be sent in the HTTP Request header should be
+  calculated before additional escape characters are added to the
+  policy table string. The mobile proxy will remove the escape
   characters after receiving this request. */
 
   content_length = ParsePTString(policy_table_string);
-  
+
   if (0 > sprintf(size_str, "%zu", content_length)) {
     memset(size_str, 0, sizeof(size_str));
   }
@@ -149,10 +153,11 @@ void OnSystemRequestNotification::AddHeader(BinaryMessage& message) const {
       ","
       "\"InstanceFollowRedirects\": false,"
       "\"charset\": \"utf-8\","
-      "\"Content_-Length\": " +
+      "\"Content-Length\": " +
       std::string(size_str) +
       "},"
-      "\"body\": \"" + policy_table_string +
+      "\"body\": \"" +
+      policy_table_string +
       "\""
       "}"
       "}";
@@ -164,16 +169,18 @@ void OnSystemRequestNotification::AddHeader(BinaryMessage& message) const {
       logger_, "Header added: " << std::string(message.begin(), message.end()));
 }
 
-size_t OnSystemRequestNotification::ParsePTString(std::string& pt_string) const{
+size_t OnSystemRequestNotification::ParsePTString(
+    std::string& pt_string) const {
   std::string result;
-  size_t length = pt_string.length();  
+  size_t length = pt_string.length();
   size_t result_length = length;
-  result.reserve(length*2);
-  for(size_t i=0;i<length;++i){
-    if(pt_string[i]=='\"' || pt_string[i]=='\\'){
+  result.reserve(length * 2);
+  for (size_t i = 0; i < length; ++i) {
+    if (pt_string[i] == '\"' || pt_string[i] == '\\') {
       result += '\\';
-    } else if(pt_string[i] == '\n') {
-      result_length--;  // contentLength is adjusted when this character is not copied to result.
+    } else if (pt_string[i] == '\n') {
+      result_length--;  // contentLength is adjusted when this character is not
+                        // copied to result.
       continue;
     }
     result += pt_string[i];
@@ -181,7 +188,7 @@ size_t OnSystemRequestNotification::ParsePTString(std::string& pt_string) const{
   pt_string = result;
   return result_length;
 }
-#endif
+#endif  // PROPRIETARY_MODE
 
 }  // namespace mobile
 

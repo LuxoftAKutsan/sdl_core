@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2016, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -34,15 +34,16 @@
 #include <string>
 #include "gmock/gmock.h"
 #include "application_manager/application.h"
+#include "application_manager/app_extension.h"
 #include "smart_objects/smart_object.h"
 #include "utils/custom_string.h"
+#include "application_manager/usage_statistics.h"
 
 namespace test {
 namespace components {
 namespace application_manager_test {
 
 namespace custom_str = utils::custom_string;
-namespace smart_objects = NsSmartDeviceLink::NsSmartObjects;
 class MockApplication : public ::application_manager::Application {
  public:
   MockApplication() {}
@@ -67,6 +68,7 @@ class MockApplication : public ::application_manager::Application {
   MOCK_METHOD1(set_video_streaming_allowed, void(bool state));
   MOCK_CONST_METHOD0(audio_streaming_allowed, bool());
   MOCK_METHOD1(set_audio_streaming_allowed, void(bool state));
+  MOCK_CONST_METHOD0(is_audio, bool());
   MOCK_METHOD1(StartStreaming,
                void(protocol_handler::ServiceType service_type));
   MOCK_METHOD1(StopStreaming, void(protocol_handler::ServiceType service_type));
@@ -142,7 +144,7 @@ class MockApplication : public ::application_manager::Application {
   MOCK_CONST_METHOD1(IsSubscribedToIVI, bool(uint32_t vehicle_info_type));
   MOCK_METHOD1(UnsubscribeFromIVI, bool(uint32_t vehicle_info_type));
   MOCK_METHOD0(ResetDataInNone, void());
-  MOCK_METHOD2(IsCommandLimitsExceeded,
+  MOCK_METHOD2(AreCommandLimitsExceeded,
                bool(mobile_apis::FunctionID::eType cmd_id,
                     ::application_manager::TLimitSource source));
   MOCK_METHOD0(usage_report, ::application_manager::UsageStatistics&());
@@ -271,11 +273,44 @@ class MockApplication : public ::application_manager::Application {
   MOCK_CONST_METHOD0(is_reset_global_properties_active, bool());
   MOCK_CONST_METHOD0(app_id, uint32_t());
   MOCK_CONST_METHOD0(mac_address, const std::string&());
+  MOCK_CONST_METHOD0(bundle_id, const std::string&());
+  MOCK_METHOD1(set_bundle_id, void(const std::string& bundle_id));
   MOCK_METHOD0(GetAvailableDiskSpace, uint32_t());
+
   MOCK_METHOD1(set_mobile_app_id, void(const std::string& policy_app_id));
   MOCK_CONST_METHOD0(is_foreground, bool());
   MOCK_METHOD1(set_foreground, void(bool is_foreground));
   MOCK_CONST_METHOD0(IsRegistered, bool());
+  MOCK_CONST_METHOD0(SchemaUrl, std::string());
+  MOCK_CONST_METHOD0(PackageName, std::string());
+
+#ifdef SDL_REMOTE_CONTROL
+  MOCK_METHOD1(
+      set_system_context,
+      void(const application_manager::mobile_api::SystemContext::eType&));
+  MOCK_METHOD1(
+      set_audio_streaming_state,
+      void(const application_manager::mobile_api::AudioStreamingState::eType&
+               state));
+  MOCK_METHOD1(IsSubscribedToInteriorVehicleData,
+               bool(smart_objects::SmartObject module));
+  MOCK_METHOD1(SubscribeToInteriorVehicleData,
+               bool(smart_objects::SmartObject module));
+  MOCK_METHOD1(UnsubscribeFromInteriorVehicleData,
+               bool(smart_objects::SmartObject module));
+  MOCK_METHOD1(
+      set_hmi_level,
+      void(const application_manager::mobile_api::HMILevel::eType& hmi_level));
+  MOCK_METHOD1(QueryInterface,
+               application_manager::AppExtensionPtr(
+                   application_manager::AppExtensionUID uid));
+  MOCK_METHOD1(AddExtension,
+               bool(application_manager::AppExtensionPtr extention));
+  MOCK_METHOD1(RemoveExtension, bool(application_manager::AppExtensionUID uid));
+  MOCK_METHOD0(RemoveExtensions, void());
+  MOCK_CONST_METHOD0(SubscribesIVI, const std::set<uint32_t>&());
+
+#endif  // SDL_REMOTE_CONTROL
 };
 
 }  // namespace application_manager_test

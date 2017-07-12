@@ -87,8 +87,24 @@ class RegisterAppInterfaceRequest : public CommandRequestImpl {
 
  private:
   smart_objects::SmartObjectSPtr GetLockScreenIconUrlNotification(
-        const uint32_t connection_key,
-        ApplicationSharedPtr app);
+      const uint32_t connection_key, ApplicationSharedPtr app);
+
+  /**
+   * @brief SendChangeRegistration send ChangeRegistration on HMI
+   * @param function_id interface specific ChangeRegistration
+   * @param language language of registration
+   * @param app_id application to change registration
+   */
+  void SendChangeRegistration(const hmi_apis::FunctionID::eType function_id,
+                              const int32_t language,
+                              const uint32_t app_id);
+
+  /**
+   * @brief SendChangeRegistrationOnHMI send required SendChangeRegistration
+   * HMI
+   * @param app application to change registration
+   */
+  void SendChangeRegistrationOnHMI(ApplicationConstSharedPtr app);
 
   /**
    * @brief Sends OnAppRegistered notification to HMI

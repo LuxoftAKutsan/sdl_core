@@ -169,11 +169,12 @@ void ConnectionHandlerImpl::OnDeviceRemoved(
     RemoveConnection(*it);
   }
 
-  device_list_.erase(device_info.device_handle());
   sync_primitives::AutoReadLock read_lock(connection_handler_observer_lock_);
   if (connection_handler_observer_) {
     connection_handler_observer_->RemoveDevice(device_info.device_handle());
+    connection_handler_observer_->OnDeviceListUpdated(device_list_);
   }
+  device_list_.erase(device_info.device_handle());
 }
 
 void ConnectionHandlerImpl::OnScanDevicesFinished() {
@@ -289,6 +290,7 @@ uint32_t ConnectionHandlerImpl::OnSessionStartedCallback(
   if (hash_id) {
     *hash_id = protocol_handler::HASH_ID_WRONG;
   }
+
 #ifdef ENABLE_SECURITY
   if (!AllowProtection(get_settings(), service_type, is_protected)) {
     return 0;
@@ -668,6 +670,7 @@ security_manager::SSLContext::HandshakeContext
 ConnectionHandlerImpl::GetHandshakeContext(uint32_t key) const {
   return connection_handler_observer_->GetHandshakeContext(key);
 }
+
 #endif  // ENABLE_SECURITY
 
 void ConnectionHandlerImpl::StartDevicesDiscovery() {
@@ -695,6 +698,20 @@ void ConnectionHandlerImpl::ConnectToDevice(
           "Application Manager wanted to connect to non-existing device");
     }
   }
+}
+
+void ConnectionHandlerImpl::RunAppOnDevice(const std::string& device_mac,
+                                           const std::string& bundle_id) const {
+  for (DeviceMap::const_iterator i = device_list_.begin();
+       i != device_list_.end();
+       ++i) {
+    const connection_handler::Device& device = i->second;
+    if (device.mac_address() == device_mac) {
+      transport_manager_.RunAppOnDevice(device.device_handle(), bundle_id);
+      return;
+    }
+  }
+  LOG4CXX_WARN(logger_, "No apps found on device " << device_mac);
 }
 
 void ConnectionHandlerImpl::ConnectToAllDevices() {

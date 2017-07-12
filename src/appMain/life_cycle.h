@@ -43,10 +43,11 @@
 #if (defined(MESSAGEBROKER_HMIADAPTER) || defined(PASA_HMI))
 #include "hmi_message_handler/messagebroker_adapter.h"
 #endif  // #if ( defined (MESSAGEBROKER_HMIADAPTER) || defined(PASA_HMI)  )
-#ifdef MQUEUE_HMIADAPTER
-#include "hmi_message_handler/mqueue_adapter.h"
-#endif  // MQUEUE_HMIADAPTER
 #include "application_manager/application_manager_impl.h"
+#ifdef SDL_REMOTE_CONTROL
+#include "application_manager/core_service.h"
+#include "functional_module/plugin_manager.h"
+#endif  // SDL_REMOTE_CONTROL
 #include "connection_handler/connection_handler_impl.h"
 #include "protocol_handler/protocol_handler_impl.h"
 #include "transport_manager/transport_manager.h"

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Ford Motor Company
+ * Copyright (c) 2016, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,24 +41,16 @@
 #include "utils/data_accessor.h"
 #include "interfaces/MOBILE_API.h"
 #include "connection_handler/device.h"
+#include "application_manager/app_extension.h"
 #include "application_manager/message.h"
 #include "application_manager/hmi_state.h"
 #include "application_manager/application_state.h"
 #include "protocol_handler/protocol_handler.h"
-
-namespace NsSmartDeviceLink {
-namespace NsSmartObjects {
-
-class SmartObject;
-}
-}
+#include "smart_objects/smart_object.h"
 
 namespace application_manager {
 
 namespace mobile_api = mobile_apis;
-
-namespace smart_objects = NsSmartDeviceLink::NsSmartObjects;
-
 namespace custom_str = utils::custom_string;
 
 typedef int32_t ErrorCode;
@@ -109,6 +101,8 @@ class InitialApplicationData {
   virtual const smart_objects::SmartObject* app_types() const = 0;
   virtual const smart_objects::SmartObject* vr_synonyms() const = 0;
   virtual const std::string& mac_address() const = 0;
+  virtual const std::string& bundle_id() const = 0;
+  virtual void set_bundle_id(const std::string& bundle_id) = 0;
   virtual std::string policy_app_id() const = 0;
   virtual const smart_objects::SmartObject* tts_name() const = 0;
   virtual const smart_objects::SmartObject* ngn_media_screen_name() const = 0;
@@ -216,9 +210,16 @@ class DynamicApplicationData {
   virtual void set_video_stream_retry_number(
       const uint32_t& video_stream_retry_number) = 0;
 
-  /*
-   * @brief Adds a command to the in application menu
+  /**
+   * @brief Checks if application is media, voice communication or navigation
+   * @return true if application is media, voice communication or navigation,
+   * false otherwise
    */
+  virtual bool is_audio() const = 0;
+
+  /*
+ * @brief Adds a command to the in application menu
+ */
   virtual void AddCommand(uint32_t cmd_id,
                           const smart_objects::SmartObject& command) = 0;
 
@@ -380,7 +381,6 @@ class Application : public virtual InitialApplicationData,
  public:
   enum ApplicationRegisterState { kRegistered = 0, kWaitingForRegistration };
 
- public:
   Application() : is_greyed_out_(false) {}
   virtual ~Application() {}
 
@@ -578,8 +578,8 @@ class Application : public virtual InitialApplicationData,
    * @param source Limits source, e.g. policy table, config file etc.
    * @return true, if - excedeed, otherwise - false
    */
-  virtual bool IsCommandLimitsExceeded(mobile_apis::FunctionID::eType cmd_id,
-                                       TLimitSource source) = 0;
+  virtual bool AreCommandLimitsExceeded(mobile_apis::FunctionID::eType cmd_id,
+                                        TLimitSource source) = 0;
 
   /**
    * Returns object for recording statistics
@@ -770,6 +770,31 @@ class Application : public virtual InitialApplicationData,
    */
   virtual uint32_t GetAvailableDiskSpace() = 0;
 
+#ifdef SDL_REMOTE_CONTROL
+  virtual void set_system_context(
+      const mobile_api::SystemContext::eType& system_context) = 0;
+  virtual void set_audio_streaming_state(
+      const mobile_api::AudioStreamingState::eType& state) = 0;
+  virtual bool IsSubscribedToInteriorVehicleData(
+      smart_objects::SmartObject module) = 0;
+  virtual bool SubscribeToInteriorVehicleData(
+      smart_objects::SmartObject module) = 0;
+  virtual bool UnsubscribeFromInteriorVehicleData(
+      smart_objects::SmartObject module) = 0;
+  virtual void set_hmi_level(const mobile_api::HMILevel::eType& hmi_level) = 0;
+
+  /**
+   * @brief Return pointer to extension by uid
+   * @param uid uid of extension
+   * @return Pointer to extension, if extension was initialized, otherwise NULL
+   */
+  virtual AppExtensionPtr QueryInterface(AppExtensionUID uid) = 0;
+  virtual bool AddExtension(AppExtensionPtr extention) = 0;
+  virtual bool RemoveExtension(AppExtensionUID uid) = 0;
+  virtual void RemoveExtensions() = 0;
+  virtual const std::set<uint32_t>& SubscribesIVI() const = 0;
+#endif  // SDL_REMOTE_CONTROL
+
  protected:
   mutable sync_primitives::Lock hmi_states_lock_;
 
@@ -784,6 +809,7 @@ class Application : public virtual InitialApplicationData,
 
 typedef utils::SharedPtr<Application> ApplicationSharedPtr;
 typedef utils::SharedPtr<const Application> ApplicationConstSharedPtr;
+typedef uint32_t ApplicationId;
 
 }  // namespace application_manager
 
