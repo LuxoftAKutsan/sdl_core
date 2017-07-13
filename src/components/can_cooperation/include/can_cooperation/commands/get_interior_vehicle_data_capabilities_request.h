@@ -36,6 +36,7 @@
 #include "can_cooperation/commands/base_command_request.h"
 #include "can_cooperation/event_engine/event.h"
 #include "can_cooperation/can_module_interface.h"
+#include "utils/macro.h"
 
 namespace can_cooperation {
 
@@ -58,7 +59,12 @@ class GetInteriorVehicleDataCapabiliesRequest : public BaseCommandRequest {
   /**
    * @brief Execute command
    */
-  virtual void Execute();
+  void Execute() FINAL;
+
+  /**
+   * @brief On timeout specific reaction
+   */
+  void OnTimeout() FINAL;
 
   /**
    * @brief Interface method that is called whenever new event received
@@ -81,9 +87,7 @@ class GetInteriorVehicleDataCapabiliesRequest : public BaseCommandRequest {
  private:
   void UpdateModules(Json::Value* params);
   application_manager::TypeAccess CheckModuleTypes(const Json::Value& message);
-  bool ReadCapabilitiesFromFile(
-      const can_event_engine::Event<application_manager::MessagePtr,
-                                    std::string>& event);
+  Json::Value ReadCapabilitiesFromFile();
   inline bool IsDriverDevice();
   application_manager::TypeAccess GetModuleTypes();
   application_manager::TypeAccess ProcessRequestedModuleTypes(

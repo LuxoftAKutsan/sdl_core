@@ -41,6 +41,7 @@
 #include "functional_module/function_ids.h"
 #include "json/json.h"
 #include "utils/logger.h"
+#include "utils/make_shared.h"
 
 namespace can_cooperation {
 
@@ -73,6 +74,20 @@ void GetInteriorVehicleDataCapabiliesRequest::Execute() {
       functional_modules::hmi_api::get_interior_vehicle_data_capabilities,
       params,
       true);
+}
+
+void GetInteriorVehicleDataCapabiliesRequest::OnTimeout() {
+  LOG4CXX_AUTO_TRACE(logger_);
+
+  const Json::Value capabilities_from_file = ReadCapabilitiesFromFile();
+  if (capabilities_from_file.empty()) {
+    BaseCommandRequest::OnTimeout();
+    return;
+  }
+
+  response_params_ = Json::Value(Json::ValueType::objectValue);
+  response_params_[kInteriorVehicleDataCapabilities] = capabilities_from_file;
+  SendResponse(true, result_codes::kSuccess, "");
 }
 
 void GetInteriorVehicleDataCapabiliesRequest::UpdateModules(
@@ -117,22 +132,31 @@ void GetInteriorVehicleDataCapabiliesRequest::OnEvent(
 
   if (!success) {
     LOG4CXX_INFO(logger_, "Failed to get correct response from HMI!");
-    if (ReadCapabilitiesFromFile(event)) {
-      success = true;
-      result_code = result_codes::kSuccess;
-      info = "";
-    } else {
+    const Json::Value capabilities_from_file = ReadCapabilitiesFromFile();
+    if (capabilities_from_file.empty()) {
       success = false;
       result_code = result_codes::kGenericError;
       info = "Invalid response from the vehicle.";
+    } else {
+      LOG4CXX_INFO(logger_, "Replacing HMI response capabilities with default");
+      value[kResult][kInteriorVehicleDataCapabilities] = capabilities_from_file;
+      success = true;
+      result_code = result_codes::kSuccess;
+      info = "";
     }
   }
+
+  if (success) {
+    response_params_ = Json::Value(Json::ValueType::objectValue);
+    response_params_[kInteriorVehicleDataCapabilities] =
+        value[kResult][kInteriorVehicleDataCapabilities];
+  }
+
   SendResponse(success, result_code.c_str(), info);
 }
 
-bool GetInteriorVehicleDataCapabiliesRequest::ReadCapabilitiesFromFile(
-    const can_event_engine::Event<application_manager::MessagePtr, std::string>&
-        event) {
+Json::Value
+GetInteriorVehicleDataCapabiliesRequest::ReadCapabilitiesFromFile() {
   LOG4CXX_AUTO_TRACE(logger_);
   VehicleCapabilities file_caps;
   LOG4CXX_DEBUG(logger_,
@@ -152,22 +176,27 @@ bool GetInteriorVehicleDataCapabiliesRequest::ReadCapabilitiesFromFile(
   generated_response_to_mobile[kResult][kCode] = Json::Value(0);
   generated_response_to_mobile[kResult][kInteriorVehicleDataCapabilities] =
       interior_vehicle_data_caps_content;
-  generated_response_to_mobile[kId] = event.event_message()->correlation_id();
+  generated_response_to_mobile[kId] = Json::Value(0);
   generated_response_to_mobile[kResult][kMethod] =
       functional_modules::hmi_api::get_interior_vehicle_data_capabilities;
   generated_response_to_mobile[kJsonrpc] = Json::Value("2.0");
 
-  event.event_message()->set_json_message(
+  const application_manager::MessagePtr message_to_validate =
+      utils::MakeShared<application_manager::Message>(
+          protocol_handler::MessagePriority::kDefault);
+  message_to_validate->set_json_message(
       generated_response_to_mobile.toStyledString());
+  message_to_validate->set_protocol_version(
+      application_manager::ProtocolVersion::kHMI);
   // Check new generated response according schhema
   const bool is_file_contents_valid =
-      service()->ValidateMessageBySchema(*(event.event_message()));
+      service()->ValidateMessageBySchema(*message_to_validate);
   if (!is_file_contents_valid) {
     LOG4CXX_ERROR(logger_, "Contents of default capabilities file is invalid");
-    return false;
+    return Json::Value(Json::ValueType::objectValue);
   }
-  response_params_ = interior_vehicle_data_caps;
-  return !response_params_[kInteriorVehicleDataCapabilities].empty();
+
+  return interior_vehicle_data_caps;
 }
 
 application_manager::TypeAccess
