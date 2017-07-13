@@ -1434,9 +1434,6 @@
 
  <struct name="RadioControlCapabilities">
    <description>Contains information about a radio control module's capabilities.</description>
-   <param name="name" type="String" maxlength="50">
-     <description>The short name or a short description of the radio control module.</description>
-   </param>
    <param name="radioEnableAvailable" type="Boolean" mandatory="false">
      <description>
        Availability of the control of enable/disable radio.
@@ -1533,7 +1530,6 @@
    </param>
    <param name="acEnable" type="Boolean" mandatory="false">
    </param>
-
    <param name="circulateAirEnable" type="Boolean" mandatory="false">
    </param>
    <param name="autoModeEnable" type="Boolean" mandatory="false">
@@ -1550,9 +1546,6 @@
 
    <struct name="ClimateControlCapabilities">
    <description>Contains information about a climate control module's capabilities.</description>
-   <param name="name" type="String" maxlength="50">
-     <description>The short name or a short description of the climate control module.</description>
-   </param>
    <param name="fanSpeedAvailable" type="Boolean" mandatory="false">
      <description>
        Availability of the control of fan speed.
