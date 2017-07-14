@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2013, Ford Motor Company
+ Copyright (c) 2017, Ford Motor Company
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -102,15 +102,15 @@ std::vector<std::string> OnInteriorVehicleDataNotification::ControlData(
     const Json::Value& message) {
   Json::Value data =
       message.get(message_params::kModuleData, Json::Value(Json::objectValue));
-  const char* name_control_data;
   std::string module = ModuleType(message);
+  const char* name_control_data;
   if (module == enums_value::kRadio) {
     name_control_data = message_params::kRadioControlData;
   }
   if (module == enums_value::kClimate) {
     name_control_data = message_params::kClimateControlData;
   }
-  Json::Value params =
+  const Json::Value params =
       data.get(name_control_data, Json::Value(Json::objectValue));
   return params.getMemberNames();
 }
