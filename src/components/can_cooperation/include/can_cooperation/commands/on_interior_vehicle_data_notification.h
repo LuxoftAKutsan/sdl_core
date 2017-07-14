@@ -56,8 +56,8 @@ class OnInteriorVehicleDataNotification : public BaseCommandNotification {
   /**
    * @brief Execute command
    */
-  virtual void Execute();
-;
+  void Execute() FINAL;
+  ;
 
   /**
    * @brief OnInteriorVehicleDataNotification class destructor
@@ -65,8 +65,8 @@ class OnInteriorVehicleDataNotification : public BaseCommandNotification {
   virtual ~OnInteriorVehicleDataNotification();
 
  protected:
-  virtual std::string ModuleType(const Json::Value& message);
-  virtual std::vector<std::string> ControlData(const Json::Value& message);
+  std::string ModuleType(const Json::Value& message) FINAL;
+  std::vector<std::string> ControlData(const Json::Value& message) FINAL;
 };
 
 }  // namespace commands

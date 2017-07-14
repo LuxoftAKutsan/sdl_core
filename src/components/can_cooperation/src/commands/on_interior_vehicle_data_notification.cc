@@ -59,6 +59,10 @@ void OnInteriorVehicleDataNotification::Execute() {
   Json::Value json;
 
   application_manager::MessagePtr msg = message();
+  if (!service_->ValidateMessageBySchema(*msg)) {
+    LOG4CXX_ERROR(logger_, "Message validation failed");
+    return;
+  }
 
   json = MessageHelper::StringToValue(msg->json_message());
 
@@ -84,15 +88,15 @@ void OnInteriorVehicleDataNotification::Execute() {
   }
 }
 
-
 std::string OnInteriorVehicleDataNotification::ModuleType(
     const Json::Value& message) {
-  return message.get(message_params::kModuleData,
-                     Json::Value(Json::objectValue))
-      .get(message_params::kModuleType, Json::Value(""))
-      .asString();
-}
+  const Json::Value module_data =
+      message.get(message_params::kModuleData, Json::Value(Json::objectValue));
+  const Json::Value module_type =
+      module_data.get(message_params::kModuleType, Json::Value(""));
 
+  return module_data.asString();
+}
 
 std::vector<std::string> OnInteriorVehicleDataNotification::ControlData(
     const Json::Value& message) {
