@@ -2430,6 +2430,7 @@
       <param name="phoneCapability" type="PhoneCapability" mandatory="false">
       </param>
   </struct>
+
 </interface>
 
 <interface name="Buttons" version="1.2.0" date="2017-07-18">
@@ -3358,6 +3359,9 @@
     </param>
     <param name="hmiCapabilities" type="Common.HMICapabilities" mandatory="false">
       <description>Specifies the HMI’s capabilities. See HMICapabilities.</description>
+    </param>
+    <param name="systemCapabilities" type="Common.SystemCapabilities" mandatory="false">
+      <description>Specifies system capabilities. See SystemCapabilities</description>
     </param>
     <param name="systemCapabilities" type="Common.SystemCapabilities" mandatory="false">
       <description>Specifies system capabilities. See SystemCapabilities</description>
