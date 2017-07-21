@@ -4634,7 +4634,7 @@
     <description>Method is invoked at system startup by SDL to request information about Remote Control capabilities of HMI.</description>
   </function>
   <function name="GetCapabilities" messagetype="response">
-    <param name="remoteControlCapabilities" type="Common.RemoteControlCapabilities" mandatory="false">
+    <param name="remoteControlCapability" type="Common.RemoteControlCapabilities" mandatory="false">
       <description>See RemoteControlCapabilities, all available RC modules and buttons shall be returned.</description>
     </param>
   </function>

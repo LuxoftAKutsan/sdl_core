@@ -55,6 +55,16 @@ void GetSystemCapabilityRequest::Run() {
       }
       break;
     }
+    case mobile_apis::SystemCapabilityType::REMOTE_CONTROL: {
+      if (hmi_capabilities.rc_capability()) {
+        response_params[strings::system_capability][strings::rc_capability] =
+          *hmi_capabilities.rc_capability();
+      } else {
+        SendResponse(false, mobile_apis::Result::DATA_NOT_AVAILABLE);
+        return;
+      }
+    break;
+  }
     case mobile_apis::SystemCapabilityType::VIDEO_STREAMING:
       SendResponse(false, mobile_apis::Result::UNSUPPORTED_RESOURCE);
       return;
