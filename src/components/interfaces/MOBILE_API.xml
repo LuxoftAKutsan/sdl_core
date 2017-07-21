@@ -1478,6 +1478,7 @@
         If included, the platform supports RC radio controls.
         For this baseline version, maxsize=1. i.e. only one radio control module is supported.
       </description >
+    </param>
     <param name="buttonCapabilities" type="ButtonCapabilities"  mandatory="false" minsize="1" maxsize="100" array="true" >
       <description>If included, the platform supports RC button controls with the included button names.</description >
     </param>
