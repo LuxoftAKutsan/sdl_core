@@ -135,6 +135,9 @@
     <element name="DATA_NOT_AVAILABLE">
       <description>The requested data is not available on this vehicle or is not published for the connected app </description>
     </element>
+    <element name="READ_ONLY">
+      <description>The requested data is read only thus cannot be change via remote control </description>
+  </element>
   </enum>
 
   <enum name="ButtonPressMode">
@@ -1466,24 +1469,6 @@
     </param>
   </struct>
 
-  <struct name="RemoteControlCapabilities">
-    <param name="climateControlCapabilities" type="ClimateControlCapabilities" mandatory="false" minsize="1" maxsize="100" array="true">
-      <description>
-        If included, the platform supports RC climate controls.
-        For this baseline version, maxsize=1. i.e. only one climate control module is supported.
-      </description >
-    </param>
-    <param name="radioControlCapabilities" type="RadioControlCapabilities" mandatory="false" minsize="1" maxsize="100" array="true">
-      <description>
-        If included, the platform supports RC radio controls.
-        For this baseline version, maxsize=1. i.e. only one radio control module is supported.
-      </description >
-    </param>
-    <param name="buttonCapabilities" type="ButtonCapabilities"  mandatory="false" minsize="1" maxsize="100" array="true" >
-      <description>If included, the platform supports RC button controls with the included button names.</description >
-    </param>
-  </struct>
-
   <struct name="RadioControlCapabilities">
     <description>Contains information about a radio control module's capabilities.</description>
     <!-- need an ID in the future -->
@@ -2189,6 +2174,24 @@
     </param>
   </struct>
 
+  <struct name="RemoteControlCapabilities">
+    <param name="climateControlCapabilities" type="ClimateControlCapabilities" mandatory="false" minsize="1" maxsize="100" array="true">
+      <description>
+        If included, the platform supports RC climate controls.
+        For this baseline version, maxsize=1. i.e. only one climate control module is supported.
+      </description >
+    </param>
+    <param name="radioControlCapabilities" type="RadioControlCapabilities" mandatory="false" minsize="1" maxsize="100" array="true">
+      <description>
+        If included, the platform supports RC radio controls.
+        For this baseline version, maxsize=1. i.e. only one radio control module is supported.
+      </description >
+    </param>
+    <param name="buttonCapabilities" type="ButtonCapabilities"  mandatory="false" minsize="1" maxsize="100" array="true" >
+      <description>If included, the platform supports RC button controls with the included button names.</description >
+    </param>
+  </struct>
+
   <struct name="MenuParams">
     <param name="parentID" type="Integer" minvalue="0" maxvalue="2000000000" defvalue="0" mandatory="false">
       <description>
@@ -2676,30 +2679,6 @@
     <description>Portion of thoroughfare e.g. house number</description>
   </param>
 </struct>
-
-  <struct name="LocationDetails">
-    <param name="coordinate" type="Coordinate" mandatory="false">
-      <description>Latitude/Longitude of the location.</description>
-    </param>
-    <param name="locationName" type="String" maxlength="500" mandatory="false">
-      <description>Name of location.</description>
-    </param>
-    <param name="addressLines" type="String" maxlength="500" minsize="0" maxsize="4" array="true" mandatory="false">
-      <description>Location address for display purposes only</description>
-    </param>
-    <param name="locationDescription" type="String" maxlength="500" mandatory="false">
-      <description>Description intended location / establishment (if applicable)</description>
-    </param>
-    <param name="phoneNumber" type="String" maxlength="500" mandatory="false">
-      <description>Phone number of location / establishment.</description>
-    </param>
-    <param name="locationImage" type="Image" mandatory="false">
-      <description>Image / icon of intended location.</description>
-    </param>
-    <param name="searchAddress" type="OASISAddress" mandatory="false">
-      <description>Address to be used by navigation engines for search</description>
-    </param>
-  </struct>
 
   <struct name="LocationDetails">
     <param name="coordinate" type="Coordinate" mandatory="false">
