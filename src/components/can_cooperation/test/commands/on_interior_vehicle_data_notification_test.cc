@@ -30,16 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "can_cooperation/commands/on_interior_vehicle_data_notification.h"
+#include "remote_control/commands/on_interior_vehicle_data_notification.h"
 #include "gtest/gtest.h"
 #include "mock_can_module.h"
 #include "mock_application.h"
-#include "can_cooperation/can_app_extension.h"
-#include "can_cooperation/can_module_event.h"
-#include "can_cooperation/can_module_constants.h"
-#include "can_cooperation/message_helper.h"
-#include "can_cooperation/rc_command_factory.h"
-#include "can_cooperation/event_engine/event_dispatcher.h"
+#include "remote_control/can_app_extension.h"
+#include "remote_control/can_module_event.h"
+#include "remote_control/can_module_constants.h"
+#include "remote_control/message_helper.h"
+#include "remote_control/rc_command_factory.h"
+#include "remote_control/event_engine/event_dispatcher.h"
 #include "functional_module/function_ids.h"
 #include "include/mock_service.h"
 #include "utils/shared_ptr.h"
@@ -49,7 +49,7 @@ using functional_modules::MobileFunctionID;
 using application_manager::ServicePtr;
 
 using application_manager::MockService;
-using test::components::can_cooperation_test::MockApplication;
+using test::components::remote_control_test::MockApplication;
 
 using ::testing::_;
 using ::testing::Mock;
@@ -60,9 +60,9 @@ using ::application_manager::Message;
 using ::application_manager::MessageType;
 using ::application_manager::ApplicationSharedPtr;
 using ::protocol_handler::MessagePriority;
-using can_cooperation::CANModuleInterface;
-using can_cooperation::MessageHelper;
-using namespace can_cooperation;
+using remote_control::RemotePluginInterface;
+using remote_control::MessageHelper;
+using namespace remote_control;
 
 namespace {
 const int kModuleId = 153;
@@ -75,7 +75,7 @@ const uint32_t kAppId_ = 11u;
 
 namespace test {
 namespace components {
-namespace can_cooperation_test {
+namespace remote_control_test {
 namespace on_interior_vehicle_data_notification_test {
 
 class OnInteriorVehicleDataNotificationTest : public ::testing::Test {
@@ -84,15 +84,15 @@ class OnInteriorVehicleDataNotificationTest : public ::testing::Test {
       : mock_service_(utils::MakeShared<NiceMock<MockService> >())
       , mock_app_(utils::MakeShared<NiceMock<MockApplication> >())
       , can_app_extention_(
-            utils::MakeShared<can_cooperation::CANAppExtension>(kModuleId)) {
+            utils::MakeShared<remote_control::CANAppExtension>(kModuleId)) {
     ON_CALL(mock_module_, service()).WillByDefault(Return(mock_service_));
     ServicePtr exp_service(mock_service_);
     mock_module_.set_service(exp_service);
   }
 
-  can_cooperation::request_controller::MobileRequestPtr CreateCommand(
+  remote_control::request_controller::MobileRequestPtr CreateCommand(
       application_manager::MessagePtr msg) {
-    return can_cooperation::RCCommandFactory::CreateCommand(msg, mock_module_);
+    return remote_control::RCCommandFactory::CreateCommand(msg, mock_module_);
   }
 
   application_manager::MessagePtr CreateBasicMessage() {
@@ -107,8 +107,8 @@ class OnInteriorVehicleDataNotificationTest : public ::testing::Test {
  protected:
   utils::SharedPtr<NiceMock<application_manager::MockService> > mock_service_;
   utils::SharedPtr<NiceMock<MockApplication> > mock_app_;
-  utils::SharedPtr<can_cooperation::CANAppExtension> can_app_extention_;
-  can_cooperation_test::MockCANModuleInterface mock_module_;
+  utils::SharedPtr<remote_control::CANAppExtension> can_app_extention_;
+  remote_control_test::MockCANModuleInterface mock_module_;
   std::vector<ApplicationSharedPtr> apps_;
 };
 
@@ -139,7 +139,7 @@ TEST_F(OnInteriorVehicleDataNotificationTest,
   EXPECT_CALL(*mock_service_, SendMessageToMobile(_))
       .WillOnce(SaveArg<0>(&result_msg));
   // Act
-  can_cooperation::request_controller::MobileRequestPtr command =
+  remote_control::request_controller::MobileRequestPtr command =
       CreateCommand(message);
   command->Run();
   // Assertions
@@ -167,12 +167,12 @@ TEST_F(OnInteriorVehicleDataNotificationTest,
       .WillOnce(Return(can_app_extention_));
   EXPECT_CALL(*mock_service_, SendMessageToMobile(_)).Times(0);
   // Act
-  can_cooperation::request_controller::MobileRequestPtr command =
+  remote_control::request_controller::MobileRequestPtr command =
       CreateCommand(message);
   command->Run();
 }
 
 }  // namespace on_interior_vehicle_data_notification_test
-}  // namespace can_cooperation_test
+}  // namespace remote_control_test
 }  // namespace components
 }  // namespace test
