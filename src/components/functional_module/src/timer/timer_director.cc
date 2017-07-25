@@ -31,7 +31,7 @@
  */
 #include <typeinfo>
 #include "functional_module/timer/timer_director.h"
-#include "can_cooperation/can_module_timer.h"
+#include "reverse_control/rc_module_timer.h"
 #include "utils/logger.h"
 
 namespace functional_modules {
@@ -104,8 +104,8 @@ void TimerDirector::RegisterTimer(ModuleTimer<T>& timer) {
   }
 }
 
-template void TimerDirector::RegisterTimer<can_cooperation::TrackableMessage>(
-    ModuleTimer<can_cooperation::TrackableMessage>& timer);
+template void TimerDirector::RegisterTimer<reverse_control::TrackableMessage>(
+    ModuleTimer<reverse_control::TrackableMessage>& timer);
 
 template <class T>
 void TimerDirector::UnregisterTimer(const ModuleTimer<T>& timer) {
@@ -122,8 +122,8 @@ void TimerDirector::UnregisterTimer(const ModuleTimer<T>& timer) {
   timer_threads_.erase(it);
 }
 
-template void TimerDirector::UnregisterTimer<can_cooperation::TrackableMessage>(
-    const ModuleTimer<can_cooperation::TrackableMessage>& timer);
+template void TimerDirector::UnregisterTimer<reverse_control::TrackableMessage>(
+    const ModuleTimer<reverse_control::TrackableMessage>& timer);
 
 template <class T>
 void TimerDirector::ResetTimer(ModuleTimer<T>& timer) {
@@ -138,8 +138,8 @@ void TimerDirector::ResetTimer(ModuleTimer<T>& timer) {
   delegate->ResetTimer();
 }
 
-template void TimerDirector::ResetTimer<can_cooperation::TrackableMessage>(
-    ModuleTimer<can_cooperation::TrackableMessage>& timer);
+template void TimerDirector::ResetTimer<reverse_control::TrackableMessage>(
+    ModuleTimer<reverse_control::TrackableMessage>& timer);
 
 void TimerDirector::UnregisterAllTimers() {
   for (std::map<std::string, threads::Thread*>::iterator it =

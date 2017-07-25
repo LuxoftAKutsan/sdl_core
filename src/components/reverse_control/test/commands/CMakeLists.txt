@@ -30,47 +30,33 @@
 
 include(${CMAKE_SOURCE_DIR}/tools/cmake/helpers/sources.cmake)
 
-include_directories (
-  include/
-  ${COMPONENTS_DIR}/include/application_manager/
-  ${COMPONENTS_DIR}/telemetry_monitor/include/
-  ${COMPONENTS_DIR}/utils/include/
-  ${COMPONENTS_DIR}/protocol_handler/include/
-  ${COMPONENTS_DIR}/connection_handler/include/
-  ${COMPONENTS_DIR}/transport_manager/include/
-  ${COMPONENTS_DIR}/application_manager/include/
+include_directories(
+  ${GMOCK_INCLUDE_DIRECTORY}
   ${COMPONENTS_DIR}/reverse_control/include/
-  ${POLICY_PATH}/include/
-  ${POLICY_GLOBAL_INCLUDE_PATH}/
-  ${COMPONENTS_DIR}/rpc_base/include/
-  ${COMPONENTS_DIR}/functional_module/include/
-  ${COMPONENTS_DIR}/hmi_message_handler/include/
-  ${COMPONENTS_DIR}/formatters/include/
-  ${COMPONENTS_DIR}/media_manager/include/
-  ${COMPONENTS_DIR}/smart_objects/include/
-  ${COMPONENTS_DIR}/config_profile/include/
-  ${JSONCPP_INCLUDE_DIRECTORY}
-  ${CMAKE_BINARY_DIR}/src/components/
-  ${LOG4CXX_INCLUDE_DIRECTORY}
+  ${COMPONENTS_DIR}/reverse_control/include/reverse_control/
+  ${COMPONENTS_DIR}/reverse_control/include/reverse_control/commands/
+  ${COMPONENTS_DIR}/reverse_control/test/include
 )
 
-set(PATHS
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/src
+set(RC_COMMANDS_TEST_DIR ${RC_TEST_DIR}/commands)
+
+file(GLOB SOURCES
+  ${COMPONENTS_DIR}/application_manager/test/mock_message_helper.cc
+  ${RC_COMMANDS_TEST_DIR}/*
 )
-collect_sources(SOURCES "${PATHS}")
 
 set(LIBRARIES
+  gmock
+  ReverseControllModule
+  Utils
+  SmartObjects
+  jsoncpp
   HMI_API
   MOBILE_API
-  Utils
-  Policy
+  ApplicationManager
+  AMHMICommandsLibrary
+  AMMobileCommandsLibrary
+  connectionHandler
 )
 
-add_library("TelemetryMonitor" ${SOURCES})
-target_link_libraries("TelemetryMonitor" ${LIBRARIES})
-add_dependencies("TelemetryMonitor" HMI_API MOBILE_API)
-
-if(BUILD_TESTS)
-  add_subdirectory(test)
-endif()
+create_test("rc_commands_test" "${SOURCES}" "${LIBRARIES}" )
