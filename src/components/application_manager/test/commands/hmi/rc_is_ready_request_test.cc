@@ -69,11 +69,10 @@ class RCIsReadyRequestTest
                          bool is_send_message_to_hmi,
                          bool is_message_contain_param,
                          am::HmiInterfaces::InterfaceState state) {
-    const bool is_send_message_by_timeout = false;
     if (is_send_message_to_hmi) {
       EXPECT_CALL(app_mngr_, hmi_capabilities())
           .WillRepeatedly(ReturnRef(mock_hmi_capabilities_));
-      ExpectSendMessagesToHMI(is_send_message_by_timeout);
+      ExpectSendMessagesToHMI();
     } else {
       EXPECT_CALL(app_mngr_, hmi_capabilities())
           .WillOnce(ReturnRef(mock_hmi_capabilities_));
@@ -97,12 +96,8 @@ class RCIsReadyRequestTest
         .WillOnce(Return(state));
   }
 
-  void ExpectSendMessagesToHMI(bool is_send_message_by_timeout) {
-    if (is_send_message_by_timeout) {
-      EXPECT_CALL(app_mngr_, hmi_capabilities())
-          .WillOnce(ReturnRef(mock_hmi_capabilities_));
-    }
 
+  void ExpectSendMessagesToHMI() {
     smart_objects::SmartObjectSPtr capabilities(
         new smart_objects::SmartObject(smart_objects::SmartType_Map));
     EXPECT_CALL(*(MockMessageHelper::message_helper_mock()),
@@ -167,8 +162,7 @@ TEST_F(RCIsReadyRequestTest, Run_KeyAvailableEqualToTrue_StateAvailable) {
 }
 
 TEST_F(RCIsReadyRequestTest, Run_HMIDoestRespond_SendMessageToHMIByTimeout) {
-  const bool is_send_message_by_timeout = true;
-  ExpectSendMessagesToHMI(is_send_message_by_timeout);
+  ExpectSendMessagesToHMI();
   command_->onTimeOut();
 }
 
