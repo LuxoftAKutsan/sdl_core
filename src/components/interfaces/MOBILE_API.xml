@@ -5394,7 +5394,7 @@
     </param>
   </function>
 
-    <function name="ButtonPress" functionID="ButtonPressID" messagetype="request">
+  <function name="ButtonPress" functionID="ButtonPressID" messagetype="request">
     <param name="moduleType" type="ModuleType">
       <description>The module where the button should be pressed</description>
     </param>
@@ -5419,6 +5419,7 @@
         <element name="DISALLOWED"/>
         <element name="USER_DISALLOWED"/>
         <element name="IN_USE"/>
+        <element name="TIMED_OUT"/>
       </param>
       <param name="info" type="String" maxlength="1000" mandatory="false">
       </param>
@@ -5498,6 +5499,7 @@
       <element name="READ_ONLY"/>
       <element name="UNSUPPORTED_RESOURCE"/>
       <element name="IN_USE"/>
+      <element name="TIMED_OUT"/>
     </param>
     <param name="info" type="String" maxlength="1000" mandatory="false">
     </param>
