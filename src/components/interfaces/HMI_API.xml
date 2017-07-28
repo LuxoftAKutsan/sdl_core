@@ -3783,7 +3783,7 @@
       <description>If "true" - video data started. If "false" - video data stopped.</description>
     </param>
   </function>
-  <function name="GetWayPoints" functionID="GetWayPointsID" messagetype="request">
+  <function name="GetWayPoints" messagetype="request">
     <description>Request for getting waypoint/destination data.</description>
     <param name="wayPointType" type="Common.WayPointType" mandatory="true">
       <description>To request for either the destination only or for all waypoints including destination</description>
@@ -3792,7 +3792,7 @@
       <description>ID of the application.</description>
     </param>
   </function>
-  <function name="GetWayPoints" functionID="GetWayPointsID" messagetype="response">
+  <function name="GetWayPoints" messagetype="response">
     <param name="appID" type="Integer" mandatory="true">
       <description>ID of the application.</description>
     </param>
@@ -3800,25 +3800,25 @@
       <description>See LocationDetails</description>
     </param>
   </function>
-  <function name="OnWayPointChange" functionID="OnWayPointChangeID" messagetype="notification">
+  <function name="OnWayPointChange" messagetype="notification">
     <description>Notification which provides the entire LocationDetails when there is a change to any waypoints or destination.</description>
     <param name="wayPoints" type="Common.LocationDetails" mandatory="true" array="true" minsize="1" maxsize="10">
       <description>See LocationDetails</description>
     </param>
   </function>
 
-  <function name="SubscribeWayPoints" functionID="SubscribeWayPointsID" messagetype="request">
+  <function name="SubscribeWayPoints" messagetype="request">
     <description>To subscribe in getting changes for Waypoints/destinations</description>
   </function>
 
-  <function name="SubscribeWayPoints" functionID="SubscribeWayPointsID" messagetype="response">
+  <function name="SubscribeWayPoints" messagetype="response">
   </function>
 
-  <function name="UnsubscribeWayPoints" functionID="UnsubscribeWayPointsID" messagetype="request">
+  <function name="UnsubscribeWayPoints" messagetype="request">
     <description>Request to unsubscribe from WayPoints and Destination</description>
   </function>
 
-  <function name="UnsubscribeWayPoints" functionID="UnsubscribeWayPointsID" messagetype="response">
+  <function name="UnsubscribeWayPoints" messagetype="response">
   </function>
 
 </interface>
@@ -4639,7 +4639,7 @@
     </param>
   </function>
 
-  <function name="SetInteriorVehicleData" functionID="SetInteriorVehicleDataID" messagetype="request">
+  <function name="SetInteriorVehicleData" messagetype="request">
     <param name="moduleData" type="Common.ModuleData">
       <description>The module type and data to set</description>
     </param>
@@ -4647,13 +4647,13 @@
       <description>Internal SDL-assigned ID of the related application</description>
     </param>
   </function>
-  <function name="SetInteriorVehicleData" functionID="SetInteriorVehicleDataID" messagetype="response">
+  <function name="SetInteriorVehicleData" messagetype="response">
     <description>Used to set the values of one RC module</description>
     <param name="moduleData" type="Common.ModuleData">
     </param>
   </function>
 
-  <function name="GetInteriorVehicleData" functionID="GetInteriorVehicleDataID" messagetype="request">
+  <function name="GetInteriorVehicleData" messagetype="request">
     <param name="moduleType" type="Common.ModuleType">
       <description>The module data to retrieve from the vehicle for that type</description>
     </param>
@@ -4664,7 +4664,7 @@
       <description>Internal SDL-assigned ID of the related application</description>
     </param>
   </function>
-  <function name="GetInteriorVehicleData" functionID="GetInteriorVehicleDataID" messagetype="response">
+  <function name="GetInteriorVehicleData" messagetype="response">
     <param name="moduleData" type="Common.ModuleData">
     </param>
     <param name="isSubscribed" type="Boolean" mandatory="false" >
@@ -4692,7 +4692,7 @@
     </param>
   </function>
 
-  <function name="OnInteriorVehicleData" functionID="OnInteriorVehicleDataID" messagetype="notification">
+  <function name="OnInteriorVehicleData" messagetype="notification">
     <param name="moduleData" type="Common.ModuleData">
     </param>
   </function>
