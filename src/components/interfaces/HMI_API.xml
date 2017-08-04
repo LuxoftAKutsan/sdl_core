@@ -34,7 +34,7 @@
 
 <interfaces name="SmartDeviceLink HMI API">
 
-<interface name="Common" version="1.8" date="2017-01-26">
+<interface name="Common" version="1.6.0" date="2017-07-18">
 
 <enum name="Result">
     <element name="SUCCESS" value="0"/>
@@ -93,7 +93,8 @@
     <element name="PRESET_9"/>
     <element name="CUSTOM_BUTTON"/>
     <element name="SEARCH"/>
-      <!-- Climate Buttons -->
+
+    <!-- Climate Buttons -->
     <element name="AC_MAX" />
     <element name="AC" />
     <element name="RECIRCULATE" />
@@ -520,9 +521,6 @@
   <element name="phoneNumber">
     <description> Optional hone number of intended location / establishment (if applicable) for SendLocation.</description>
   </element>
-  <element name="audioPassThruIcon">
-    <description>The optional image field for AudioPassThru</description>
-  </element>
   <element name="timeToDestination"/>
     <!-- TO DO to be removed -->
     <element name="turnText"/>
@@ -562,14 +560,8 @@
   <element name="showConstantTBTNextTurnIcon">
     <description>The secondary image field for ShowConstantTBT</description>
   </element>
-  <element name="audiPassThruIcon">
-    <description>The optional image for AudioPassThru</description>
-  </element>
   <element name="locationImage">
     <description>The optional image of a destination / location</description>
-  </element>
-  <element name="subMenuIcon">
-    <description>The image field for AddSubMenu </description>
   </element>
 </enum>
 
@@ -1231,30 +1223,11 @@
   </element>
 </enum>
 
-<enum name="SteeringWheelLocation">
-  <description>Describes the location of the Steering Wheel.</description>
-  <element name="LEFT" />
-  <element name="RIGHT" />
-  <element name="CENTER" />
-</enum>
-
 <enum name="DeliveryMode">
   <description>The mode in which the SendLocation request is sent</description>
   <element name="PROMPT" />
   <element name="DESTINATION" />
   <element name="QUEUE" />
-</enum>
-
-<enum name="AudioStreamingIndicator">
-  <element name="PLAY_PAUSE">
-    <description>Indicates to use the Play/Pause icon.</description>
-  </element>
-  <element name="PLAY">
-    <description>Indicates to use the Play only icon.</description>
-  </element>
-  <element name="PAUSE">
-    <description>Indicates to use the Pause only icon.</description>
-  </element>
 </enum>
 
 <!-- Policies -->
@@ -1263,21 +1236,21 @@
     <element name="UPDATING" />
     <element name="UPDATE_NEEDED"/>
   </enum>
-
+  
   <enum name="SystemError">
     <element name="SYNC_REBOOTED"/>
     <element name="SYNC_OUT_OF_MEMMORY" />
   </enum>
-
+  
   <enum name="StatisticsType">
     <element name="iAPP_BUFFER_FULL"/>
   </enum>
-
+  
   <enum name="ConsentSource">
     <element name="GUI"/>
     <element name="VUI" />
   </enum>
-
+  
   <enum name="DeviceState">
     <element name="UNKNOWN"/>
     <element name="UNPAIRED"/>
@@ -1290,7 +1263,7 @@
     <param name="line2" type="String" mandatory="false"/>
     <param name="textBody" type="String" mandatory="false"/>
   </struct>
-
+  
   <struct name="PermissionItem">
     <param name="name" type="String" mandatory="true">
       <description>Code of message of user-friendly text about functional group to be allowed/disallowed</description>
@@ -1301,7 +1274,7 @@
     <param name="allowed" type="Boolean" mandatory="false">
       <description>Specifies whether functionality was allowed/disallowed. If ommited - no information about User Consent is yet found for app.</description>
     </param>
-  </struct>
+  </struct>  
   <struct name="ServiceInfo">
     <param name="url" type="String" mandatory="true">
       <description>Get URL based on service type.</description>
@@ -1331,281 +1304,280 @@
 
 <!-- Remote Control -->
 <enum name="ModuleType">
-   <element name="CLIMATE"/>
-   <element name="RADIO"/>
- </enum>
-
- <enum name="RadioBand">
-   <element name="AM"/>
-   <element name="FM"/>
-   <element name="XM"/>
- </enum>
-
- <struct name="RdsData">
-   <param name="PS" type="String" minlength="0" maxlength="8">
-     <description>Program Service Name</description>
-   </param>
-   <param name="RT" type="String" minlength="0" maxlength="64">
-     <description>Radio Text</description>
-   </param>
-   <param name="CT" type="String" minlength="22" maxlength="28" mandatory="false">
-     <description>The clock text in UTC format as YYYY-MM-DDThh:mm:ss.sTZD</description>
-   </param>
-   <param name="PI" type="String" minlength="0" maxlength="6">
-     <description>Program Identification - the call sign for the radio station</description>
-   </param>
-   <param name="PTY" type="Integer" minvalue="0" maxvalue="31">
-     <description>The program type - The region should be used to differentiate between EU and North America program types</description>
-   </param>
-   <param name="TP" type="Boolean">
-     <description>Traffic Program Identification - Identifies a station that offers traffic</description>
-   </param>
-   <param name="TA" type="Boolean">
-     <description>Traffic Announcement Identification - Indicates an ongoing traffic announcement</description>
-   </param>
-   <param name="REG" type="String">
-     <description>Region</description>
-   </param>
- </struct>
-
- <enum name="RadioState">
-   <element name="ACQUIRING"/>
-   <element name="ACQUIRED"/>
-   <element name="MULTICAST"/>
-   <element name="NOT_FOUND"/>
- </enum>
-
- <struct name="RadioControlData">
-   <param name="frequencyInteger" type="Integer" minvalue="0" maxvalue="1710" mandatory="false">
-     <description>The integer part of the frequency ie for 101.7 this value should be 101</description>
-   </param>
-   <param name="frequencyFraction" type="Integer" minvalue="0" maxvalue="9" mandatory="false">
-     <description>The fractional part of the frequency for 101.7 is 7</description>
-   </param>
-   <param name="band" type="Common.RadioBand" mandatory="false">
-   </param>
-   <param name="rdsData" type="Common.RdsData" mandatory="false">
-   </param>
-   <param name="availableHDs" type="Integer" minvalue="1" maxvalue="3" mandatory="false">
-     <description>number of HD sub-channels if available</description>
-   </param>
-   <param name="hdChannel" type="Integer" minvalue="1" maxvalue="3" mandatory="false">
-     <description>Current HD sub-channel if available</description>
-   </param>
-   <param name="signalStrength" type="Integer" minvalue="0" maxvalue="100" mandatory="false">
-   </param>
-   <param name="signalChangeThreshold" type="Integer" minvalue="0" maxvalue="100" mandatory="false">
-     <description>If the signal strength falls below the set value for this parameter, the radio will tune to an alternative frequency</description>
-   </param>
-   <param name="radioEnable" type="Boolean" mandatory="false">
-     <description> True if the radio is on, false is the radio is off</description>
-   </param>
-   <param name="state" type="Common.RadioState" mandatory="false">
-   </param>
- </struct>
-
- <struct name="RadioControlCapabilities">
-   <description>Contains information about a radio control module's capabilities.</description>
-   <param name="name" type="String" maxlength="50">
-     <description>The short name or a short description of the radio control module.</description>
-   </param>
-   <param name="radioEnableAvailable" type="Boolean" mandatory="false">
-     <description>
-       Availability of the control of enable/disable radio.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="radioBandAvailable" type="Boolean">
-     <description>
-       Availability of the control of radio band.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="radioFrequencyAvailable" type="Boolean">
-     <description>
-       Availability of the control of radio frequency.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="hdChannelAvailable" type="Boolean">
-     <description>
-       Availability of the control of HD radio channel.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="rdsDataAvailable" type="Boolean">
-     <description>
-       Availability of the getting Radio Data System (RDS) data.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="availableHDsAvailable" type="Boolean">
-     <description>
-       Availability of the getting the number of available HD channels.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="stateAvailable" type="Boolean">
-     <description>
-       Availability of the getting the Radio state.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="signalStrengthAvailable" type="Boolean">
-     <description>
-       Availability of the getting the signal strength.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="signalChangeThresholdAvailable" type="Boolean">
-     <description>
-       Availability of the getting the signal Change Threshold.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
- </struct>
-
- <enum name="DefrostZone">
-   <element name="FRONT"/>
-   <element name="REAR"/>
-   <element name="ALL"/>
-   <element name="NONE"/>
- </enum>
-
- <enum name="VentilationMode">
-   <element name="UPPER"/>
-   <element name="LOWER"/>
-   <element name="BOTH"/>
-   <element name="NONE"/>
- </enum>
-
- <enum name="TemperatureUnit">
-   <element name="FAHRENHEIT"/>
-   <element name="CELSIUS"/>
- </enum>
-
- <struct name="Temperature">
-    <param name="unit" type="TemperatureUnit">
-      <description>Temperature Unit</description>
-    </param>
-    <param name="value" type="Float">
-      <description>Temperature Value in TemperatureUnit specified unit. Range depends on OEM and is not checked by SDL.</description>
-    </param>
-  </struct>
-
- <struct name="ClimateControlData">
-   <param name="fanSpeed" type="Integer" minvalue="0" maxvalue="100" mandatory="false">
-   </param>
-   <param name="currentTemperature" type="Common.Temperature" mandatory="false">
-   </param>
-   <param name="desiredTemperature" type="Common.Temperature" mandatory="false">
-   </param>
-   <param name="acEnable" type="Boolean" mandatory="false">
-   </param>
-
-   <param name="circulateAirEnable" type="Boolean" mandatory="false">
-   </param>
-   <param name="autoModeEnable" type="Boolean" mandatory="false">
-   </param>
-   <param name="defrostZone" type="DefrostZone" mandatory="false">
-   </param>
-   <param name="dualModeEnable" type="Boolean" mandatory="false">
-   </param>
-   <param name="acMaxEnable" type="Boolean" mandatory="false">
-   </param>
-   <param name="ventilationMode" type="Common.VentilationMode" mandatory="false">
-   </param>
- </struct>
-
-   <struct name="ClimateControlCapabilities">
-   <description>Contains information about a climate control module's capabilities.</description>
-   <param name="name" type="String" maxlength="50">
-     <description>The short name or a short description of the climate control module.</description>
-   </param>
-   <param name="fanSpeedAvailable" type="Boolean" mandatory="false">
-     <description>
-       Availability of the control of fan speed.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="desiredTemperatureAvailable" type="Boolean" mandatory="false">
-     <description>
-       Availability of the control of desired temperature.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="acEnableAvailable" type="Boolean" mandatory="false">
-     <description>
-       Availability of the control of turn on/off AC.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="acMaxEnableAvailable" type="Boolean" mandatory="false">
-     <description>
-       Availability of the control of enable/disable air conditioning is ON on the maximum level.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="circulateAirEnableAvailable" type="Boolean" mandatory="false">
-     <description>
-       Availability of the control of enable/disable circulate Air mode.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="autoModeEnableAvailable" type="Boolean" mandatory="false">
-     <description>
-       Availability of the control of enable/disable auto mode.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="dualModeEnableAvailable" type="Boolean" mandatory="false">
-     <description>
-       Availability of the control of enable/disable dual mode.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="defrostZoneAvailable" type="Boolean" mandatory="false">
-     <description>
-       Availability of the control of defrost zones.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="defrostZone" type="Common.DefrostZone" minsize="1" maxsize="100" array="true" mandatory="false">
-     <description>
-       A set of all defrost zones that are controllable.
-     </description>
-   </param>
-   <param name="ventilationModeAvailable" type="Boolean" mandatory="false">
-     <description>
-       Availability of the control of air ventilation mode.
-       True: Available, False: Not Available, Not present: Not Available.
-     </description>
-   </param>
-   <param name="ventilationMode" type="Common.VentilationMode" minsize="1" maxsize="100" array="true" mandatory="false">
-     <description>
-       A set of all ventilation modes that are controllable.
-     </description>
-   </param>
- </struct>
-
- <struct name="ModuleData">
-   <description>The moduleType indicates which type of data should be changed and identifies which data object exists in this struct. For example, if the moduleType is CLIMATE then a "climateControlData" should exist</description>
-   <param name="moduleType" type="Common.ModuleType">
-   </param>
-   <param name="radioControlData" type="Common.RadioControlData" mandatory="false">
-   </param>
-   <param name="climateControlData" type="Common.ClimateControlData" mandatory="false">
-   </param>
- </struct>
-
-<enum name="DeviceRank">
-  <element name="DRIVER">
-    <description>The device is ranked as driver's</description>
-  </element>
-  <element name="PASSENGER">
-    <description>The device is ranked as passenger's</description>
-  </element>
+  <element name="CLIMATE"/>
+  <element name="RADIO"/>
 </enum>
+
+<enum name="RadioBand">
+  <element name="AM"/>
+  <element name="FM"/>
+  <element name="XM"/>
+</enum>
+
+<struct name="RdsData">
+  <param name="PS" type="String" minlength="0" maxlength="8" mandatory="false">
+    <description>Program Service Name</description>
+  </param>
+  <param name="RT" type="String" minlength="0" maxlength="64" mandatory="false">
+    <description>Radio Text</description>
+  </param>
+  <param name="CT" type="String" minlength="22" maxlength="28" mandatory="false">
+    <description>The clock text in UTC format as YYYY-MM-DDThh:mm:ss.sTZD</description>
+  </param>
+  <param name="PI" type="String" minlength="0" maxlength="6" mandatory="false">
+    <description>Program Identification - the call sign for the radio station</description>
+  </param>
+  <param name="PTY" type="Integer" minvalue="0" maxvalue="31" mandatory="false">
+    <description>The program type - The region should be used to differentiate between EU and North America program types</description>
+  </param>
+  <param name="TP" type="Boolean" mandatory="false">
+    <description>Traffic Program Identification - Identifies a station that offers traffic</description>
+  </param>
+  <param name="TA" type="Boolean" mandatory="false">
+    <description>Traffic Announcement Identification - Indicates an ongoing traffic announcement</description>
+  </param>
+  <param name="REG" type="String" mandatory="false">
+    <description>Region</description>
+  </param>
+</struct>
+
+<enum name="RadioState">
+  <element name="ACQUIRING"/>
+  <element name="ACQUIRED"/>
+  <element name="MULTICAST"/>
+  <element name="NOT_FOUND"/>
+</enum>
+
+<struct name="RadioControlData">
+  <param name="frequencyInteger" type="Integer" minvalue="0" maxvalue="1710" mandatory="false">
+    <description>The integer part of the frequency ie for 101.7 this value should be 101</description>
+  </param>
+  <param name="frequencyFraction" type="Integer" minvalue="0" maxvalue="9" mandatory="false">
+    <description>The fractional part of the frequency for 101.7 is 7</description>
+  </param>
+  <param name="band" type="Common.RadioBand" mandatory="false">
+  </param>
+  <param name="rdsData" type="Common.RdsData" mandatory="false">
+  </param>
+  <param name="availableHDs" type="Integer" minvalue="1" maxvalue="3" mandatory="false">
+    <description>number of HD sub-channels if available</description>
+  </param>
+  <param name="hdChannel" type="Integer" minvalue="1" maxvalue="3" mandatory="false">
+    <description>Current HD sub-channel if available</description>
+  </param>
+  <param name="signalStrength" type="Integer" minvalue="0" maxvalue="100" mandatory="false">
+  </param>
+  <param name="signalChangeThreshold" type="Integer" minvalue="0" maxvalue="100" mandatory="false">
+    <description>If the signal strength falls below the set value for this parameter, the radio will tune to an alternative frequency</description>
+  </param>
+  <param name="radioEnable" type="Boolean" mandatory="false">
+    <description> True if the radio is on, false is the radio is off</description>
+  </param>
+  <param name="state" type="Common.RadioState" mandatory="false">
+  </param>
+</struct>
+
+<enum name="TemperatureUnit">
+  <element name="FAHRENHEIT"/>
+  <element name="CELSIUS"/>
+</enum>
+
+<struct name="Temperature">
+  <param name="unit" type="TemperatureUnit">
+      <description>Temperature Unit</description>
+  </param>
+  <param name="value" type="Float">
+      <description>The temperature value is in TemperatureUnit specified unit.</description>
+  </param>
+</struct>
+
+<enum name="DefrostZone">
+  <element name="FRONT"/>
+  <element name="REAR"/>
+  <element name="ALL"/>
+  <element name="NONE"/>
+</enum>
+
+<enum name="VentilationMode">
+  <element name="UPPER"/>
+  <element name="LOWER"/>
+  <element name="BOTH"/>
+  <element name="NONE"/>
+</enum>
+
+<struct name="ClimateControlData">
+  <param name="fanSpeed" type="Integer" minvalue="0" maxvalue="100" mandatory="false">
+  </param>
+  <param name="currentTemperature" type="Temperature" mandatory="false">
+  </param>
+  <param name="desiredTemperature" type="Temperature" mandatory="false">
+  </param>
+  <param name="acEnable" type="Boolean" mandatory="false">
+  </param>
+  <param name="circulateAirEnable" type="Boolean" mandatory="false">
+  </param>
+  <param name="autoModeEnable" type="Boolean" mandatory="false">
+  </param>
+  <param name="defrostZone" type="DefrostZone" mandatory="false">
+  </param>
+  <param name="dualModeEnable" type="Boolean" mandatory="false">
+  </param>
+  <param name="acMaxEnable" type="Boolean" mandatory="false">
+  </param>
+  <param name="ventilationMode" type="VentilationMode" mandatory="false">
+  </param>
+</struct>
+
+<struct name="ModuleData">
+  <description>The moduleType indicates which type of data should be changed and identifies which data object exists in this struct. For example, if the moduleType is CLIMATE then a "climateControlData" should exist</description>
+  <param name="moduleType" type="Common.ModuleType">
+  </param>
+  <param name="radioControlData" type="Common.RadioControlData" mandatory="false">
+  </param>
+  <param name="climateControlData" type="Common.ClimateControlData" mandatory="false">
+  </param>
+</struct>
+
+<struct name="ClimateControlCapabilities">
+  <description>Contains information about a climate control module's capabilities.</description>
+
+  <!-- need an ID in the future -->
+  <param name="moduleName" type="String" maxlength="100">
+    <description>
+      The short friendly name of the climate control module.
+      It should not be used to identify a module by mobile application.
+    </description>
+  </param>
+  <param name="fanSpeedAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the control of fan speed.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="desiredTemperatureAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the control of desired temperature.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="acEnableAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the control of turn on/off AC.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="acMaxEnableAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the control of enable/disable air conditioning is ON on the maximum level.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="circulateAirEnableAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the control of enable/disable circulate Air mode.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="autoModeEnableAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the control of enable/disable auto mode.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="dualModeEnableAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the control of enable/disable dual mode.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="defrostZoneAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the control of defrost zones.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="defrostZone" type="DefrostZone" minsize="1" maxsize="100" array="true" mandatory="false">
+    <description>
+      A set of all defrost zones that are controllable.
+    </description>
+  </param>
+  <param name="ventilationModeAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the control of air ventilation mode.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="ventilationMode" type="VentilationMode" minsize="1" maxsize="100" array="true" mandatory="false">
+    <description>
+      A set of all ventilation modes that are controllable.
+    </description>
+  </param>
+</struct>
+
+<struct name="RadioControlCapabilities">
+  <description>Contains information about a radio control module's capabilities.</description>
+  <!-- need an ID in the future -->
+  <param name="moduleName" type="String" maxlength="100">
+    <description>
+      The short friendly name of the climate control module.
+      It should not be used to identify a module by mobile application.
+    </description>
+  </param>
+  <param name="radioEnableAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the control of enable/disable radio.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="radioBandAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the control of radio band.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="radioFrequencyAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the control of radio frequency.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="hdChannelAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the control of HD radio channel.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="rdsDataAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the getting Radio Data System (RDS) data.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="availableHDsAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the getting the number of available HD channels.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="stateAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the getting the Radio state.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="signalStrengthAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the getting the signal strength.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+  <param name="signalChangeThresholdAvailable" type="Boolean" mandatory="false">
+    <description>
+      Availability of the getting the signal Change Threshold.
+      True: Available, False: Not Available, Not present: Not Available.
+    </description>
+  </param>
+</struct>
 
 <enum name="RCAccessMode">
   <description>Enumeration that describes possible remote control access mode the application might be in on HU.</description>
@@ -1615,6 +1587,7 @@
 </enum>
 
 <!-- End Remote Control -->
+
 <struct name="TextField">
   <param name="name" type="Common.TextFieldName">
     <description>The name that identifies the field. See TextFieldName.</description>
@@ -1964,9 +1937,6 @@
   <param name="phoneCall" type="Boolean" mandatory="false">
     <description>Availability of build in phone. True: Available, False: Not Available</description>
   </param>
-  <param name="steeringWheelLocation" type="Common.SteeringWheelLocation" mandatory="false">
-    <description>See SteeringWheelLocation</description>
-  </param>
 </struct>
 
 <struct name="AudioPassThruCapabilities">
@@ -2009,9 +1979,6 @@
   </param>
   <param name="autoCompleteText" type="String" maxlength="1000" mandatory="false">
     <description>Allows an app to prepopulate the text field with a suggested or completed entry as the user types</description>
-  </param>
-  <param name="autoCompleteList" type="String" maxlength="50" minsize="1" maxsize="100" array="true" mandatory="false">
-    <description>Allows an app to prepopulate the text field with a list of suggested or completed entry as the user types</description>
   </param>
 </struct>
 
@@ -2347,7 +2314,7 @@
 
 <struct name="DateTime">
   <param name="millisecond" type="Integer" minvalue="0" maxvalue="999" mandatory="false">
-    <description>Milliseconds </description>
+    <description>Milliseconds </description>     
   </param>
   <param name="second" type="Integer" minvalue="0" maxvalue="60" mandatory="false">
     <description>Seconds part of time</description>
@@ -2429,9 +2396,46 @@
     </param>
   </struct>
 
+  <struct name="NavigationCapability">
+    <description>Extended capabilities for an onboard navigation system</description>
+    <param name="sendLocationEnabled" type="Boolean" mandatory="false">
+      <description>If the module has the ability to add locations to the onboard nav</description>
+    </param>
+    <param name="getWayPointsEnabled" type="Boolean" mandatory="false">
+      <description>If the module has the ability to return way points from onboard nav</description>
+    </param>
+  </struct>
+
+  <struct name="PhoneCapability">
+    <description>Extended capabilities of the module's phone feature</description>
+    <param name="dialNumberEnabled" type="Boolean" mandatory="false">
+      <description>If the module has the abiulity to perform dial number</description>
+    </param>
+  </struct>
+
+  <struct name="SystemCapabilities">
+      <param name="navigationCapability" type="NavigationCapability" mandatory="false">
+      </param>
+      <param name="phoneCapability" type="PhoneCapability" mandatory="false">
+      </param>
+  </struct>
+
+
+<struct name="RemoteControlCapabilities">
+  <param name="climateControlCapabilities" type="ClimateControlCapabilities" mandatory="false" minsize="1" maxsize="100" array="true">
+    <description>If included, the platform supports RC climate controls. For this baseline version, maxsize=1. i.e. only one climate control module is supported.</description >
+  </param>
+  <param name="radioControlCapabilities" type="RadioControlCapabilities" mandatory="false" minsize="1" maxsize="100" array="true">
+    <description>If included, the platform supports RC radio controls. For this baseline version, maxsize=1. i.e. only one climate control module is supported.</description >
+  </param>
+  <param name="buttonCapabilities" type="ButtonCapabilities"  mandatory="false" minsize="1" maxsize="100" array="true" >
+    <description>If included, the platform supports RC button controls with the included button names.</description >
+  </param>
+</struct>
+
 </interface>
 
-<interface name="Buttons" version="1.2.0" date="2017-04-27">
+<interface name="Buttons" version="1.2.0" date="2017-07-18">
     <function name="GetCapabilities" messagetype="request">
       <description>Method is invoked at system start-up. SDL requests the information about all supported hardware buttons and their capabilities</description>
     </function>
@@ -2443,23 +2447,6 @@
         <description>Must be returned if the platform supports custom on-screen Presets</description>
       </param>
     </function>
-
-    <function name="ButtonPress" messagetype="request">
-      <description>Method is invoked when the application tries to press a button</description>
-      <param name="moduleType" type="Common.ModuleType">
-        <description>The module where the button should be pressed</description>
-      </param>
-      <param name="buttonName" type="Common.ButtonName"/>
-      <param name="buttonPressMode" type="Common.ButtonPressMode">
-        <description>Indicates whether this is a LONG or SHORT button press event.</description>
-      </param>
-      <param name="appID" type="Integer" mandatory="true">
-        <description>ID of the application that triggers the permission prompt.</description>
-      </param>
-    </function>
-    <function name="ButtonPress" messagetype="response">
-    </function>
-
     <function name="OnButtonEvent" messagetype="notification">
       <description>HU system must notify about every UP/DOWN event for buttons</description>
       <param name="name" type="Common.ButtonName" mandatory="true"/>
@@ -2512,6 +2499,21 @@
           The ID of application that relates to this button-subscription status change.
         </description>
       </param>
+    </function>
+    <function name="ButtonPress" messagetype="request">
+      <description>Method is invoked when the application tries to press a button</description>
+      <param name="moduleType" type="Common.ModuleType">
+        <description>The module where the button should be pressed</description>
+      </param>
+      <param name="buttonName" type="Common.ButtonName"/>
+      <param name="buttonPressMode" type="Common.ButtonPressMode">
+        <description>Indicates whether this is a LONG or SHORT button press event.</description>
+      </param>
+      <param name="appID" type="Integer" mandatory="true">
+        <description>ID of the application that triggers the permission prompt.</description>
+      </param>
+    </function>
+    <function name="ButtonPress" messagetype="response">
     </function>
 </interface>
 
@@ -2673,15 +2675,6 @@
       <description>If no response received SDL supposes that mixing audio is not supported</description>
       <param name="attenuatedSupported" type="Boolean" mandatory="true">
         <description>Must be true if supported</description>
-      </param>
-    </function>
-    <function name="PlayTone" messagetype="notification">
-      <description>Sent by SDL to HMI to notify that the tone should be played.</description>
-      <param name="appID" type="Integer" mandatory="true">
-         <description>ID of the application that invoked this notification</description>
-      </param>
-      <param name="methodName" type="Common.MethodName" mandatory="true">
-         <description>Defines the name of app's request that initiates playing a tone</description>
       </param>
     </function>
     <function name="DialNumber" messagetype="request">
@@ -3131,15 +3124,6 @@
 </interface>
 
 <interface name="UI" version="1.1.0" date="2017-04-27">
-  <function name="OnSeekMediaClockTimer" functionID="OnSeekMediaClockTimerID" messagetype="notification">
-   <description>Callback for the seek media clock timer notification. Notification is triggered when the user selects a position and releases the mediaclock timer or when the user selects a position and holds for a full 2 second period. System will automatically the media clock timer position based on the seek notification location.</description>
-   <param name="seekTime" type="Common.TimeFormat" mandatory="true">
-    <description>See StartTime.</description>
-   </param>
-   <param name="appID" type="Integer" mandatory="true">
-    <description>The ID of application that relates to this mediaclock position change.</description>
-   </param>
-  </function>
   <function name="Alert" messagetype="request">
     <description>Request from SDL to show an alert message on the display.</description>
     <param name="alertStrings" type="Common.TextFieldStruct" mandatory="true" array="true" minsize="0" maxsize="3">
@@ -3245,11 +3229,6 @@
     <param name="appID" type="Integer" mandatory="true">
       <description>ID of application that requested this RPC.</description>
     </param>
-    <param name="subMenuIcon" type="Common.Image" mandatory="false">
-      <description>
-        If omited on supported displays, no (or the default if applicable) icon shall be displayed.
-      </description>
-    </param>
   </function>
   <function name="AddSubMenu" messagetype="response">
   </function>
@@ -3320,12 +3299,6 @@
     <param name="appID" type="Integer" mandatory="true">
       <description>ID of application that requested this RPC.</description>
     </param>
-    <param name="enableSeek" type="Boolean" mandatory="false">
-     <description>
-       Defines if seek media clock timer functionality will be available (when DD is off) allowing for touch input on the media clock timer from the user.
-       If omitted, the value is set to false.
-     </description>
-   </param>
   </function>
   <function name="SetMediaClockTimer" messagetype="response">
   </function>
@@ -3342,7 +3315,7 @@
       <description>Optional text to label an app menu button (for certain touchscreen platforms).</description>
     </param>
     <param name="menuIcon" type="Common.Image" mandatory="false">
-      <description>>Optional icon to draw on an app menu button (for certain touchscreen platforms).</description>
+      <description>Optional icon to draw on an app menu button (for certain touchscreen platforms).</description>
     </param>
     <param name="keyboardProperties" type="Common.KeyboardProperties" mandatory="false">
       <description>On-screen keybaord configuration (if available).</description>
@@ -3388,6 +3361,9 @@
     </param>
     <param name="hmiCapabilities" type="Common.HMICapabilities" mandatory="false">
       <description>Specifies the HMI’s capabilities. See HMICapabilities.</description>
+    </param>
+    <param name="systemCapabilities" type="Common.SystemCapabilities" mandatory="false">
+      <description>Specifies system capabilities. See SystemCapabilities</description>
     </param>
   </function>
   <function name="ChangeRegistration" messagetype="request">
@@ -3601,12 +3577,6 @@
         If omitted, the value is set to true.
       </description>
     </param>
-    <param name="audioPassThruIcon" type="Common.Image" mandatory="false">
-      <description>
-        Image struct determinig wheter static or dynamic icon.
-        If omitted on supported displays, no (or the default if applicable) icon shall be displayed.
-      </description>
-    </param>
   </function>
   <function name="PerformAudioPassThru" messagetype="response">
   </function>
@@ -3647,17 +3617,6 @@
       <description>ID of application related to this RPC.</description>
     </param>
   </function>
-  <function name="SetAudioStreamingIndicator" messagetype="request">
-    <description>Sets the icon properly to the current audio playback of the app.</description>
-    <param name="audioStreamingIndicator" type="Common.AudioStreamingIndicator" mandatory="true">
-      <description>
-        See AudioStreamingIndicator.
-      </description>
-    </param>
-  </function>
-  <function name="SetAudioStreamingIndicator" messagetype="response">
-  </function>
-
 </interface>
 
 <interface name="Navigation" version="1.4.0" date="2017-04-27">
@@ -3825,7 +3784,7 @@
       <description>If "true" - video data started. If "false" - video data stopped.</description>
     </param>
   </function>
-  <function name="GetWayPoints" functionID="GetWayPointsID" messagetype="request">
+  <function name="GetWayPoints" messagetype="request">
     <description>Request for getting waypoint/destination data.</description>
     <param name="wayPointType" type="Common.WayPointType" mandatory="true">
       <description>To request for either the destination only or for all waypoints including destination</description>
@@ -3834,7 +3793,7 @@
       <description>ID of the application.</description>
     </param>
   </function>
-  <function name="GetWayPoints" functionID="GetWayPointsID" messagetype="response">
+  <function name="GetWayPoints" messagetype="response">
     <param name="appID" type="Integer" mandatory="true">
       <description>ID of the application.</description>
     </param>
@@ -3842,25 +3801,25 @@
       <description>See LocationDetails</description>
     </param>
   </function>
-  <function name="OnWayPointChange" functionID="OnWayPointChangeID" messagetype="notification">
+  <function name="OnWayPointChange" messagetype="notification">
     <description>Notification which provides the entire LocationDetails when there is a change to any waypoints or destination.</description>
     <param name="wayPoints" type="Common.LocationDetails" mandatory="true" array="true" minsize="1" maxsize="10">
       <description>See LocationDetails</description>
     </param>
   </function>
 
-  <function name="SubscribeWayPoints" functionID="SubscribeWayPointsID" messagetype="request">
+  <function name="SubscribeWayPoints" messagetype="request">
     <description>To subscribe in getting changes for Waypoints/destinations</description>
   </function>
 
-  <function name="SubscribeWayPoints" functionID="SubscribeWayPointsID" messagetype="response">
+  <function name="SubscribeWayPoints" messagetype="response">
   </function>
 
-  <function name="UnsubscribeWayPoints" functionID="UnsubscribeWayPointsID" messagetype="request">
+  <function name="UnsubscribeWayPoints" messagetype="request">
     <description>Request to unsubscribe from WayPoints and Destination</description>
   </function>
 
-  <function name="UnsubscribeWayPoints" functionID="UnsubscribeWayPointsID" messagetype="response">
+  <function name="UnsubscribeWayPoints" messagetype="response">
   </function>
 
 </interface>
@@ -3952,9 +3911,6 @@
         The application will be notified by the onVehicleData notification whenever new data is available.
         To unsubscribe the notifications, use unsubscribe with the same subscriptionType.
     </description>
-    <param name="appID" type="Integer" mandatory="true">
-      <description>ID of application that requested this RPC.</description>
-    </param>
     <param name="gps" type="Boolean" mandatory="false">
       <description>See GPSData</description>
     </param>
@@ -4341,9 +4297,6 @@
     <param name="myKey" type="Boolean" mandatory="false">
       <description>Information related to the MyKey feature</description>
     </param>
-    <param name="appID" type="Integer" mandatory="true">
-      <description>ID of application requested this RPC.</description>
-    </param>
   </function>
   <function name="GetVehicleData" messagetype="response">
     <param name="gps" type="Common.GPSData" mandatory="false">
@@ -4668,9 +4621,26 @@
     </function>
 </interface>
 
-<interface name="RC" version="1.0" date="2015-10-13">
+<interface name="RC" version="1.1" date="2017-07-18">
+  <function name="IsReady" messagetype="request">
+    <description>Method is invoked at system startup. Response should provide information about presence of any of remote controllable module and its readiness to cooperate with SDL.</description>
+  </function>
+  <function name="IsReady" messagetype="response">
+    <param name="available" type="Boolean" mandatory="true">
+      <description>Must be true if vehicle RC modules are present and ready to communicate with SDL.</description>
+    </param>
+  </function>
 
- <function name="SetInteriorVehicleData" functionID="SetInteriorVehicleDataID" messagetype="request">
+  <function name="GetCapabilities" messagetype="request">
+    <description>Method is invoked at system startup by SDL to request information about Remote Control capabilities of HMI.</description>
+  </function>
+  <function name="GetCapabilities" messagetype="response">
+    <param name="remoteControlCapability" type="Common.RemoteControlCapabilities" mandatory="false">
+      <description>See RemoteControlCapabilities, all available RC modules and buttons shall be returned.</description>
+    </param>
+  </function>
+
+  <function name="SetInteriorVehicleData" messagetype="request">
     <param name="moduleData" type="Common.ModuleData">
       <description>The module type and data to set</description>
     </param>
@@ -4678,36 +4648,34 @@
       <description>Internal SDL-assigned ID of the related application</description>
     </param>
   </function>
-
-  <function name="SetInteriorVehicleData" functionID="SetInteriorVehicleDataID" messagetype="response">
-    <description>Used to set the values of one zone and one data type within that zone</description>
+  <function name="SetInteriorVehicleData" messagetype="response">
+    <description>Used to set the values of one RC module</description>
     <param name="moduleData" type="Common.ModuleData">
     </param>
   </function>
 
-<function name="GetInteriorVehicleData" functionID="GetInteriorVehicleDataID" messagetype="request">
-  <param name="moduleType" type="Common.ModuleType">
-    <description>The module data to retrieve from the vehicle for that type</description>
-  </param>
-  <param name="subscribe" type="Boolean" mandatory="false" defvalue="false">
-    <description>If subscribe is true, the head unit will send onInteriorVehicleData notifications for the module type</description>
-  </param>
-  <param name="appID" type="Integer" mandatory="true">
-    <description>Internal SDL-assigned ID of the related application</description>
-  </param>
-</function>
+  <function name="GetInteriorVehicleData" messagetype="request">
+    <param name="moduleType" type="Common.ModuleType">
+      <description>The module data to retrieve from the vehicle for that type</description>
+    </param>
+    <param name="subscribe" type="Boolean" mandatory="false" defvalue="false">
+      <description>If subscribe is true, the head unit will send onInteriorVehicleData notifications for the module type</description>
+    </param>
+    <param name="appID" type="Integer" mandatory="true">
+      <description>Internal SDL-assigned ID of the related application</description>
+    </param>
+  </function>
+  <function name="GetInteriorVehicleData" messagetype="response">
+    <param name="moduleData" type="Common.ModuleData">
+    </param>
+    <param name="isSubscribed" type="Boolean" mandatory="false" >
+      <description>Is a conditional-mandatory parameter: must be returned in case "subscribe" parameter was present in the related request.
+      if "true" - the "moduleType" from request is successfully subscribed and  the head unit will send onInteriorVehicleData notifications for the moduleDescription.
+      if "false" - the "moduleType" from request is either unsubscribed or failed to subscribe.</description>
+    </param>
+  </function>
 
-<function name="GetInteriorVehicleData" functionID="GetInteriorVehicleDataID" messagetype="response">
-  <param name="moduleData" type="Common.ModuleData">
-  </param>
-  <param name="isSubscribed" type="Boolean" mandatory="false" >
-    <description>Is a conditional-mandatory parameter: must be returned in case "subscribe" parameter was present in the related request.
-    if "true" - the "moduleType" from request is successfully subscribed and  the head unit will send onInteriorVehicleData notifications for the moduleDescription.
-    if "false" - the "moduleType" from request is either unsubscribed or failed to subscribe.</description>
-  </param>
-</function>
-
-<function name="GetInteriorVehicleDataConsent" messagetype="request">
+  <function name="GetInteriorVehicleDataConsent" messagetype="request">
     <description>Sender: SDL->HMI. </description>
     <description>HMI is expected to display a permission prompt to the driver showing the RC module and app details (for example, app's name).
     The driver is expected to have an ability to grant or deny the permission.</description>
@@ -4723,21 +4691,21 @@
       <description>"true" - if the driver grants the permission for controlling to the named app;
       "false" - in case the driver denies the permission for controlling to the named app.</description>
     </param>
-</function>
+  </function>
 
-<function name="OnInteriorVehicleData" functionID="OnInteriorVehicleDataID" messagetype="notification">
-  <param name="moduleData" type="Common.ModuleData">
-  </param>
-</function>
+  <function name="OnInteriorVehicleData" messagetype="notification">
+    <param name="moduleData" type="Common.ModuleData">
+    </param>
+  </function>
 
-<function name="OnRemoteControlSettings" messagetype="notification">
-  <description>Sender: vehicle -> RSDL. Notification about remote-control settings changed. Sent after User`s choice through HMI.</description>
-  <param name="allowed" type="Boolean" mandatory="false" >
-    <description>If "true" - RC is allowed; if "false" - RC is disallowed.</description>
-  </param>
-  <param name="accessMode" type="Common.RCAccessMode" mandatory="false" >
-    <description>The remote control access mode specified by the driver via HMI.</description>
-  </param>
-</function>
+  <function name="OnRemoteControlSettings" messagetype="notification">
+    <description>Sender: vehicle -> RSDL. Notification about remote-control settings changed. Sent after User`s choice through HMI.</description>
+    <param name="allowed" type="Boolean" mandatory="false" >
+      <description>If "true" - RC is allowed; if "false" - RC is disallowed.</description>
+    </param>
+    <param name="accessMode" type="Common.RCAccessMode" mandatory="false" >
+      <description>The remote control access mode specified by the driver via HMI.</description>
+    </param>
+  </function>
 </interface>
 </interfaces>

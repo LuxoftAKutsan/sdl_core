@@ -90,6 +90,9 @@ class HMICapabilities {
   virtual bool is_ivi_cooperating() const = 0;
   virtual void set_is_ivi_cooperating(const bool value) = 0;
 
+  virtual bool is_rc_cooperating() const = 0;
+  virtual void set_is_rc_cooperating(const bool value) = 0;
+
   /*
    * @brief Interface used to store information about software version of the
    *target
@@ -408,6 +411,18 @@ class HMICapabilities {
    * @return TRUE if it supported, otherwise FALSE
    */
   virtual bool phone_call_supported() const = 0;
+
+  virtual void set_navigation_capability(const smart_objects::SmartObject& navigation_capability) = 0;
+
+  virtual const smart_objects::SmartObject* navigation_capability() const = 0;
+
+  virtual void set_phone_capability(const smart_objects::SmartObject& phone_capability) = 0;
+
+  virtual const smart_objects::SmartObject* phone_capability() const = 0;
+
+  virtual void set_rc_capability(const smart_objects::SmartObject& rc_capability) = 0;
+
+  virtual const smart_objects::SmartObject* rc_capability() const = 0;
 
   virtual void Init(resumption::LastState* last_state) = 0;
 

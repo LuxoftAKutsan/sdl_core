@@ -343,6 +343,7 @@ HMICapabilitiesImpl::HMICapabilitiesImpl(ApplicationManager& app_mngr)
     , is_ui_cooperating_(false)
     , is_navi_cooperating_(false)
     , is_ivi_cooperating_(false)
+    , is_rc_cooperating_(false)
     , attenuated_supported_(false)
     , ui_language_(hmi_apis::Common_Language::INVALID_ENUM)
     , vr_language_(hmi_apis::Common_Language::INVALID_ENUM)
@@ -363,6 +364,9 @@ HMICapabilitiesImpl::HMICapabilitiesImpl(ApplicationManager& app_mngr)
     , prerecorded_speech_(NULL)
     , is_navigation_supported_(false)
     , is_phone_call_supported_(false)
+    , navigation_capability_(NULL)
+    , phone_capability_(NULL)
+    , rc_capability_(NULL)
     , app_mngr_(app_mngr)
     , hmi_language_handler_(app_mngr) {
   InitCapabilities();
@@ -372,6 +376,7 @@ HMICapabilitiesImpl::HMICapabilitiesImpl(ApplicationManager& app_mngr)
     is_ui_cooperating_ = true;
     is_navi_cooperating_ = true;
     is_ivi_cooperating_ = true;
+    is_rc_cooperating_ = true;
   }
 }
 
@@ -390,6 +395,9 @@ HMICapabilitiesImpl::~HMICapabilitiesImpl() {
   delete audio_pass_thru_capabilities_;
   delete pcm_stream_capabilities_;
   delete prerecorded_speech_;
+  delete navigation_capability_;
+  delete phone_capability_;
+  delete rc_capability_;
 }
 
 bool HMICapabilitiesImpl::VerifyImageType(const int32_t image_type) const {
@@ -428,6 +436,10 @@ void HMICapabilitiesImpl::set_is_navi_cooperating(const bool value) {
 
 void HMICapabilitiesImpl::set_is_ivi_cooperating(const bool value) {
   is_ivi_cooperating_ = value;
+}
+
+void HMICapabilitiesImpl::set_is_rc_cooperating(const bool value) {
+  is_rc_cooperating_ = value;
 }
 
 void HMICapabilitiesImpl::set_attenuated_supported(const bool state) {
@@ -605,6 +617,30 @@ void HMICapabilitiesImpl::set_phone_call_supported(const bool supported) {
   is_phone_call_supported_ = supported;
 }
 
+void HMICapabilitiesImpl::set_navigation_capability(
+    const smart_objects::SmartObject& navigation_capability) {
+  if (navigation_capability_) {
+    delete navigation_capability_;
+  }
+  navigation_capability_ = new smart_objects::SmartObject(navigation_capability);
+}
+
+void HMICapabilitiesImpl::set_phone_capability(
+    const smart_objects::SmartObject& phone_capability) {
+  if (phone_capability_) {
+    delete phone_capability_;
+  }
+  phone_capability_ = new smart_objects::SmartObject(phone_capability);
+}
+
+void HMICapabilitiesImpl::set_rc_capability(
+    const smart_objects::SmartObject& rc_capability) {
+  if (rc_capability_) {
+    delete rc_capability_;
+  }
+  rc_capability_ = new smart_objects::SmartObject(rc_capability);
+}
+
 void HMICapabilitiesImpl::Init(resumption::LastState* last_state) {
   hmi_language_handler_.Init(last_state);
   if (false == load_capabilities_from_file()) {
@@ -634,6 +670,10 @@ bool HMICapabilitiesImpl::is_navi_cooperating() const {
 
 bool HMICapabilitiesImpl::is_ivi_cooperating() const {
   return is_ivi_cooperating_;
+}
+
+bool HMICapabilitiesImpl::is_rc_cooperating() const {
+  return is_rc_cooperating_;
 }
 
 const smart_objects::SmartObject* HMICapabilitiesImpl::ui_supported_languages()
@@ -714,6 +754,18 @@ bool HMICapabilitiesImpl::navigation_supported() const {
 
 bool HMICapabilitiesImpl::phone_call_supported() const {
   return is_phone_call_supported_;
+}
+
+const smart_objects::SmartObject* HMICapabilitiesImpl::navigation_capability() const {
+  return navigation_capability_;
+}
+
+const smart_objects::SmartObject* HMICapabilitiesImpl::phone_capability() const {
+  return phone_capability_;
+}
+
+const smart_objects::SmartObject* HMICapabilitiesImpl::rc_capability() const {
+  return rc_capability_;
 }
 
 bool HMICapabilitiesImpl::load_capabilities_from_file() {
@@ -960,6 +1012,27 @@ bool HMICapabilitiesImpl::load_capabilities_from_file() {
             soft_button_capabilities, soft_button_capabilities_so);
         set_soft_button_capabilities(soft_button_capabilities_so);
       }
+      if(check_existing_json_member(ui, "systemCapabilities")) {
+        Json::Value system_capabilities = ui.get("systemCapabilities", "");
+        if (check_existing_json_member(system_capabilities, "navigationCapability")) {
+          Json::Value navigation_capability = system_capabilities.get("navigationCapability","");
+          smart_objects::SmartObject navigation_capability_so;
+          Formatters::CFormatterJsonBase::jsonValueToObj(navigation_capability, navigation_capability_so);
+          set_navigation_capability(navigation_capability_so);
+        }
+        if (check_existing_json_member(system_capabilities, "phoneCapability")) {
+          Json::Value phone_capability = system_capabilities.get("phoneCapability","");
+          smart_objects::SmartObject phone_capability_so;
+          Formatters::CFormatterJsonBase::jsonValueToObj(phone_capability, phone_capability_so);
+          set_phone_capability(phone_capability_so);
+        }
+        if (check_existing_json_member(system_capabilities, "remoteControlCapability")) {
+          Json::Value rc_capability = system_capabilities.get("remoteControlCapability","");
+          smart_objects::SmartObject rc_capability_so;
+          Formatters::CFormatterJsonBase::jsonValueToObj(rc_capability, rc_capability_so);
+          set_rc_capability(rc_capability_so);
+        }
+      }
     }  // UI end
 
     // VR
@@ -1065,7 +1138,6 @@ bool HMICapabilitiesImpl::load_capabilities_from_file() {
                                                      vehicle_type_so);
       set_vehicle_type(vehicle_type_so);
     }  // VehicleType end
-
   } catch (...) {
     return false;
   }

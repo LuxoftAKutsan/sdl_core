@@ -134,7 +134,12 @@ const char* audio_pass_thru_capabilities = "audioPassThruCapabilities";
 const char* pcm_stream_capabilities = "pcmStreamCapabilities";
 const char* audio_pass_thru_icon = "audioPassThruIcon";
 const char* way_points = "wayPoints";
-const char* device_rank = "deviceRank";
+const char* system_capability = "systemCapability";
+const char* system_capability_type = "systemCapabilityType";
+const char* system_capabilities = "systemCapabilities";
+const char* navigation_capability = "navigationCapability";
+const char* phone_capability = "phoneCapability";
+const char* rc_capability = "remoteControlCapability";
 
 // PutFile
 const char* sync_file_name = "syncFileName";
