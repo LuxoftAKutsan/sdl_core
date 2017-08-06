@@ -27,9 +27,14 @@ void GetSystemCapabilityRequest::Run() {
     return;
   }
   smart_objects::SmartObject response_params(smart_objects::SmartType_Map);
-  //response_params[strings::system_capability][strings::system_capability_type] = (mobile_apis::SystemCapabilityType::PHONE_CALL);
-  mobile_apis::SystemCapabilityType::eType response_type = static_cast<mobile_apis::SystemCapabilityType::eType>((*message_)[strings::msg_params][strings::system_capability_type].asInt());
-  response_params[strings::system_capability][strings::system_capability_type] = response_type;  
+  // response_params[strings::system_capability][strings::system_capability_type]
+  // = (mobile_apis::SystemCapabilityType::PHONE_CALL);
+  mobile_apis::SystemCapabilityType::eType response_type =
+      static_cast<mobile_apis::SystemCapabilityType::eType>(
+          (*message_)[strings::msg_params][strings::system_capability_type]
+              .asInt());
+  response_params[strings::system_capability][strings::system_capability_type] =
+      response_type;
 
   const HMICapabilities& hmi_capabilities =
       application_manager_.hmi_capabilities();
@@ -37,8 +42,9 @@ void GetSystemCapabilityRequest::Run() {
   switch (response_type) {
     case mobile_apis::SystemCapabilityType::NAVIGATION: {
       if (hmi_capabilities.navigation_capability()) {
-        response_params[strings::system_capability][strings::navigation_capability] = 
-          *hmi_capabilities.navigation_capability();
+        response_params[strings::system_capability]
+                       [strings::navigation_capability] =
+                           *hmi_capabilities.navigation_capability();
       } else {
         SendResponse(false, mobile_apis::Result::DATA_NOT_AVAILABLE);
         return;
@@ -47,8 +53,8 @@ void GetSystemCapabilityRequest::Run() {
     }
     case mobile_apis::SystemCapabilityType::PHONE_CALL: {
       if (hmi_capabilities.phone_capability()) {
-        response_params[strings::system_capability][strings::phone_capability] = 
-          *hmi_capabilities.phone_capability();
+        response_params[strings::system_capability][strings::phone_capability] =
+            *hmi_capabilities.phone_capability();
       } else {
         SendResponse(false, mobile_apis::Result::DATA_NOT_AVAILABLE);
         return;
@@ -58,13 +64,13 @@ void GetSystemCapabilityRequest::Run() {
     case mobile_apis::SystemCapabilityType::REMOTE_CONTROL: {
       if (hmi_capabilities.rc_capability()) {
         response_params[strings::system_capability][strings::rc_capability] =
-          *hmi_capabilities.rc_capability();
+            *hmi_capabilities.rc_capability();
       } else {
         SendResponse(false, mobile_apis::Result::DATA_NOT_AVAILABLE);
         return;
       }
-    break;
-  }
+      break;
+    }
     case mobile_apis::SystemCapabilityType::VIDEO_STREAMING:
       SendResponse(false, mobile_apis::Result::UNSUPPORTED_RESOURCE);
       return;
@@ -73,17 +79,17 @@ void GetSystemCapabilityRequest::Run() {
       SendResponse(false, mobile_apis::Result::UNSUPPORTED_RESOURCE);
       return;
       break;
-    default: // Return unsupported resource
+    default:  // Return unsupported resource
       SendResponse(false, mobile_apis::Result::UNSUPPORTED_RESOURCE);
       break;
   }
   SendResponse(true, mobile_apis::Result::SUCCESS, NULL, &response_params);
 }
 
-void GetSystemCapabilityRequest::on_event(const event_engine::Event& event){
+void GetSystemCapabilityRequest::on_event(const event_engine::Event& event) {
   LOG4CXX_INFO(logger_, "GetSystemCapabilityRequest on_event");
 }
 
-} // namespace commands
+}  // namespace commands
 
-} // namespace application_manager
+}  // namespace application_manager

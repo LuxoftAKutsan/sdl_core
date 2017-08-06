@@ -2269,11 +2269,11 @@ CommandSharedPtr HMICommandFactory::CreateCommand(
     }
     case hmi_apis::FunctionID::RC_GetCapabilities: {
       if (is_response) {
-        command.reset(
-            new commands::RCGetCapabilitiesResponse(message, application_manager));
+        command.reset(new commands::RCGetCapabilitiesResponse(
+            message, application_manager));
       } else {
-        command.reset(
-            new commands::RCGetCapabilitiesRequest(message, application_manager));
+        command.reset(new commands::RCGetCapabilitiesRequest(
+            message, application_manager));
       }
       break;
     }

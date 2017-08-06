@@ -410,15 +410,18 @@ class HMICapabilitiesImpl : public HMICapabilities {
    */
   bool phone_call_supported() const OVERRIDE;
 
-  void set_navigation_capability(const smart_objects::SmartObject& navigation_capability) OVERRIDE;
+  void set_navigation_capability(
+      const smart_objects::SmartObject& navigation_capability) OVERRIDE;
 
   const smart_objects::SmartObject* navigation_capability() const OVERRIDE;
 
-  void set_phone_capability(const smart_objects::SmartObject& phone_capability) OVERRIDE;
+  void set_phone_capability(
+      const smart_objects::SmartObject& phone_capability) OVERRIDE;
 
   const smart_objects::SmartObject* phone_capability() const OVERRIDE;
 
-  void set_rc_capability(const smart_objects::SmartObject& rc_capability) OVERRIDE;
+  void set_rc_capability(
+      const smart_objects::SmartObject& rc_capability) OVERRIDE;
 
   const smart_objects::SmartObject* rc_capability() const OVERRIDE;
 

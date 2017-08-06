@@ -96,7 +96,6 @@ class RCIsReadyRequestTest
         .WillOnce(Return(state));
   }
 
-
   void ExpectSendMessagesToHMI() {
     smart_objects::SmartObjectSPtr capabilities(
         new smart_objects::SmartObject(smart_objects::SmartType_Map));

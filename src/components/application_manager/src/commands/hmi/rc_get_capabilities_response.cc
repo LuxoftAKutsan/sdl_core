@@ -46,9 +46,9 @@ void RCGetCapabilitiesResponse::Run() {
 
   HMICapabilities& hmi_capabilities = application_manager_.hmi_capabilities();
 
-  if((*message_)[strings::msg_params].keyExists(strings::rc_capability)) {
-      hmi_capabilities.set_rc_capability(
-          (*message_)[strings::msg_params][strings::rc_capability]);
+  if ((*message_)[strings::msg_params].keyExists(strings::rc_capability)) {
+    hmi_capabilities.set_rc_capability(
+        (*message_)[strings::msg_params][strings::rc_capability]);
   }
 }
 
