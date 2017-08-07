@@ -65,9 +65,9 @@ class RCIsReadyRequestTest
  public:
   RCIsReadyRequestTest() : command_(CreateCommand<RCIsReadyRequest>()) {}
 
-  void SetUpExpectations(bool is_rc_cooperating_available,
-                         bool is_send_message_to_hmi,
-                         bool is_message_contain_param,
+  void SetUpExpectations(const bool is_rc_cooperating_available,
+                         const bool is_send_message_to_hmi,
+                         const bool is_message_contain_param,
                          am::HmiInterfaces::InterfaceState state) {
     if (is_send_message_to_hmi) {
       EXPECT_CALL(app_mngr_, hmi_capabilities())

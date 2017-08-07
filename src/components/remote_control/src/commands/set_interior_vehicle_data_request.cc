@@ -60,7 +60,21 @@ std::vector<std::string> GetModuleReadOnlyParams(
   }
   return module_ro_params;
 }
+// std::vector<std::string> GetExistingParams(
+//    const std::string& module_type,
+//    const smart_objects::SmartObject& rc_capabilities) {
+//    std::vector<std::string> result;
+//    if (module_type  == enums_value::kClimate) {
+//        const smart_objects::SmartObject& climat_caps =
+//            rc_capabilities[strings::kButtonCapabilities];
+//        smart_objects::SmartArray::iterator it =
+//        climat_caps.asArray()->begin();
+//        for (; it != climat_caps.asArray()->end(); ++it) {
+//            smart_objects::SmartObject& so = *it;
 
+//        }
+//    }
+//}
 }  // namespace
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "SetInteriorVehicleDataRequest")

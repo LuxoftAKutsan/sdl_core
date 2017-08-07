@@ -84,9 +84,9 @@ const std::vector<std::string> buttons_radio() {
 bool CheckIfButtonExistInRCCaps(
     const smart_objects::SmartObject& rc_capabilities,
     const std::string& button_name) {
-  if (rc_capabilities.keyExists(strings::kbuttonCapabilities)) {
+  if (rc_capabilities.keyExists(strings::kButtonCapabilities)) {
     const smart_objects::SmartObject& button_caps =
-        rc_capabilities[strings::kbuttonCapabilities];
+        rc_capabilities[strings::kButtonCapabilities];
     smart_objects::SmartArray::iterator it = button_caps.asArray()->begin();
     for (; it != button_caps.asArray()->end(); ++it) {
       smart_objects::SmartObject& so = *it;

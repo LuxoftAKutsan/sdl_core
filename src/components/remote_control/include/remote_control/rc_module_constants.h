@@ -37,9 +37,9 @@ namespace remote_control {
 
 namespace strings {
 // RemoteControlCapabilities constants
-const char kclimateControlCapabilities[] = "climateControlCapabilities";
-const char kradioControlCapabilities[] = "radioControlCapabilities";
-const char kbuttonCapabilities[] = "buttonCapabilities";
+const char kClimateControlCapabilities[] = "climateControlCapabilities";
+const char kRadioControlCapabilities[] = "radioControlCapabilities";
+const char kButtonCapabilities[] = "buttonCapabilities";
 // RemoteControlCapabilities constants
 }  //  strings
 

@@ -27,9 +27,7 @@ void GetSystemCapabilityRequest::Run() {
     return;
   }
   smart_objects::SmartObject response_params(smart_objects::SmartType_Map);
-  // response_params[strings::system_capability][strings::system_capability_type]
-  // = (mobile_apis::SystemCapabilityType::PHONE_CALL);
-  mobile_apis::SystemCapabilityType::eType response_type =
+  const mobile_apis::SystemCapabilityType::eType response_type =
       static_cast<mobile_apis::SystemCapabilityType::eType>(
           (*message_)[strings::msg_params][strings::system_capability_type]
               .asInt());

@@ -140,7 +140,7 @@ class ButtonPressRequestTest : public ::testing::Test {
     for (size_t i = 0; i < button_names.size(); i++) {
       button_caps[i] = ButtonCapability(button_names[i]);
     }
-    rc_capabilities_[strings::kbuttonCapabilities] = button_caps;
+    rc_capabilities_[strings::kButtonCapabilities] = button_caps;
     ON_CALL(*mock_service_, GetRCCapabilities())
         .WillByDefault(Return(&rc_capabilities_));
   }
