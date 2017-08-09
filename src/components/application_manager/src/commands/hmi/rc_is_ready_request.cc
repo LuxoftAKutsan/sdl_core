@@ -79,7 +79,6 @@ void RCIsReadyRequest::on_event(const event_engine::Event& event) {
 }
 
 void RCIsReadyRequest::onTimeOut() {
-  // Note(dtrunov): According to new requirment APPLINK-27956
   SendMessageToHMI();
 }
 
