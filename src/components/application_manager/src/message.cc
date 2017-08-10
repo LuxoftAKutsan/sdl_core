@@ -76,7 +76,7 @@ Message::Message(const Message& message)
     , binary_data_(NULL)
     , data_size_(0)
     , payload_size_(0)
-    , version_(kUnknownProtocol) {
+    , version_(PROTOCOL_VERSION_UNKNOWN) {
   *this = message;
 }
 

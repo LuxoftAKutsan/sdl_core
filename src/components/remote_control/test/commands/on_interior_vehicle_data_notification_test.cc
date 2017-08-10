@@ -143,7 +143,7 @@ TEST_F(OnInteriorVehicleDataNotificationTest,
       CreateCommand(message);
   command->Run();
   // Assertions
-  EXPECT_EQ(application_manager::ProtocolVersion::kV3,
+  EXPECT_EQ(protocol_handler::MajorProtocolVersion::PROTOCOL_VERSION_3,
             result_msg->protocol_version());
   EXPECT_EQ(application_manager::MessageType::kNotification,
             result_msg->type());
