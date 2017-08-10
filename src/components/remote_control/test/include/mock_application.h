@@ -286,6 +286,9 @@ class MockApplication : public ::application_manager::Application {
   MOCK_METHOD1(set_bundle_id, void(const std::string& bundle_id));
   MOCK_METHOD0(GetAvailableDiskSpace, uint32_t());
 
+  MOCK_METHOD1(set_mobile_projection_enabled, void(bool));
+  MOCK_CONST_METHOD0(mobile_projection_enabled, bool());
+
   MOCK_METHOD1(set_mobile_app_id, void(const std::string& policy_app_id));
   MOCK_CONST_METHOD0(is_foreground, bool());
   MOCK_METHOD1(set_foreground, void(bool is_foreground));

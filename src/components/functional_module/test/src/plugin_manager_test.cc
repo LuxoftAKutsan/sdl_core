@@ -68,7 +68,7 @@ TEST_F(PluginManagerTest, IsHMIMessageForPluginFail) {
 TEST_F(PluginManagerTest, IsHMIMessageForPluginPass) {
   Message* msg = new Message(protocol_handler::MessagePriority::FromServiceType(
       protocol_handler::ServiceType::kRpc));
-  msg->set_protocol_version(MajorProtocolVersion::PROTOCOL_VERSION_HMIMI);
+  msg->set_protocol_version(MajorProtocolVersion::PROTOCOL_VERSION_HMI);
   std::string json = "{\"method\": \"HMI-Func-1\"}";  // see MockGenericModule
   msg->set_json_message(json);
   EXPECT_TRUE(manager->IsHMIMessageForPlugin(msg));
@@ -114,7 +114,7 @@ TEST_F(PluginManagerTest, ProcessHMIMessagePass) {
   Message* msg = new Message(protocol_handler::MessagePriority::FromServiceType(
       protocol_handler::ServiceType::kRpc));
   application_manager::MessagePtr message(msg);
-  message->set_protocol_version(MajorProtocolVersion::PROTOCOL_VERSION_HMIMI);
+  message->set_protocol_version(MajorProtocolVersion::PROTOCOL_VERSION_HMI);
   std::string json = "{\"method\": \"HMI-Func-1\"}";  // see MockGenericModule
   message->set_json_message(json);
   EXPECT_CALL(*module, ProcessHMIMessage(message))
