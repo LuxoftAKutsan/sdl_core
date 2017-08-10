@@ -1315,28 +1315,28 @@
  </enum>
 
  <struct name="RdsData">
-   <param name="PS" type="String" minlength="0" maxlength="8">
+   <param name="PS" type="String" minlength="0" maxlength="8" mandatory="true" >
      <description>Program Service Name</description>
    </param>
-   <param name="RT" type="String" minlength="0" maxlength="64">
+   <param name="RT" type="String" minlength="0" maxlength="64" mandatory="true" >
      <description>Radio Text</description>
    </param>
    <param name="CT" type="String" minlength="22" maxlength="28" mandatory="false">
      <description>The clock text in UTC format as YYYY-MM-DDThh:mm:ss.sTZD</description>
    </param>
-   <param name="PI" type="String" minlength="0" maxlength="6">
+   <param name="PI" type="String" minlength="0" maxlength="6" mandatory="true" >
      <description>Program Identification - the call sign for the radio station</description>
    </param>
-   <param name="PTY" type="Integer" minvalue="0" maxvalue="31">
+   <param name="PTY" type="Integer" minvalue="0" maxvalue="31" mandatory="true" >
      <description>The program type - The region should be used to differentiate between EU and North America program types</description>
    </param>
-   <param name="TP" type="Boolean">
+   <param name="TP" type="Boolean" mandatory="true" >
      <description>Traffic Program Identification - Identifies a station that offers traffic</description>
    </param>
-   <param name="TA" type="Boolean">
+   <param name="TA" type="Boolean" mandatory="true" >
      <description>Traffic Announcement Identification - Indicates an ongoing traffic announcement</description>
    </param>
-   <param name="REG" type="String">
+   <param name="REG" type="String" mandatory="true" >
      <description>Region</description>
    </param>
  </struct>
@@ -1379,7 +1379,7 @@
 
  <struct name="RadioControlCapabilities">
    <description>Contains information about a radio control module's capabilities.</description>
-   <param name="name" type="String" maxlength="50">
+   <param name="name" type="String" maxlength="50" mandatory="true" >
      <description>The short name or a short description of the radio control module.</description>
    </param>
    <param name="radioEnableAvailable" type="Boolean" mandatory="false">
@@ -1388,49 +1388,49 @@
        True: Available, False: Not Available, Not present: Not Available.
      </description>
    </param>
-   <param name="radioBandAvailable" type="Boolean">
+   <param name="radioBandAvailable" type="Boolean" mandatory="true" >
      <description>
        Availability of the control of radio band.
        True: Available, False: Not Available, Not present: Not Available.
      </description>
    </param>
-   <param name="radioFrequencyAvailable" type="Boolean">
+   <param name="radioFrequencyAvailable" type="Boolean" mandatory="true" >
      <description>
        Availability of the control of radio frequency.
        True: Available, False: Not Available, Not present: Not Available.
      </description>
    </param>
-   <param name="hdChannelAvailable" type="Boolean">
+   <param name="hdChannelAvailable" type="Boolean" mandatory="true" >
      <description>
        Availability of the control of HD radio channel.
        True: Available, False: Not Available, Not present: Not Available.
      </description>
    </param>
-   <param name="rdsDataAvailable" type="Boolean">
+   <param name="rdsDataAvailable" type="Boolean" mandatory="true" >
      <description>
        Availability of the getting Radio Data System (RDS) data.
        True: Available, False: Not Available, Not present: Not Available.
      </description>
    </param>
-   <param name="availableHDsAvailable" type="Boolean">
+   <param name="availableHDsAvailable" type="Boolean" mandatory="true" >
      <description>
        Availability of the getting the number of available HD channels.
        True: Available, False: Not Available, Not present: Not Available.
      </description>
    </param>
-   <param name="stateAvailable" type="Boolean">
+   <param name="stateAvailable" type="Boolean" mandatory="true" >
      <description>
        Availability of the getting the Radio state.
        True: Available, False: Not Available, Not present: Not Available.
      </description>
    </param>
-   <param name="signalStrengthAvailable" type="Boolean">
+   <param name="signalStrengthAvailable" type="Boolean" mandatory="true" >
      <description>
        Availability of the getting the signal strength.
        True: Available, False: Not Available, Not present: Not Available.
      </description>
    </param>
-   <param name="signalChangeThresholdAvailable" type="Boolean">
+   <param name="signalChangeThresholdAvailable" type="Boolean" mandatory="true" >
      <description>
        Availability of the getting the signal Change Threshold.
        True: Available, False: Not Available, Not present: Not Available.
@@ -1458,10 +1458,10 @@
  </enum>
 
  <struct name="Temperature">
-    <param name="unit" type="TemperatureUnit">
+    <param name="unit" type="TemperatureUnit" mandatory="true" >
       <description>Temperature Unit</description>
     </param>
-    <param name="value" type="Float">
+    <param name="value" type="Float" mandatory="true" >
       <description>Temperature Value in TemperatureUnit specified unit. Range depends on OEM and is not checked by SDL.</description>
     </param>
   </struct>
@@ -1492,7 +1492,7 @@
 
    <struct name="ClimateControlCapabilities">
    <description>Contains information about a climate control module's capabilities.</description>
-   <param name="name" type="String" maxlength="50">
+   <param name="name" type="String" maxlength="50" mandatory="true" >
      <description>The short name or a short description of the climate control module.</description>
    </param>
    <param name="fanSpeedAvailable" type="Boolean" mandatory="false">
@@ -1563,7 +1563,7 @@
 
  <struct name="ModuleData">
    <description>The moduleType indicates which type of data should be changed and identifies which data object exists in this struct. For example, if the moduleType is CLIMATE then a "climateControlData" should exist</description>
-   <param name="moduleType" type="Common.ModuleType">
+   <param name="moduleType" type="Common.ModuleType" mandatory="true" >
    </param>
    <param name="radioControlData" type="Common.RadioControlData" mandatory="false">
    </param>
@@ -2437,11 +2437,11 @@
 
     <function name="ButtonPress" messagetype="request">
       <description>Method is invoked when the application tries to press a button</description>
-      <param name="moduleType" type="Common.ModuleType">
+      <param name="moduleType" type="Common.ModuleType" mandatory="true" >
         <description>The module where the button should be pressed</description>
       </param>
-      <param name="buttonName" type="Common.ButtonName"/>
-      <param name="buttonPressMode" type="Common.ButtonPressMode">
+      <param name="buttonName" type="Common.ButtonName" mandatory="true" />
+      <param name="buttonPressMode" type="Common.ButtonPressMode" mandatory="true" >
         <description>Indicates whether this is a LONG or SHORT button press event.</description>
       </param>
       <param name="appID" type="Integer" mandatory="true">
@@ -4613,7 +4613,7 @@
 <interface name="RC" version="1.0" date="2015-10-13">
 
  <function name="SetInteriorVehicleData" functionID="SetInteriorVehicleDataID" messagetype="request">
-    <param name="moduleData" type="Common.ModuleData">
+    <param name="moduleData" type="Common.ModuleData" mandatory="true" >
       <description>The module type and data to set</description>
     </param>
     <param name="appID" type="Integer" mandatory="true">
@@ -4623,12 +4623,12 @@
 
   <function name="SetInteriorVehicleData" functionID="SetInteriorVehicleDataID" messagetype="response">
     <description>Used to set the values of one zone and one data type within that zone</description>
-    <param name="moduleData" type="Common.ModuleData">
+    <param name="moduleData" type="Common.ModuleData" mandatory="true" >
     </param>
   </function>
 
 <function name="GetInteriorVehicleData" functionID="GetInteriorVehicleDataID" messagetype="request">
-  <param name="moduleType" type="Common.ModuleType">
+  <param name="moduleType" type="Common.ModuleType" mandatory="true" >
     <description>The module data to retrieve from the vehicle for that type</description>
   </param>
   <param name="subscribe" type="Boolean" mandatory="false" defvalue="false">
@@ -4640,7 +4640,7 @@
 </function>
 
 <function name="GetInteriorVehicleData" functionID="GetInteriorVehicleDataID" messagetype="response">
-  <param name="moduleData" type="Common.ModuleData">
+  <param name="moduleData" type="Common.ModuleData" mandatory="true" >
   </param>
   <param name="isSubscribed" type="Boolean" mandatory="false" >
     <description>Is a conditional-mandatory parameter: must be returned in case "subscribe" parameter was present in the related request.
@@ -4668,7 +4668,7 @@
 </function>
 
 <function name="OnInteriorVehicleData" functionID="OnInteriorVehicleDataID" messagetype="notification">
-  <param name="moduleData" type="Common.ModuleData">
+  <param name="moduleData" type="Common.ModuleData" mandatory="true" >
   </param>
 </function>
 
