@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Ford Motor Company
+ * Copyright (c) 2017, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@
  * \class MessageQueue
  * \brief Wrapper for multithreading queue.
  */
-
 namespace utils {
 
 template <typename T, class Q = std::queue<T> >
@@ -97,12 +96,6 @@ class MessageQueue {
   void wait();
 
   /**
-    * \brief waitUntilEmpty message queue
-    * Wait until message queue is empty
-    */
-  void WaitUntilEmpty();
-
-  /**
    * \brief Shutdown the queue.
    * This leads to waking up everyone waiting on the queue
    * Queue being shut down can be drained ( with pop() )
@@ -113,6 +106,12 @@ class MessageQueue {
 
   /**
     * \brief Clears queue.
+    */
+  void Clear();
+
+  /**
+    * \brief Resets queue. After this call queue is ready to
+    * be filled with messages again
     */
   void Reset();
 
@@ -141,14 +140,6 @@ template <typename T, class Q>
 void MessageQueue<T, Q>::wait() {
   sync_primitives::AutoLock auto_lock(queue_lock_);
   while ((!shutting_down_) && queue_.empty()) {
-    queue_new_items_.Wait(auto_lock);
-  }
-}
-
-template <typename T, class Q>
-void MessageQueue<T, Q>::WaitUntilEmpty() {
-  sync_primitives::AutoLock auto_lock(queue_lock_);
-  while ((!shutting_down_) && !queue_.empty()) {
     queue_new_items_.Wait(auto_lock);
   }
 }
@@ -190,7 +181,6 @@ bool MessageQueue<T, Q>::pop(T& element) {
   }
   element = queue_.front();
   queue_.pop();
-  queue_new_items_.NotifyOne();
   return true;
 }
 
@@ -198,6 +188,11 @@ template <typename T, class Q>
 void MessageQueue<T, Q>::Shutdown() {
   sync_primitives::AutoLock auto_lock(queue_lock_);
   shutting_down_ = true;
+}
+
+template <typename T, class Q>
+void MessageQueue<T, Q>::Clear() {
+  sync_primitives::AutoLock auto_lock(queue_lock_);
   if (!queue_.empty()) {
     Queue empty_queue;
     std::swap(queue_, empty_queue);
@@ -216,5 +211,4 @@ void MessageQueue<T, Q>::Reset() {
 }
 
 }  // namespace utils
-
 #endif  // SRC_COMPONENTS_INCLUDE_UTILS_MESSAGE_QUEUE_H_

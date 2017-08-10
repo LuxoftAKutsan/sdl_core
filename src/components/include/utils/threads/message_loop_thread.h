@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Ford Motor Company
+ * Copyright (c) 2017, Ford Motor Company
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,13 +35,11 @@
 
 #include <string>
 #include <queue>
-
 #include "utils/logger.h"
 #include "utils/macro.h"
 #include "utils/message_queue.h"
 #include "utils/threads/thread.h"
-#include "utils/shared_ptr.h"
-#include "utils/lock.h"
+#include "utils/conditional_variable.h"
 
 namespace threads {
 
@@ -63,12 +61,12 @@ class MessageLoopThread {
    * owned by MessageLoopThread so make sure is only accesses
    * thread-safe data
    */
-  struct Handler {
+  class Handler {
+   public:
     /*
      * Method called by MessageLoopThread to process single message
      * from it's queue. After calling this method message is discarded.
      */
-    // TODO (AKozoriz) : change to const reference (APPLINK-20235)
     virtual void Handle(const Message message) = 0;
 
     virtual ~Handler() {}
@@ -85,16 +83,21 @@ class MessageLoopThread {
   // Places a message to the therad's queue. Thread-safe.
   void PostMessage(const Message& message);
 
-  // Process already posted messages and stop thread processing. Thread-safe.
+  // Removes all existing messages from queue. Thread-safe.
+  void Clear();
+
+  // Prevents pushing new messages to queue. Thread-safe.
+  void Stop();
+
+  // Removes all existing messages from queue and stop thread processing.
+  // Thread-safe.
   void Shutdown();
+
+  // Wait while dump all messages
+  void WaitDumpQueue() const;
 
   // Added for utils/test/auto_trace_test.cc
   size_t GetMessageQueueSize() const;
-
-  /*
-   * Wait until message queue will be empty
-   */
-  void WaitDumpQueue();
 
  private:
   /*
@@ -110,6 +113,11 @@ class MessageLoopThread {
     virtual void threadMain() OVERRIDE;
     virtual void exitThreadMain() OVERRIDE;
 
+    // Cond var notified after each message handling
+    sync_primitives::ConditionalVariable handle_message_cond_var_;
+    // Lock to protect cond var above
+    sync_primitives::Lock handle_message_lock_;
+
    private:
     // Handle all messages that are in the queue until it is empty
     void DrainQue();
@@ -124,8 +132,6 @@ class MessageLoopThread {
   LoopThreadDelegate* thread_delegate_;
   threads::Thread* thread_;
 };
-
-///////// Implementation
 
 template <class Q>
 size_t MessageLoopThread<Q>::GetMessageQueueSize() const {
@@ -158,16 +164,28 @@ void MessageLoopThread<Q>::PostMessage(const Message& message) {
 }
 
 template <class Q>
+void MessageLoopThread<Q>::Clear() {
+  message_queue_.Clear();
+}
+
+template <class Q>
+void MessageLoopThread<Q>::Stop() {
+  message_queue_.Shutdown();
+}
+
+template <class Q>
 void MessageLoopThread<Q>::Shutdown() {
   thread_->join();
 }
 
 template <class Q>
-void MessageLoopThread<Q>::WaitDumpQueue() {
-  message_queue_.WaitUntilEmpty();
+void MessageLoopThread<Q>::WaitDumpQueue() const {
+  sync_primitives::AutoLock lock(thread_delegate_->handle_message_lock_);
+  while (!message_queue_.empty()) {
+    thread_delegate_->handle_message_cond_var_.Wait(lock);
+  }
 }
 
-//////////
 template <class Q>
 MessageLoopThread<Q>::LoopThreadDelegate::LoopThreadDelegate(
     MessageQueue<Message, Queue>* message_queue, Handler* handler)
@@ -190,15 +208,20 @@ void MessageLoopThread<Q>::LoopThreadDelegate::threadMain() {
 
 template <class Q>
 void MessageLoopThread<Q>::LoopThreadDelegate::exitThreadMain() {
+  sync_primitives::AutoLock lock(handle_message_lock_);
   message_queue_.Shutdown();
+  message_queue_.Clear();
+  handle_message_cond_var_.Broadcast();
 }
 
 template <class Q>
 void MessageLoopThread<Q>::LoopThreadDelegate::DrainQue() {
   while (!message_queue_.empty()) {
     Message msg;
+    sync_primitives::AutoLock lock(handle_message_lock_);
     if (message_queue_.pop(msg)) {
       handler_.Handle(msg);
+      handle_message_cond_var_.Broadcast();
     }
   }
 }

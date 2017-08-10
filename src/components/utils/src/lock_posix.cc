@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "utils/lock.h"
 #include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <cstring>
+#include "utils/lock.h"
 #include "utils/logger.h"
 
 namespace sync_primitives {
@@ -80,7 +80,6 @@ void Lock::Acquire() {
     LOG4CXX_FATAL(logger_,
                   "Failed to acquire mutex " << &mutex_ << ": "
                                              << strerror(status));
-    NOTREACHED();
   } else {
     AssertFreeAndMarkTaken();
   }
@@ -122,9 +121,10 @@ void Lock::AssertTakenAndMarkFree() {
   }
   lock_taken_--;
 }
-#endif
 
 void Lock::Init(bool is_recursive) {
+  int32_t status = -1;
+
   pthread_mutexattr_t attr;
   pthread_mutexattr_init(&attr);
 
@@ -132,15 +132,18 @@ void Lock::Init(bool is_recursive) {
       is_recursive ? PTHREAD_MUTEX_RECURSIVE : PTHREAD_MUTEX_ERRORCHECK;
 
   pthread_mutexattr_settype(&attr, mutex_type);
-  const int32_t status = pthread_mutex_init(&mutex_, &attr);
+  status = pthread_mutex_init(&mutex_, &attr);
 
   pthread_mutexattr_destroy(&attr);
 
   if (status != 0) {
     LOG4CXX_FATAL(logger_,
                   "Failed to initialize mutex. " << std::strerror(status));
+#ifndef NDEBUG
     DCHECK(status != 0);
+#endif  // NDEBUG
   }
 }
+#endif
 
 }  // namespace sync_primitives
