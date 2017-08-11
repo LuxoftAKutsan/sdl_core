@@ -1501,6 +1501,12 @@
        True: Available, False: Not Available, Not present: Not Available.
      </description>
    </param>
+   <param name="currentTemperatureAvailable" type="Boolean" mandatory="false">
+     <description>
+       Availability of the control of desired temperature.
+       True: Available, False: Not Available, Not present: Not Available.
+     </description>
+   </param>
    <param name="desiredTemperatureAvailable" type="Boolean" mandatory="false">
      <description>
        Availability of the control of desired temperature.

@@ -1526,9 +1526,9 @@
   <param name="name" type="String" maxlength="50" mandatory="true" >
     <description>The short name or a short description of the climate control module.</description>
   </param>
-  <param name="fanSpeedAvailable" type="Boolean" mandatory="false">
+  <param name="currentTemperatureAvailable" type="Boolean" mandatory="false">
     <description>
-      Availability of the control of fan speed.
+      Availability of the current temperature.
       True: Available, False: Not Available, Not present: Not Available.
     </description>
   </param>
