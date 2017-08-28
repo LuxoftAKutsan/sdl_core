@@ -18,6 +18,9 @@ class MockResourceAllocationManager
                void(const std::string& module_type, const uint32_t app_id));
   MOCK_METHOD2(OnDriverDisallowed,
                void(const std::string& module_type, const uint32_t app_id));
+  MOCK_METHOD2(OnSDLEvent,
+               void(functional_modules::SDLEvent event,
+                    const uint32_t application_id));
   MOCK_METHOD1(SetAccessMode,
                void(const hmi_apis::Common_RCAccessMode::eType access_mode));
   MOCK_CONST_METHOD0(GetAccessMode, hmi_apis::Common_RCAccessMode::eType());
@@ -25,7 +28,6 @@ class MockResourceAllocationManager
                void(const std::string& module_type,
                     const uint32_t app_id,
                     const remote_control::ResourceState::eType state));
-  MOCK_METHOD1(OnUnregisterApplication, void(const uint32_t app_id));
   MOCK_CONST_METHOD1(IsResourceFree, bool(const std::string& module_type));
   MOCK_METHOD0(ResetAllAllocations, void());
 };
