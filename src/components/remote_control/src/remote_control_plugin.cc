@@ -322,6 +322,33 @@ void RemoteControlPlugin::OnSDLEvent(functional_modules::SDLEvent event,
                                      const uint32_t application_id) {
   LOG4CXX_AUTO_TRACE(logger_);
   resource_allocation_manager_.OnSDLEvent(event, application_id);
+  switch (event) {
+    case functional_modules::SDLEvent::kApplicationExit:
+    case functional_modules::SDLEvent::kApplicationUnregistered: {
+      application_manager::ApplicationSharedPtr app =
+          service()->GetApplication(application_id);
+      if (!app) {
+        LOG4CXX_DEBUG(logger_,
+                      "Applicaiton " << application_id << "does not exist");
+        return;
+      }
+      const RCAppExtensionPtr extension =
+          application_manager::AppExtensionPtr::static_pointer_cast<
+              RCAppExtension>(app->QueryInterface(GetModuleID()));
+      if (extension) {
+        const Json::Value climate(enums_value::kClimate);
+        extension->UnsubscribeFromInteriorVehicleData(climate);
+        const Json::Value radio(enums_value::kRadio);
+        extension->UnsubscribeFromInteriorVehicleData(radio);
+      }
+      break;
+    }
+    case functional_modules::SDLEvent::kApplicationPolicyUpdated:
+      break;
+    case functional_modules::SDLEvent::kApplicationsDisabled:
+      break;
+      ;
+  }
 }
 
 }  //  namespace remote_control
