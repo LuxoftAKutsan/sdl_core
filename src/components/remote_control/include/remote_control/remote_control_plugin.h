@@ -91,18 +91,21 @@ class RemoteControlPlugin : public RemotePluginInterface {
   void OnAppHMILevelChanged(application_manager::ApplicationSharedPtr app,
                             mobile_apis::HMILevel::eType old_level);
 
-  /**
-   * @brief OnUnregisterApplication handles application unregistering event
-   * @param app_id application id which was unregistered
-   */
-  void OnUnregisterApplication(const uint32_t app_id) OVERRIDE;
-
   void SendHmiStatusNotification(
       application_manager::ApplicationSharedPtr app) OVERRIDE;
 
   RCEventDispatcher& event_dispatcher() OVERRIDE;
 
   ResourceAllocationManager& resource_allocation_manager() OVERRIDE;
+
+  /**
+   * @brief OnSDLEvent Processed defined events coming from SDL
+   * @param event Event
+   * @param application_id Application id or zero if event is common for all
+   * applications
+   */
+  void OnSDLEvent(functional_modules::SDLEvent event,
+                  const uint32_t application_id = 0) OVERRIDE;
 
  protected:
   /**

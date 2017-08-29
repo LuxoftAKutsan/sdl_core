@@ -310,17 +310,18 @@ void RemoteControlPlugin::OnAppHMILevelChanged(
   service()->NotifyHMIAboutHMILevel(app, app->hmi_level());
 }
 
-void RemoteControlPlugin::OnUnregisterApplication(const uint32_t app_id) {
-  LOG4CXX_AUTO_TRACE(logger_);
-  resource_allocation_manager_.OnUnregisterApplication(app_id);
-}
-
 RCEventDispatcher& RemoteControlPlugin::event_dispatcher() {
   return event_dispatcher_;
 }
 
 ResourceAllocationManager& RemoteControlPlugin::resource_allocation_manager() {
   return resource_allocation_manager_;
+}
+
+void RemoteControlPlugin::OnSDLEvent(functional_modules::SDLEvent event,
+                                     const uint32_t application_id) {
+  LOG4CXX_AUTO_TRACE(logger_);
+  resource_allocation_manager_.OnSDLEvent(event, application_id);
 }
 
 }  //  namespace remote_control
