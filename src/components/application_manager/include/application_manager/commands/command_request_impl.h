@@ -368,7 +368,7 @@ class CommandRequestImpl : public CommandImpl,
   void AddTimeOutComponentInfoToMessage(
       smart_objects::SmartObject& response) const;
 
-/**
+  /**
    * @brief UpdateHash updates hash field for application and sends
    * OnHashChanged notification to mobile side in case of approriate hash mode
    * is set
