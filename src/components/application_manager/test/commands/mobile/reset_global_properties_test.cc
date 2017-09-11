@@ -280,7 +280,6 @@ TEST_F(ResetGlobalPropertiesRequestTest,
 
   EXPECT_CALL(*mock_app_, reset_vr_help_title());
   EXPECT_CALL(*mock_app_, reset_vr_help());
-
   EXPECT_CALL(*mock_app_, set_reset_global_properties_active(true));
 
   smart_objects::SmartObjectSPtr vr_help =
@@ -389,17 +388,20 @@ TEST_F(ResetGlobalPropertiesRequestTest,
                   hmi_apis::FunctionID::TTS_SetGlobalProperties)))
       .WillOnce(Return(true));
 
-  command_->Run();
+  ResetGlobalPropertiesRequestPtr command =
+      CreateCommand<ResetGlobalPropertiesRequest>(msg_);
+  command->Run();
 
   // Received response only from UI
   MessageSharedPtr ui_msg = CreateMessage();
   (*ui_msg)[am::strings::params][am::strings::correlation_id] = kCorrelationId;
   (*ui_msg)[am::strings::params][am::hmi_response::code] =
       hmi_apis::Common_Result::eType::SUCCESS;
-
+  (*ui_msg)[am::strings::msg_params] =
+      SmartObject(smart_objects::SmartType_Map);
   Event ui_event(hmi_apis::FunctionID::UI_SetGlobalProperties);
   ui_event.set_smart_object(*ui_msg);
-  command_->on_event(ui_event);
+  command->on_event(ui_event);
 
   // TTS doesn't respond, so timeout should send generic error
   smart_objects::SmartObjectSPtr response =
@@ -414,7 +416,7 @@ TEST_F(ResetGlobalPropertiesRequestTest,
       ManageMobileCommand(
           MobileResponseIs(mobile_apis::Result::GENERIC_ERROR, info, false),
           am::commands::Command::ORIGIN_SDL));
-  command_->onTimeOut();
+  command->onTimeOut();
 }
 
 TEST_F(ResetGlobalPropertiesRequestTest,
