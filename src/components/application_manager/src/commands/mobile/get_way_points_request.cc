@@ -57,8 +57,10 @@ void GetWayPointsRequest::on_event(const event_engine::Event& event) {
       GetInfo(message, response_info);
       const bool result = PrepareResultForMobileResponse(
           result_code, HmiInterfaces::HMI_INTERFACE_Navigation);
+      const mobile_apis::Result::eType mobile_result_code =
+          MessageHelper::HMIToMobileResult(result_code);
       SendResponse(result,
-                   MessageHelper::HMIToMobileResult(result_code),
+                   mobile_result_code,
                    response_info.empty() ? NULL : response_info.c_str(),
                    &(message[strings::msg_params]));
       break;
