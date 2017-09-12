@@ -1053,7 +1053,7 @@ TEST_F(SetGlobalPropertiesRequestTest, OnEvent_UIAndSuccessResultCode_SUCCESS) {
   hmi_apis::Common_Result::eType response_code =
       hmi_apis::Common_Result::SUCCESS;
   (*msg)[am::strings::params][am::hmi_response::code] = response_code;
-  
+
   ON_CALL(
       mock_hmi_interfaces_,
       GetInterfaceFromFunction(hmi_apis::FunctionID::UI_SetGlobalProperties))
@@ -1073,7 +1073,6 @@ TEST_F(SetGlobalPropertiesRequestTest, OnEvent_UIAndSuccessResultCode_SUCCESS) {
       .WillOnce(Return(mobile_apis::Result::SUCCESS));
   EXPECT_CALL(app_mngr_, application(kConnectionKey))
       .WillOnce(Return(mock_app_));
-  EXPECT_CALL(*mock_app_, UpdateHash());
 
   EXPECT_CALL(mock_hmi_interfaces_, GetInterfaceState(_))
       .WillRepeatedly(Return(am::HmiInterfaces::STATE_NOT_AVAILABLE));
@@ -1102,18 +1101,15 @@ TEST_F(SetGlobalPropertiesRequestTest, OnEvent_UIAndWarningResultCode_SUCCESS) {
       .WillByDefault(Return(am::HmiInterfaces::STATE_NOT_AVAILABLE));
   OnEventUISetupHelper(msg, command);
 
-  EXPECT_CALL(mock_message_helper_, HMIToMobileResult(_)).Times(0);
   EXPECT_CALL(app_mngr_, application(kConnectionKey))
       .WillOnce(Return(mock_app_));
-  EXPECT_CALL(*mock_app_, UpdateHash());
 
   Event event(hmi_apis::FunctionID::UI_SetGlobalProperties);
   event.set_smart_object(*msg);
 
   EXPECT_CALL(mock_hmi_interfaces_, GetInterfaceState(_))
       .WillRepeatedly(Return(am::HmiInterfaces::STATE_NOT_AVAILABLE));
-  EXPECT_CALL(mock_message_helper_, HMIToMobileResult(_))
-      .WillOnce(Return(mobile_apis::Result::SUCCESS));
+
   EXPECT_CALL(app_mngr_,
               ManageMobileCommand(_, am::commands::Command::ORIGIN_SDL))
       .WillOnce(Return(true));
@@ -1140,8 +1136,6 @@ TEST_F(SetGlobalPropertiesRequestTest, OnEvent_InvalidApp_Canceled) {
   EXPECT_CALL(mock_hmi_interfaces_, GetInterfaceState(_))
       .WillRepeatedly(Return(am::HmiInterfaces::STATE_NOT_AVAILABLE));
 
-  EXPECT_CALL(mock_message_helper_, HMIToMobileResult(_))
-      .WillOnce(Return(mobile_apis::Result::SUCCESS));
   EXPECT_CALL(app_mngr_, application(kConnectionKey))
       .WillOnce(Return(MockAppPtr()));
   EXPECT_CALL(*mock_app_, UpdateHash()).Times(0);
@@ -1196,7 +1190,6 @@ TEST_F(SetGlobalPropertiesRequestTest,
       .WillOnce(Return(mobile_apis::Result::SUCCESS));
   EXPECT_CALL(app_mngr_, application(kConnectionKey))
       .WillOnce(Return(mock_app_));
-  EXPECT_CALL(*mock_app_, UpdateHash());
 
   Event event(hmi_apis::FunctionID::TTS_SetGlobalProperties);
   event.set_smart_object(*msg);
@@ -1207,7 +1200,7 @@ TEST_F(SetGlobalPropertiesRequestTest,
 TEST_F(SetGlobalPropertiesRequestTest,
        OnEvent_TTSAndWarningsResultCode_SUCCESS) {
   MessageSharedPtr msg = CreateMsgParams();
-  hmi_apis::Common_Result::eType response_code =
+  const hmi_apis::Common_Result::eType response_code =
       hmi_apis::Common_Result::WARNINGS;
   (*msg)[am::strings::params][am::hmi_response::code] = response_code;
   ON_CALL(
@@ -1222,23 +1215,30 @@ TEST_F(SetGlobalPropertiesRequestTest,
 
   OnEventTTSSetupHelper(msg, command);
 
-  EXPECT_CALL(hmi_interfaces_, GetInterfaceState(_))
+  EXPECT_CALL(mock_hmi_interfaces_, GetInterfaceState(_))
       .WillRepeatedly(Return(am::HmiInterfaces::STATE_NOT_AVAILABLE));
 
-  EXPECT_CALL(app_mngr_,
-              ManageMobileCommand(_, am::commands::Command::ORIGIN_SDL))
-      .WillOnce(Return(true));
+  MessageSharedPtr ui_command_result;
+  EXPECT_CALL(
+      app_mngr_,
+      ManageMobileCommand(_, am::commands::Command::CommandOrigin::ORIGIN_SDL))
+      .WillOnce(DoAll(SaveArg<0>(&ui_command_result), Return(true)));
 
-  EXPECT_CALL(mock_message_helper_, HMIToMobileResult(_))
-      .WillOnce(Return(mobile_apis::Result::SUCCESS));
   EXPECT_CALL(app_mngr_, application(kConnectionKey))
       .WillOnce(Return(mock_app_));
-  EXPECT_CALL(*mock_app_, UpdateHash());
 
   Event event(hmi_apis::FunctionID::TTS_SetGlobalProperties);
   event.set_smart_object(*msg);
 
   command->on_event(event);
+
+  EXPECT_EQ((*ui_command_result)[am::strings::msg_params][am::strings::success]
+                .asBool(),
+            true);
+  EXPECT_EQ(
+      (*ui_command_result)[am::strings::msg_params][am::strings::result_code]
+          .asInt(),
+      static_cast<int32_t>(hmi_apis::Common_Result::WARNINGS));
 }
 
 }  // namespace set_global_properties_request
