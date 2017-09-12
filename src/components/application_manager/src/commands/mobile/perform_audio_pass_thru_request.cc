@@ -196,7 +196,8 @@ PerformAudioPassThruRequest::PrepareResponseParameters() {
                                 HmiInterfaces::HMI_INTERFACE_TTS,
                                 application_manager_);
 
-  // Note(dtrunov): According to requirment "WARNINGS, success:true on getting UNSUPPORTED_RESOURCE for "ttsChunks"
+  // Note(dtrunov): According to requirment "WARNINGS, success:true on getting
+  // UNSUPPORTED_RESOURCE for "ttsChunks"
   if (ui_perform_info.is_ok && tts_perform_info.is_unsupported_resource &&
       HmiInterfaces::STATE_AVAILABLE == tts_perform_info.interface_state) {
     response_params_.result_code = mobile_apis::Result::WARNINGS;
