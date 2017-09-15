@@ -328,11 +328,8 @@ TEST_F(SetMediaClockRequestTest, Run_InvalidApp_Canceled) {
 TEST_F(SetMediaClockRequestTest, OnEvent_Success) {
   MessageSharedPtr msg = CreateMessage();
   (*msg)[am::strings::params][am::hmi_response::code] =
-      hmi_apis::Common_Result::SUCCESS;
-  (*msg)[am::strings::msg_params] = SmartObject(smart_objects::SmartType_Null);
-
-  SharedPtr<SetMediaClockRequest> command(
-      CreateCommand<SetMediaClockRequest>(msg));
+      mobile_apis::Result::SUCCESS;
+  (*msg)[am::strings::msg_params] = SmartObject(smart_objects::SmartType_Map);
 
   EXPECT_CALL(mock_message_helper_,
               HMIToMobileResult(hmi_apis::Common_Result::SUCCESS))
@@ -345,6 +342,8 @@ TEST_F(SetMediaClockRequestTest, OnEvent_Success) {
   Event event(hmi_apis::FunctionID::UI_SetMediaClockTimer);
   event.set_smart_object(*msg);
 
+  SharedPtr<SetMediaClockRequest> command(
+      CreateCommand<SetMediaClockRequest>(msg));
   command->on_event(event);
 }
 
