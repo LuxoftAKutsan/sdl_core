@@ -108,20 +108,30 @@ const std::string CreateInfoForUnsupportedResult(
 }
 
 bool CheckResultCode(const ResponseInfo& first, const ResponseInfo& second) {
-  if (first.is_ok && second.is_unsupported_resource &&
-      HmiInterfaces::STATE_NOT_AVAILABLE != second.interface_state) {
-    return true;
+  if (!first.is_ok && second.is_not_used) {
+    return false;
   }
-  return false;
+
+  if (!second.is_ok && first.is_not_used) {
+    return false;
+  }
+
+  if (first.is_unsupported_resource && second.is_not_used &&
+      HmiInterfaces::STATE_NOT_AVAILABLE == first.interface_state) {
+    return false;
+  }
+
+  return true;
 }
+
 
 bool IsResultCodeWarning(const ResponseInfo& first,
                          const ResponseInfo& second) {
   const bool first_is_ok_second_is_warn =
-      (first.is_ok || first.is_invalid_enum) &&
+      (first.is_ok || first.is_not_used) &&
       hmi_apis::Common_Result::WARNINGS == second.result_code;
   const bool second_is_ok_first_is_warn =
-      (second.is_ok || second.is_invalid_enum) &&
+      (second.is_ok || second.is_not_used) &&
       hmi_apis::Common_Result::WARNINGS == first.result_code;
   const bool both_warnings =
       hmi_apis::Common_Result::WARNINGS == first.result_code &&
@@ -161,7 +171,7 @@ ResponseInfo::ResponseInfo()
     , interface_state(HmiInterfaces::STATE_NOT_RESPONSE)
     , is_ok(false)
     , is_unsupported_resource(false)
-    , is_invalid_enum(false) {}
+    , is_not_used(false) {}
 
 ResponseInfo::ResponseInfo(const hmi_apis::Common_Result::eType result,
                            const HmiInterfaces::InterfaceID hmi_interface,
@@ -171,7 +181,7 @@ ResponseInfo::ResponseInfo(const hmi_apis::Common_Result::eType result,
     , interface_state(HmiInterfaces::STATE_NOT_RESPONSE)
     , is_ok(false)
     , is_unsupported_resource(false)
-    , is_invalid_enum(false) {
+    , is_not_used(false) {
   using namespace helpers;
 
   interface_state =
@@ -185,7 +195,7 @@ ResponseInfo::ResponseInfo(const hmi_apis::Common_Result::eType result,
       hmi_apis::Common_Result::RETRY,
       hmi_apis::Common_Result::SAVED);
 
-  is_invalid_enum = hmi_apis::Common_Result::INVALID_ENUM == result_code;
+  is_not_used = hmi_apis::Common_Result::INVALID_ENUM == result_code;
 
   is_unsupported_resource =
       hmi_apis::Common_Result::UNSUPPORTED_RESOURCE == result_code;
@@ -821,8 +831,8 @@ bool CommandRequestImpl::PrepareResultForMobileResponse(
 bool CommandRequestImpl::PrepareResultForMobileResponse(
     ResponseInfo& out_first, ResponseInfo& out_second) const {
   bool result = (out_first.is_ok && out_second.is_ok) ||
-                (out_second.is_invalid_enum && out_first.is_ok) ||
-                (out_first.is_invalid_enum && out_second.is_ok);
+                (out_second.is_not_used && out_first.is_ok) ||
+                (out_first.is_not_used && out_second.is_ok);
   result = result || CheckResultCode(out_first, out_second);
   result = result || CheckResultCode(out_second, out_first);
   return result;
@@ -902,9 +912,9 @@ void CommandRequestImpl::EndAwaitForInterface(
 bool CommandRequestImpl::IsResultCodeUnsupported(
     const ResponseInfo& first, const ResponseInfo& second) const {
   const bool first_ok_second_unsupported =
-      (first.is_ok || first.is_invalid_enum) && second.is_unsupported_resource;
+      (first.is_ok || first.is_not_used) && second.is_unsupported_resource;
   const bool scond_ok_first_unsupported =
-      (second.is_ok || second.is_invalid_enum) && first.is_unsupported_resource;
+      (second.is_ok || second.is_not_used) && first.is_unsupported_resource;
   const bool both_unsupported =
       first.is_unsupported_resource && second.is_unsupported_resource;
   return first_ok_second_unsupported || scond_ok_first_unsupported ||

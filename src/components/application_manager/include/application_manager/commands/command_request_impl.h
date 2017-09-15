@@ -52,7 +52,7 @@ struct ResponseInfo {
   HmiInterfaces::InterfaceState interface_state;
   bool is_ok;
   bool is_unsupported_resource;
-  bool is_invalid_enum;
+  bool is_not_used;
 };
 
 namespace NsSmart = NsSmartDeviceLink::NsSmartObjects;
