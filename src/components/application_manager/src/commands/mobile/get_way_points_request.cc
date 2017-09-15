@@ -31,6 +31,7 @@ void GetWayPointsRequest::Run() {
 
   msg_params = (*message_)[strings::msg_params];
   msg_params[strings::app_id] = app->app_id();
+  StartAwaitForInterface(HmiInterfaces::HMI_INTERFACE_Navigation);
   SendHMIRequest(hmi_apis::FunctionID::Navigation_GetWayPoints,
                  msg_params.empty() ? NULL : &msg_params,
                  true);
@@ -48,6 +49,7 @@ void GetWayPointsRequest::on_event(const event_engine::Event& event) {
     }
     case hmi_apis::FunctionID::Navigation_GetWayPoints: {
       LOG4CXX_INFO(logger_, "Received Navigation_GetWayPoints event");
+      EndAwaitForInterface(HmiInterfaces::HMI_INTERFACE_Navigation);
       const hmi_apis::Common_Result::eType result_code =
           static_cast<hmi_apis::Common_Result::eType>(
               message[strings::params][hmi_response::code].asInt());
@@ -55,8 +57,10 @@ void GetWayPointsRequest::on_event(const event_engine::Event& event) {
       GetInfo(message, response_info);
       const bool result = PrepareResultForMobileResponse(
           result_code, HmiInterfaces::HMI_INTERFACE_Navigation);
+      const mobile_apis::Result::eType mobile_result_code =
+          MessageHelper::HMIToMobileResult(result_code);
       SendResponse(result,
-                   MessageHelper::HMIToMobileResult(result_code),
+                   mobile_result_code,
                    response_info.empty() ? NULL : response_info.c_str(),
                    &(message[strings::msg_params]));
       break;
