@@ -390,7 +390,7 @@ TEST_F(ChangeRegistrationRequestTest,
   CheckExpectations(hmi_apis::Common_Result::UNSUPPORTED_RESOURCE,
                     mobile_apis::Result::UNSUPPORTED_RESOURCE,
                     am::HmiInterfaces::STATE_NOT_RESPONSE,
-                    true);
+                    false);
 }
 
 TEST_F(ChangeRegistrationRequestTest,
@@ -398,7 +398,7 @@ TEST_F(ChangeRegistrationRequestTest,
   CheckExpectations(hmi_apis::Common_Result::UNSUPPORTED_RESOURCE,
                     mobile_apis::Result::UNSUPPORTED_RESOURCE,
                     am::HmiInterfaces::STATE_AVAILABLE,
-                    true);
+                    false);
 }
 
 TEST_F(ChangeRegistrationRequestTest,
