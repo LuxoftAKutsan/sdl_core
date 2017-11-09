@@ -379,7 +379,7 @@ TEST_F(ChangeRegistrationRequestTest,
 
 TEST_F(ChangeRegistrationRequestTest,
        OnEvent_TTS_UNSUPPORTED_RESOURCE_STATE_NOT_AVAILABLE_Expect_false) {
-  CheckExpectations(hmi_apis::Common_Result::SUCCESS,
+  CheckExpectations(hmi_apis::Common_Result::INVALID_ENUM,
                     mobile_apis::Result::UNSUPPORTED_RESOURCE,
                     am::HmiInterfaces::STATE_NOT_AVAILABLE,
                     false);

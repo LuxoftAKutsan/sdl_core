@@ -92,8 +92,8 @@ class AlertManeuverRequestTest
     ON_CALL(app_mngr_, application(_)).WillByDefault(Return(mock_app));
 
     if (hmi_apis::Common_Result::UNSUPPORTED_RESOURCE != hmi_response) {
-      EXPECT_CALL(mock_message_helper_, HMIToMobileResult(hmi_response))
-          .WillOnce(Return(mobile_response));
+      ON_CALL(mock_message_helper_, HMIToMobileResult(hmi_response))
+          .WillByDefault(Return(mobile_response));
     }
 
     EXPECT_CALL(mock_hmi_interfaces_, GetInterfaceState(_))
