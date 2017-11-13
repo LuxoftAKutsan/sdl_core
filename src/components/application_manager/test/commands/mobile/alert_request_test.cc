@@ -198,38 +198,6 @@ class AlertRequestTest : public CommandRequestTest<CommandsTestMocks::kIsNice> {
   MockPolicyHandlerInterface mock_policy_handler_;
 };
 
-TEST_F(AlertRequestTest, OnTimeout_GENERIC_ERROR) {
-  PreConditions();
-  MessageSharedPtr command_msg = CreateMessage(smart_objects::SmartType_Map);
-  (*command_msg)[am::strings::msg_params][am::strings::result_code] =
-      am::mobile_api::Result::GENERIC_ERROR;
-  (*command_msg)[am::strings::msg_params][am::strings::success] = false;
-  (*command_msg)[am::strings::params][am::strings::connection_key] =
-      kConnectionKey;
-
-  utils::SharedPtr<AlertRequest> command = CreateCommand<AlertRequest>();
-
-  EXPECT_CALL(
-      mock_message_helper_,
-      CreateNegativeResponse(_, _, _, am::mobile_api::Result::GENERIC_ERROR))
-      .WillOnce(Return(command_msg));
-
-  MessageSharedPtr ui_command_result;
-  EXPECT_CALL(
-      app_mngr_,
-      ManageMobileCommand(_, am::commands::Command::CommandOrigin::ORIGIN_SDL))
-      .WillOnce(DoAll(SaveArg<0>(&ui_command_result), Return(true)));
-
-  command->onTimeOut();
-  EXPECT_EQ((*ui_command_result)[am::strings::msg_params][am::strings::success]
-                .asBool(),
-            false);
-  EXPECT_EQ(
-      (*ui_command_result)[am::strings::msg_params][am::strings::result_code]
-          .asInt(),
-      static_cast<int32_t>(am::mobile_api::Result::GENERIC_ERROR));
-}
-
 TEST_F(AlertRequestTest, OnEvent_UI_HmiSendSuccess_UNSUPPORTED_RESOURCE) {
   PreConditions();
   MessageSharedPtr command_msg = CreateFullParamsUISO();
@@ -300,14 +268,6 @@ TEST_F(AlertRequestTest, Init_DurationNotExists_SUCCESS) {
   Expectations();
   CommandPtr command(CreateCommand<AlertRequest>(msg_));
   EXPECT_TRUE(command->Init());
-}
-
-TEST_F(AlertRequestTest, OnTimeOut_UNSUCCESS) {
-  Expectations();
-  (*msg_)[am::strings::msg_params][am::strings::soft_buttons] = 0;
-  CommandPtr command(CreateCommand<AlertRequest>(msg_));
-  command->onTimeOut();
-  EXPECT_CALL(app_mngr_, ManageMobileCommand(_, _)).Times(0);
 }
 
 TEST_F(AlertRequestTest, OnTimeOut_SUCCESS) {

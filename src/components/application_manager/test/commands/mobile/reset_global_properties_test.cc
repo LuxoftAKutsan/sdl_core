@@ -346,16 +346,6 @@ TEST_F(ResetGlobalPropertiesRequestTest,
   command_->on_event(event);
 }
 
-TEST_F(ResetGlobalPropertiesRequestTest, OnEvent_PendingRequest_UNSUCCESS) {
-  Event event(hmi_apis::FunctionID::UI_SetGlobalProperties);
-  event.set_smart_object(*msg_);
-
-  EXPECT_CALL(app_mngr_, ManageMobileCommand(_, _)).Times(0);
-  EXPECT_CALL(*mock_app_, UpdateHash()).Times(0);
-
-  command_->on_event(event);
-}
-
 TEST_F(ResetGlobalPropertiesResponseTest, Run_Sendmsg_SUCCESS) {
   MessageSharedPtr message(CreateMessage());
   ResetGlobalPropertiesResponsePtr command(
