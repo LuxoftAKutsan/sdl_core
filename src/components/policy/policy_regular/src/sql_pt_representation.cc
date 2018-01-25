@@ -615,7 +615,7 @@ bool SQLPTRepresentation::GatherFunctionalGroupings(
     rpcs.Bind(0, func_id);
     while (rpcs.Next()) {
       if (!rpcs.IsNull(1)) {
-        policy_table::HmiLevel level;
+        policy_table::HMILevel level;
         if (policy_table::EnumFromJsonString(rpcs.GetString(1), &level)) {
           InsertUnique(level, &rpcs_tbl.rpcs[rpcs.GetString(0)].hmi_levels);
         }

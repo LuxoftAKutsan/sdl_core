@@ -63,7 +63,7 @@ bool EnumFromJsonString(const std::string& literal, Priority* result) {
   }
 }
 
-// bool IsValidEnum(HmiLevel val) {
+// bool IsValidEnum(HMILevel val) {
 //  switch (val) {
 //    case HL_BACKGROUND:
 //      return true;
@@ -77,7 +77,7 @@ bool EnumFromJsonString(const std::string& literal, Priority* result) {
 //      return false;
 //  }
 //}
-// const char* EnumToJsonString(HmiLevel val) {
+// const char* EnumToJsonString(HMILevel val) {
 //  switch (val) {
 //    case HL_BACKGROUND:
 //      return "BACKGROUND";
@@ -91,7 +91,7 @@ bool EnumFromJsonString(const std::string& literal, Priority* result) {
 //      return "";
 //  }
 //}
-// bool EnumFromJsonString(const std::string& literal, HmiLevel* result) {
+// bool EnumFromJsonString(const std::string& literal, HMILevel* result) {
 //  if ("BACKGROUND" == literal) {
 //    *result = HL_BACKGROUND;
 //    return true;

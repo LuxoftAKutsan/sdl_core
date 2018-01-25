@@ -826,7 +826,7 @@ bool SQLPTExtRepresentation::GatherApplicationPoliciesSection(
       policy_table::Priority priority;
       policy_table::EnumFromJsonString(query.GetString(1), &priority);
       device_policy.priority = priority;
-      policy_table::HmiLevel hmi;
+      policy_table::HMILevel hmi;
       policy_table::EnumFromJsonString(query.GetString(2), &hmi);
       device_policy.default_hmi = hmi;
       device_policy.keep_context = query.GetBoolean(3);
@@ -841,7 +841,7 @@ bool SQLPTExtRepresentation::GatherApplicationPoliciesSection(
     policy_table::Priority priority;
     policy_table::EnumFromJsonString(query.GetString(1), &priority);
     params.priority = priority;
-    policy_table::HmiLevel hmi;
+    policy_table::HMILevel hmi;
     policy_table::EnumFromJsonString(query.GetString(2), &hmi);
     params.default_hmi = hmi;
     params.keep_context = query.GetBoolean(3);

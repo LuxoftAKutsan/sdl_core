@@ -51,15 +51,15 @@ bool IsValidEnum(Priority val);
 const char* EnumToJsonString(Priority val);
 bool EnumFromJsonString(const std::string& literal, Priority* result);
 
-enum HmiLevel {
+enum HMILevel {
   HL_BACKGROUND,
   HL_FULL,
   HL_LIMITED,
   HL_NONE,
 };
-bool IsValidEnum(HmiLevel val);
-const char* EnumToJsonString(HmiLevel val);
-bool EnumFromJsonString(const std::string& literal, HmiLevel* result);
+bool IsValidEnum(HMILevel val);
+const char* EnumToJsonString(HMILevel val);
+bool EnumFromJsonString(const std::string& literal, HMILevel* result);
 
 enum Parameter {
   P_GPS,

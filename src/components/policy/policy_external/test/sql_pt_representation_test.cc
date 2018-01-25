@@ -1259,14 +1259,14 @@ TEST_F(
   EXPECT_TRUE(hmi_levels1.end() !=
               std::find(hmi_levels1.begin(),
                         hmi_levels1.end(),
-                        policy_table::HmiLevel::HL_BACKGROUND));
+                        policy_table::HMILevel::HL_BACKGROUND));
   EXPECT_TRUE(hmi_levels1.end() !=
               std::find(hmi_levels1.begin(),
                         hmi_levels1.end(),
-                        policy_table::HmiLevel::HL_LIMITED));
+                        policy_table::HMILevel::HL_LIMITED));
   EXPECT_TRUE(hmi_levels1.end() != std::find(hmi_levels1.begin(),
                                              hmi_levels1.end(),
-                                             policy_table::HmiLevel::HL_FULL));
+                                             policy_table::HMILevel::HL_FULL));
 
   func_groups_it = func_groups.find("OnKeyboardInputOnlyGroup");
   EXPECT_TRUE(func_groups.end() != func_groups_it);
@@ -1280,7 +1280,7 @@ TEST_F(
   EXPECT_EQ(1u, hmi_levels2.size());
   EXPECT_TRUE(hmi_levels2.end() != std::find(hmi_levels2.begin(),
                                              hmi_levels2.end(),
-                                             policy_table::HmiLevel::HL_FULL));
+                                             policy_table::HMILevel::HL_FULL));
 }
 
 TEST_F(
@@ -1640,7 +1640,7 @@ TEST_F(SQLPTRepresentationTest,
   EXPECT_EQ(0u, (policies.device.preconsented_groups)->size());
   EXPECT_EQ(0u, policies.device.groups.size());
   EXPECT_EQ(policy_table::Priority::P_EMERGENCY, policies.device.priority);
-  EXPECT_EQ(policy_table::HmiLevel::HL_BACKGROUND, policies.device.default_hmi);
+  EXPECT_EQ(policy_table::HMILevel::HL_BACKGROUND, policies.device.default_hmi);
   EXPECT_FALSE(policies.device.keep_context);
   EXPECT_FALSE(policies.device.steal_focus);
 
@@ -1691,7 +1691,7 @@ TEST_F(SQLPTRepresentationTest,
   EXPECT_EQ(1u, hmi_levels.size());
   EXPECT_TRUE(hmi_levels.end() != std::find(hmi_levels.begin(),
                                             hmi_levels.end(),
-                                            policy_table::HmiLevel::HL_FULL));
+                                            policy_table::HMILevel::HL_FULL));
 
   const ::policy_table::Parameters& parameters = *(rpc_iter->second.parameters);
   EXPECT_EQ(1u, parameters.size());
@@ -1735,7 +1735,7 @@ TEST_F(SQLPTRepresentationTest,
                           groups);
   EXPECT_EQ(0u, (policies.device.preconsented_groups)->size());
   EXPECT_EQ(0u, policies.device.groups.size());
-  EXPECT_EQ(policy_table::HmiLevel::HL_BACKGROUND, policies.device.default_hmi);
+  EXPECT_EQ(policy_table::HMILevel::HL_BACKGROUND, policies.device.default_hmi);
   EXPECT_FALSE(policies.device.keep_context);
   EXPECT_FALSE(policies.device.steal_focus);
 

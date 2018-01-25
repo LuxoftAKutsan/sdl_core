@@ -62,18 +62,19 @@ class CodeGenerator(object):
         required_enums_for_policy = [
             "HMILevel",
             "FunctionID",
-            # "VehicleDataType",
+            #"VehicleDataType",
             "AppHMIType",
             "RequestType",
             "ModuleType",
             # "Common_AppPriority"
         ]
         self.enum_naming_conversion_ = {
-            "HMILevel" :  lambda enum_name : "HL_" + enum_name,
+            "HMILevel" :  lambda enum_name : "HL_" + enum_name.replace("HMI_", ""),
             "AppHMIType" : lambda enum_name : enum_name,
             "FunctionID" : lambda enum_name : enum_name,
             "RequestType" : lambda enum_name : "RT_" + enum_name,
-            "ModuleType" : lambda enum_name : "MT_" + enum_name
+            "ModuleType" : lambda enum_name : "MT_" + enum_name,
+            #"VehicleDataType" :  lambda enum_name : "P_" + enum_name.replace("VEHICLEDATA_", "")
         }
         
         get_first_enum_value_name = lambda enum : enum.elements.values()[0].name

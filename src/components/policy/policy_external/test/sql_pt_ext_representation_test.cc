@@ -1541,8 +1541,8 @@ TEST_F(SQLPTExtRepresentationTest, SaveFunctionalGroupings_ExpectedSaved) {
   ExternalConsentEntity on_entity_1(1, 0);
   ExternalConsentEntity on_entity_2(1, 1);
 
-  const HmiLevel test_level_1 = HL_FULL;
-  const HmiLevel test_level_2 = HL_LIMITED;
+  const HMILevel test_level_1 = HL_FULL;
+  const HMILevel test_level_2 = HL_LIMITED;
   const policy_table::Parameter test_parameter_1 = P_GPS;
   const policy_table::Parameter test_parameter_2 = P_SPEED;
 
@@ -1579,7 +1579,7 @@ TEST_F(SQLPTExtRepresentationTest, SaveFunctionalGroupings_ExpectedSaved) {
       on_entity_3);
   *another_rpcs.user_consent_prompt = another_user_consent_prompt;
 
-  const HmiLevel test_level_3 = HL_BACKGROUND;
+  const HMILevel test_level_3 = HL_BACKGROUND;
   const policy_table::Parameter test_parameter_3 = P_BELTSTATUS;
 
   RpcParameters another_parameters;

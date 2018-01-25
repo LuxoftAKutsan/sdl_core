@@ -25,7 +25,7 @@ PolicyBase::PolicyBase() : CompositeType(kUninitialized) {}
 
 PolicyBase::PolicyBase(const Strings& groups,
                        Priority priority,
-                       HmiLevel default_hmi,
+                       HMILevel default_hmi,
                        bool keep_context,
                        bool steal_focus)
     : CompositeType(kUninitialized)
@@ -141,7 +141,7 @@ DevicePolicy::DevicePolicy() : PolicyBase() {}
 
 DevicePolicy::DevicePolicy(const Strings& groups,
                            Priority priority,
-                           HmiLevel default_hmi,
+                           HMILevel default_hmi,
                            bool keep_context,
                            bool steal_focus)
     : PolicyBase(groups, priority, default_hmi, keep_context, steal_focus) {}
@@ -226,7 +226,7 @@ ApplicationParams::ApplicationParams() : PolicyBase() {}
 
 ApplicationParams::ApplicationParams(const Strings& groups,
                                      Priority priority,
-                                     HmiLevel default_hmi,
+                                     HMILevel default_hmi,
                                      bool keep_context,
                                      bool steal_focus)
     : PolicyBase(groups, priority, default_hmi, keep_context, steal_focus) {}

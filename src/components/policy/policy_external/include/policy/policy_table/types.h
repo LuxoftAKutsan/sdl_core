@@ -65,7 +65,7 @@ typedef Array<String<1, 255>, 0, 255> Strings;
 
 typedef Array<Enum<AppHMIType>, 0, 255> AppHMITypes;
 
-typedef Array<Enum<HmiLevel>, 0, 4> HmiLevels;
+typedef Array<Enum<HMILevel>, 0, 4> HmiLevels;
 
 typedef Array<Enum<Parameter>, 0, 100> Parameters;
 
@@ -132,7 +132,7 @@ struct PolicyBase : CompositeType {
   Strings groups;
   Optional<Strings> preconsented_groups;
   Enum<Priority> priority;
-  Enum<HmiLevel> default_hmi;
+  Enum<HMILevel> default_hmi;
   Boolean keep_context;
   Boolean steal_focus;
 
@@ -140,7 +140,7 @@ struct PolicyBase : CompositeType {
   PolicyBase();
   PolicyBase(const Strings& groups,
              Priority priority,
-             HmiLevel default_hmi,
+             HMILevel default_hmi,
              bool keep_context,
              bool steal_focus);
   virtual ~PolicyBase();
@@ -161,7 +161,7 @@ struct DevicePolicy : PolicyBase {
   DevicePolicy();
   DevicePolicy(const Strings& groups,
                Priority priority,
-               HmiLevel default_hmi,
+               HMILevel default_hmi,
                bool keep_context,
                bool steal_focus);
   ~DevicePolicy();
@@ -183,7 +183,7 @@ struct ApplicationParams : PolicyBase {
   ApplicationParams();
   ApplicationParams(const Strings& groups,
                     Priority priority,
-                    HmiLevel default_hmi,
+                    HMILevel default_hmi,
                     bool keep_context,
                     bool steal_focus);
   ~ApplicationParams();

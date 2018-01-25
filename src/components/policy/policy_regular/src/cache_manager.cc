@@ -463,7 +463,7 @@ void CacheManager::CheckPermissions(const policy_table::Strings& groups,
       if (rpcs.rpcs.end() != rpc_iter) {
         policy_table::RpcParameters rpc_param = rpc_iter->second;
 
-        policy_table::HmiLevel hmi_level_e;
+        policy_table::HMILevel hmi_level_e;
         policy_table::EnumFromJsonString(hmi_level, &hmi_level_e);
 
         policy_table::HmiLevels::const_iterator hmi_iter =

@@ -1176,14 +1176,14 @@ TEST_F(
   EXPECT_TRUE(hmi_levels1.end() !=
               std::find(hmi_levels1.begin(),
                         hmi_levels1.end(),
-                        policy_table::HmiLevel::HL_BACKGROUND));
+                        policy_table::HMILevel::HL_BACKGROUND));
   EXPECT_TRUE(hmi_levels1.end() !=
               std::find(hmi_levels1.begin(),
                         hmi_levels1.end(),
-                        policy_table::HmiLevel::HL_LIMITED));
+                        policy_table::HMILevel::HL_LIMITED));
   EXPECT_TRUE(hmi_levels1.end() != std::find(hmi_levels1.begin(),
                                              hmi_levels1.end(),
-                                             policy_table::HmiLevel::HL_FULL));
+                                             policy_table::HMILevel::HL_FULL));
 
   func_groups_it = func_groups.find("OnKeyboardInputOnlyGroup");
   EXPECT_TRUE(func_groups.end() != func_groups_it);
@@ -1197,7 +1197,7 @@ TEST_F(
   EXPECT_EQ(1u, hmi_levels2.size());
   EXPECT_TRUE(hmi_levels2.end() != std::find(hmi_levels2.begin(),
                                              hmi_levels2.end(),
-                                             policy_table::HmiLevel::HL_FULL));
+                                             policy_table::HMILevel::HL_FULL));
 }
 
 TEST_F(
@@ -1609,7 +1609,7 @@ TEST_F(SQLPTRepresentationTest, Save_SetPolicyTableThenSave_ExpectSavedToPT) {
   EXPECT_EQ(1u, hmi_levels.size());
   EXPECT_TRUE(hmi_levels.end() != std::find(hmi_levels.begin(),
                                             hmi_levels.end(),
-                                            policy_table::HmiLevel::HL_FULL));
+                                            policy_table::HMILevel::HL_FULL));
 
   const ::policy_table::Parameters& parameters = *(rpc_iter->second.parameters);
   EXPECT_EQ(1u, parameters.size());

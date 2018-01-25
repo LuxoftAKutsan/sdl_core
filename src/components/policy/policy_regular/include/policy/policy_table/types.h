@@ -63,7 +63,7 @@ typedef Array<String<1, 255>, 0, 255> Strings;
 
 typedef Array<Enum<AppHMIType>, 0, 255> AppHMITypes;
 
-typedef Array<Enum<HmiLevel>, 0, 4> HmiLevels;
+typedef Array<Enum<HMILevel>, 0, 4> HmiLevels;
 
 typedef Array<Enum<Parameter>, 0, 24> Parameters;
 
