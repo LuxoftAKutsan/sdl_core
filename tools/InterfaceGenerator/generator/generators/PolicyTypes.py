@@ -60,14 +60,21 @@ class CodeGenerator(object):
             raise GenerateError("Given interface is None.")
 
         required_enums_for_policy = [
-            # "HMILevel",
-            # "FunctionID",
+            "HMILevel",
+            "FunctionID",
             # "VehicleDataType",
             "AppHMIType",
-            # "RequestType",
-            # "ModuleType",
+            "RequestType",
+            "ModuleType",
             # "Common_AppPriority"
         ]
+        self.enum_naming_conversion_ = {
+            "HMILevel" :  lambda enum_name : "HL_" + enum_name,
+            "AppHMIType" : lambda enum_name : enum_name,
+            "FunctionID" : lambda enum_name : enum_name,
+            "RequestType" : lambda enum_name : "RT_" + enum_name,
+            "ModuleType" : lambda enum_name : "MT_" + enum_name
+        }
         
         get_first_enum_value_name = lambda enum : enum.elements.values()[0].name
         enum_required_for_policy = lambda enum : enum.name in required_enums_for_policy and "." not in get_first_enum_value_name(enum)
@@ -182,22 +189,14 @@ class CodeGenerator(object):
         """
 
         enum_elements = enum.elements.values()
-        enum_elements.insert(0, Model.EnumElement(
-            name=u"INVALID_ENUM",
-            description=None,
-            design_description=None,
-            issues=None,
-            todos=None,
-            platform=None,
-            internal_name=None,
-            value=u"-1"))
+
         return self._enum_template.substitute(
             comment=self._gen_comment(enum),
             name=enum.name,
             enum_items=self._indent_code(self._gen_enum_elements(
-                enum_elements), 1))
+                enum_elements, enum.name), 1))
 
-    def _gen_enum_elements(self, enum_elements):
+    def _gen_enum_elements(self, enum_elements, enum_name):
         """Generate enum elements for header file.
 
         Generates declaration of enumeration elements for the header file.
@@ -210,10 +209,10 @@ class CodeGenerator(object):
 
         """
 
-        return u",\n\n".join([self._gen_enum_element(x)
+        return u",\n\n".join([self._gen_enum_element(x, enum_name)
                               for x in enum_elements])
 
-    def _gen_enum_element(self, enum_element):
+    def _gen_enum_element(self, enum_element, enum_name):
         """Generate enum element for header file.
 
         Generates declaration of enumeration element for the header file.
@@ -229,12 +228,12 @@ class CodeGenerator(object):
         if enum_element.value is not None:
             return self._enum_element_with_value_template.substitute(
                 comment=self._gen_comment(enum_element),
-                name=enum_element.primary_name,
+                name=self.enum_naming_conversion_[enum_name](enum_element.primary_name),
                 value=enum_element.value)
         else:
             return self._enum_element_with_no_value_template.substitute(
                 comment=self._gen_comment(enum_element),
-                name=enum_element.primary_name)
+                name=self.enum_naming_conversion_[enum_name](enum_element.primary_name))
     
     def gen_enums_processing(self, enums):
         validation = "\n".join([self._gen_enum_validation(enum) for enum in enums])
@@ -245,33 +244,33 @@ class CodeGenerator(object):
     def _gen_enum_validation(self, enum):
         return self._valiation_enum_template.substitute(
             name = enum.name,
-            enum_items = "\n".join([self._gen_enum_item_validation(enum_item) for enum_item in enum.elements.values()])
+            enum_items = "\n".join([self._gen_enum_item_validation(enum_item, enum.name) for enum_item in enum.elements.values()])
         )
 
-    def _gen_enum_item_validation(self, item):
+    def _gen_enum_item_validation(self, item, enum_name):
         return self._valiation_enum_item_template.substitute(
-            name = item.name)
+            name = self.enum_naming_conversion_[enum_name](item.name))
     
     def _gen_enum_to_json(self, enum):
         return self._enum_to_json_template.substitute(
             name = enum.name,
-            enum_items = "\n".join([self._gen_enum_item_to_json(enum_item) for enum_item in enum.elements.values()])
+            enum_items = "\n".join([self._gen_enum_item_to_json(enum_item, enum.name) for enum_item in enum.elements.values()])
         )
 
-    def _gen_enum_item_to_json(self, item):
+    def _gen_enum_item_to_json(self, item, enum_name):
         return self._enum_to_json_item_template.substitute(
-            name = item.name)
+            name =  self.enum_naming_conversion_[enum_name](item.name))
 
 
     def _gen_enum_from_json(self, enum):
         return self._enum_from_json_template.substitute(
             name = enum.name,
-            enum_items = "\n".join([self._gen_enum_item_from_json(enum_item) for enum_item in enum.elements.values()])
+            enum_items = "\n".join([self._gen_enum_item_from_json(enum_item, enum.name) for enum_item in enum.elements.values()])
         )
 
-    def _gen_enum_item_from_json(self, item):
+    def _gen_enum_item_from_json(self, item, enum_name):
         return self._enum_from_json_item_template.substitute(
-            name = item.name)
+            name = self.enum_naming_conversion_[enum_name](item.name))
 
     def _gen_comment(self, interface_item_base, use_doxygen=True):
         """Generate doxygen comment for iterface_item_base for header file.
@@ -409,7 +408,7 @@ class CodeGenerator(object):
         u''' * @brief Generated class ${class_name} source file.\n'''
         u''' *\n'''
         u'''*/\n'''
-        u'''#include policy/policy_table/"${header_file}"\n'''
+        u'''#include "${header_file}"\n'''
         u'''\n\n'''
         u'''$namespace_open'''
         u'''\n'''

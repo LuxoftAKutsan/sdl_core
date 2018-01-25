@@ -34,7 +34,7 @@
 #define SRC_COMPONENTS_POLICY_POLICY_REGULAR_INCLUDE_POLICY_POLICY_TABLE_ENUMS_H_
 
 #include <string>
-#include "policy/policy_table/generated_MOBILE_API_policy_types.h"
+#include "generated_MOBILE_API_policy_types.h"
 
 namespace rpc {
 namespace policy_table_interface_base {
@@ -52,15 +52,15 @@ bool IsValidEnum(Priority val);
 const char* EnumToJsonString(Priority val);
 bool EnumFromJsonString(const std::string& literal, Priority* result);
 
-enum HmiLevel {
-  HL_BACKGROUND,
-  HL_FULL,
-  HL_LIMITED,
-  HL_NONE,
-};
-bool IsValidEnum(HmiLevel val);
-const char* EnumToJsonString(HmiLevel val);
-bool EnumFromJsonString(const std::string& literal, HmiLevel* result);
+// enum HmiLevel {
+//  HL_BACKGROUND,
+//  HL_FULL,
+//  HL_LIMITED,
+//  HL_NONE,
+//};
+// bool IsValidEnum(HmiLevel val);
+// const char* EnumToJsonString(HmiLevel val);
+// bool EnumFromJsonString(const std::string& literal, HmiLevel* result);
 
 enum Parameter {
   P_GPS,
@@ -112,40 +112,41 @@ bool EnumFromJsonString(const std::string& literal, Parameter* result);
 // const char* EnumToJsonString(AppHMIType val);
 // bool EnumFromJsonString(const std::string& literal, AppHMIType* result);
 
-enum RequestType {
-  RT_HTTP,
-  RT_FILE_RESUME,
-  RT_AUTH_REQUEST,
-  RT_AUTH_CHALLENGE,
-  RT_AUTH_ACK,
-  RT_PROPRIETARY,
-  RT_QUERY_APPS,
-  RT_LAUNCH_APP,
-  RT_LOCK_SCREEN_ICON_URL,
-  RT_TRAFFIC_MESSAGE_CHANNEL,
-  RT_DRIVER_PROFILE,
-  RT_VOICE_SEARCH,
-  RT_NAVIGATION,
-  RT_PHONE,
-  RT_CLIMATE,
-  RT_SETTINGS,
-  RT_VEHICLE_DIAGNOSTICS,
-  RT_EMERGENCY,
-  RT_MEDIA,
-  RT_FOTA
-};
+// enum RequestType {
+//  RT_HTTP,
+//  RT_FILE_RESUME,
+//  RT_AUTH_REQUEST,
+//  RT_AUTH_CHALLENGE,
+//  RT_AUTH_ACK,
+//  RT_PROPRIETARY,
+//  RT_QUERY_APPS,
+//  RT_LAUNCH_APP,
+//  RT_LOCK_SCREEN_ICON_URL,
+//  RT_TRAFFIC_MESSAGE_CHANNEL,
+//  RT_DRIVER_PROFILE,
+//  RT_VOICE_SEARCH,
+//  RT_NAVIGATION,
+//  RT_PHONE,
+//  RT_CLIMATE,
+//  RT_SETTINGS,
+//  RT_VEHICLE_DIAGNOSTICS,
+//  RT_EMERGENCY,
+//  RT_MEDIA,
+//  RT_FOTA
+//};
 
-bool IsValidEnum(RequestType val);
-const char* EnumToJsonString(RequestType val);
-bool EnumFromJsonString(const std::string& literal, RequestType* result);
+// bool IsValidEnum(RequestType val);
+// const char* EnumToJsonString(RequestType val);
+// bool EnumFromJsonString(const std::string& literal, RequestType* result);
 
-enum ModuleType {
-  MT_CLIMATE,
-  MT_RADIO,
-};
-bool IsValidEnum(ModuleType val);
-const char* EnumToJsonString(ModuleType val);
-bool EnumFromJsonString(const std::string& literal, ModuleType* result);
+// enum ModuleType {
+//  MT_CLIMATE,
+//  MT_RADIO,
+//};
+
+// bool IsValidEnum(ModuleType val);
+// const char* EnumToJsonString(ModuleType val);
+// bool EnumFromJsonString(const std::string& literal, ModuleType* result);
 
 extern const std::string kDefaultApp;
 extern const std::string kPreDataConsentApp;

@@ -58,6 +58,7 @@ set(PATHS
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
+
 collect_sources(SOURCES "${PATHS}")
 
 set(LIBRARIES
