@@ -80,13 +80,13 @@ typedef std::vector<uint8_t> BinaryMessage;
 typedef utils::SharedPtr<BinaryMessage> BinaryMessageSptr;
 
 typedef std::string HMILevel;
-typedef std::string Parameter;
+typedef std::string VehicleDataType;
 typedef std::string RpcName;
 typedef std::set<std::string> RPCParams;
 
 typedef std::map<std::string, std::set<policy::HMILevel> > HMIPermissions;
 struct ParameterPermissions
-    : std::map<std::string, std::set<policy::Parameter> > {
+    : std::map<std::string, std::set<policy::VehicleDataType> > {
   ParameterPermissions()
       : any_parameter_allowed(false)
       , any_parameter_disallowed_by_user(false)

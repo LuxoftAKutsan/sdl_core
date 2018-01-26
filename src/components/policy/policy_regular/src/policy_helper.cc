@@ -539,7 +539,7 @@ void FillNotificationData::UpdateHMILevels(
 
 void FillNotificationData::UpdateParameters(
     const policy_table::Parameters& in_parameters,
-    std::set<Parameter>& out_parameter) {
+    std::set<VehicleDataType>& out_parameter) {
   ParametersConstItr it_parameters = in_parameters.begin();
   ParametersConstItr it_parameters_end = in_parameters.end();
 
@@ -624,8 +624,8 @@ void FillNotificationData::ExcludeSameHMILevels(
 }
 
 void FillNotificationData::ExcludeSameParameters(
-    std::set<Parameter>& source, const std::set<Parameter>& target) {
-  std::set<Parameter> diff_parameter;
+    std::set<VehicleDataType>& source, const std::set<VehicleDataType>& target) {
+  std::set<VehicleDataType> diff_parameter;
 
   std::set_difference(source.begin(),
                       source.end(),

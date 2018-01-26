@@ -2249,9 +2249,9 @@ void MessageHelper::SendOnPermissionsChangeNotification(
       smart_objects::SmartObject& parameters =
           parameter_permissions[(*it_parameter_permissions).first];
 
-      std::set<policy::Parameter>::const_iterator it_parameters =
+      std::set<policy::VehicleDataType>::const_iterator it_parameters =
           (*it_parameter_permissions).second.begin();
-      std::set<policy::Parameter>::const_iterator it_parameters_end =
+      std::set<policy::VehicleDataType>::const_iterator it_parameters_end =
           (*it_parameter_permissions).second.end();
 
       for (size_t index_parameters = 0; it_parameters != it_parameters_end;

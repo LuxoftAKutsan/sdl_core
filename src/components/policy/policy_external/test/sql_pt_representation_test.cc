@@ -1697,7 +1697,7 @@ TEST_F(SQLPTRepresentationTest,
   EXPECT_EQ(1u, parameters.size());
   EXPECT_TRUE(parameters.end() != std::find(parameters.begin(),
                                             parameters.end(),
-                                            policy_table::Parameter::P_SPEED));
+                                            policy_table::VehicleDataType::P_SPEED));
   // Check Application Policies Section
   GatherApplicationPoliciesSection(&policies);
   const uint32_t apps_size = 3u;

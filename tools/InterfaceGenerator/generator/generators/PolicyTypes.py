@@ -62,19 +62,30 @@ class CodeGenerator(object):
         required_enums_for_policy = [
             "HMILevel",
             "FunctionID",
-            #"VehicleDataType",
+            "VehicleDataType",
             "AppHMIType",
             "RequestType",
             "ModuleType",
-            # "Common_AppPriority"
+            "Common_AppPriority"
         ]
-        self.enum_naming_conversion_ = {
+        self.enum_items_naming_conversion_ = {
             "HMILevel" :  lambda enum_name : "HL_" + enum_name.replace("HMI_", ""),
             "AppHMIType" : lambda enum_name : enum_name,
             "FunctionID" : lambda enum_name : enum_name,
             "RequestType" : lambda enum_name : "RT_" + enum_name,
             "ModuleType" : lambda enum_name : "MT_" + enum_name,
-            #"VehicleDataType" :  lambda enum_name : "P_" + enum_name.replace("VEHICLEDATA_", "")
+            "VehicleDataType" :  lambda enum_name : "P_" + enum_name.replace("VEHICLEDATA_", ""),
+            "Common_AppPriority" :  lambda enum_name : "P_" + enum_name
+        }
+
+        self.enum_naming_conversion_ = {
+            "HMILevel" : "HMILevel",
+            "AppHMIType" : "AppHMIType",
+            "FunctionID" : "FunctionID",
+            "RequestType" : "RequestType",
+            "ModuleType" : "ModuleType",
+            "VehicleDataType" : "VehicleDataType",
+            "Common_AppPriority" : "Priority" 
         }
         
         get_first_enum_value_name = lambda enum : enum.elements.values()[0].name
@@ -193,7 +204,7 @@ class CodeGenerator(object):
 
         return self._enum_template.substitute(
             comment=self._gen_comment(enum),
-            name=enum.name,
+            name=self.enum_naming_conversion_[enum.name],
             enum_items=self._indent_code(self._gen_enum_elements(
                 enum_elements, enum.name), 1))
 
@@ -229,12 +240,12 @@ class CodeGenerator(object):
         if enum_element.value is not None:
             return self._enum_element_with_value_template.substitute(
                 comment=self._gen_comment(enum_element),
-                name=self.enum_naming_conversion_[enum_name](enum_element.primary_name),
+                name=self.enum_items_naming_conversion_[enum_name](enum_element.primary_name),
                 value=enum_element.value)
         else:
             return self._enum_element_with_no_value_template.substitute(
                 comment=self._gen_comment(enum_element),
-                name=self.enum_naming_conversion_[enum_name](enum_element.primary_name))
+                name=self.enum_items_naming_conversion_[enum_name](enum_element.primary_name))
     
     def gen_enums_processing(self, enums):
         validation = "\n".join([self._gen_enum_validation(enum) for enum in enums])
@@ -244,34 +255,34 @@ class CodeGenerator(object):
         
     def _gen_enum_validation(self, enum):
         return self._valiation_enum_template.substitute(
-            name = enum.name,
+            name = self.enum_naming_conversion_[enum.name],
             enum_items = "\n".join([self._gen_enum_item_validation(enum_item, enum.name) for enum_item in enum.elements.values()])
         )
 
     def _gen_enum_item_validation(self, item, enum_name):
         return self._valiation_enum_item_template.substitute(
-            name = self.enum_naming_conversion_[enum_name](item.name))
+            name = self.enum_items_naming_conversion_[enum_name](item.name))
     
     def _gen_enum_to_json(self, enum):
         return self._enum_to_json_template.substitute(
-            name = enum.name,
+            name = self.enum_naming_conversion_[enum.name],
             enum_items = "\n".join([self._gen_enum_item_to_json(enum_item, enum.name) for enum_item in enum.elements.values()])
         )
 
     def _gen_enum_item_to_json(self, item, enum_name):
         return self._enum_to_json_item_template.substitute(
-            name =  self.enum_naming_conversion_[enum_name](item.name))
+            name =  self.enum_items_naming_conversion_[enum_name](item.name))
 
 
     def _gen_enum_from_json(self, enum):
         return self._enum_from_json_template.substitute(
-            name = enum.name,
+            name = self.enum_naming_conversion_[enum.name],
             enum_items = "\n".join([self._gen_enum_item_from_json(enum_item, enum.name) for enum_item in enum.elements.values()])
         )
 
     def _gen_enum_item_from_json(self, item, enum_name):
         return self._enum_from_json_item_template.substitute(
-            name = self.enum_naming_conversion_[enum_name](item.name))
+            name = self.enum_items_naming_conversion_[enum_name](item.name))
 
     def _gen_comment(self, interface_item_base, use_doxygen=True):
         """Generate doxygen comment for iterface_item_base for header file.

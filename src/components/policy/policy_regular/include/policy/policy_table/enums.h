@@ -35,22 +35,23 @@
 
 #include <string>
 #include "generated_MOBILE_API_policy_types.h"
+#include "generated_HMI_API_policy_types.h"
 
 namespace rpc {
 namespace policy_table_interface_base {
 
-enum Priority {
-  P_EMERGENCY,
-  P_NAVIGATION,
-  P_VOICECOM,
-  P_COMMUNICATION,
-  P_NORMAL,
-  P_NONE,
-};
+// enum Priority {
+//  P_EMERGENCY,
+//  P_NAVIGATION,
+//  P_VOICECOM,
+//  P_COMMUNICATION,
+//  P_NORMAL,
+//  P_NONE,
+//};
 
-bool IsValidEnum(Priority val);
-const char* EnumToJsonString(Priority val);
-bool EnumFromJsonString(const std::string& literal, Priority* result);
+// bool IsValidEnum(Priority val);
+// const char* EnumToJsonString(Priority val);
+// bool EnumFromJsonString(const std::string& literal, Priority* result);
 
 // enum HMILevel {
 //  HL_BACKGROUND,
@@ -62,37 +63,37 @@ bool EnumFromJsonString(const std::string& literal, Priority* result);
 // const char* EnumToJsonString(HMILevel val);
 // bool EnumFromJsonString(const std::string& literal, HMILevel* result);
 
-enum Parameter {
-  P_GPS,
-  P_SPEED,
-  P_ENGINETORQUE,
-  P_EXTERNALTEMPERATURE,
-  P_FUELLEVEL,
-  P_FUELLEVEL_STATE,
-  P_HEADLAMPSTATUS,
-  P_INSTANTFUELCONSUMPTION,
-  P_ODOMETER,
-  P_TIREPRESSURE,
-  P_WIPERSTATUS,
-  P_VIN,
-  P_ACCPEDALPOSITION,
-  P_BELTSTATUS,
-  P_DRIVERBRAKING,
-  P_PRNDL,
-  P_RPM,
-  P_STEERINGWHEELANGLE,
-  P_MYKEY,
-  P_AIRBAGSTATUS,
-  P_BODYINFORMATION,
-  P_CLUSTERMODESTATUS,
-  P_DEVICESTATUS,
-  P_EMERGENCYEVENT,
-  P_ECALLINFO,
-};
+// enum VehicleDataType {
+//  P_GPS,
+//  P_SPEED,
+//  P_ENGINETORQUE,
+//  P_EXTERNALTEMPERATURE,
+//  P_FUELLEVEL,
+//  P_FUELLEVEL_STATE,
+//  P_HEADLAMPSTATUS,
+//  P_INSTANTFUELCONSUMPTION,
+//  P_ODOMETER,
+//  P_TIREPRESSURE,
+//  P_WIPERSTATUS,
+//  P_VIN,
+//  P_ACCPEDALPOSITION,
+//  P_BELTSTATUS,
+//  P_DRIVERBRAKING,
+//  P_PRNDL,
+//  P_RPM,
+//  P_STEERINGWHEELANGLE,
+//  P_MYKEY,
+//  P_AIRBAGSTATUS,
+//  P_BODYINFORMATION,
+//  P_CLUSTERMODESTATUS,
+//  P_DEVICESTATUS,
+//  P_EMERGENCYEVENT,
+//  P_ECALLINFO,
+//};
 
-bool IsValidEnum(Parameter val);
-const char* EnumToJsonString(Parameter val);
-bool EnumFromJsonString(const std::string& literal, Parameter* result);
+// bool IsValidEnum(VehicleDataType val);
+// const char* EnumToJsonString(VehicleDataType val);
+// bool EnumFromJsonString(const std::string& literal, VehicleDataType* result);
 
 // enum AppHMIType {
 //  AHT_DEFAULT,

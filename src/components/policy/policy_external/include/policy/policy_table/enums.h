@@ -61,7 +61,7 @@ bool IsValidEnum(HMILevel val);
 const char* EnumToJsonString(HMILevel val);
 bool EnumFromJsonString(const std::string& literal, HMILevel* result);
 
-enum Parameter {
+enum VehicleDataType {
   P_GPS,
   P_SPEED,
   P_ENGINETORQUE,
@@ -105,9 +105,9 @@ enum Parameter {
   P_EMPTY  // Added to allow empty parameters handling
 };
 
-bool IsValidEnum(Parameter val);
-const char* EnumToJsonString(Parameter val);
-bool EnumFromJsonString(const std::string& literal, Parameter* result);
+bool IsValidEnum(VehicleDataType val);
+const char* EnumToJsonString(VehicleDataType val);
+bool EnumFromJsonString(const std::string& literal, VehicleDataType* result);
 
 enum AppHMIType {
   AHT_DEFAULT,

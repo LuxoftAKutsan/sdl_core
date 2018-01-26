@@ -144,14 +144,14 @@ struct FillNotificationData {
   void UpdateHMILevels(const policy_table::HmiLevels& in_hmi,
                        std::set<HMILevel>& out_hmi);
   void UpdateParameters(const policy_table::Parameters& in_parameters,
-                        std::set<Parameter>& out_parameter);
+                        std::set<VehicleDataType>& out_parameter);
 
  private:
   void ExcludeSame();
   void ExcludeSameHMILevels(std::set<HMILevel>& source,
                             const std::set<HMILevel>& target);
-  void ExcludeSameParameters(std::set<Parameter>& source,
-                             const std::set<Parameter>& target);
+  void ExcludeSameParameters(std::set<VehicleDataType>& source,
+                             const std::set<VehicleDataType>& target);
   void InitRpcKeys(const std::string& rpc_name);
   std::string current_key_;
   Permissions& data_;

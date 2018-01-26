@@ -243,8 +243,8 @@ struct FillNotificationData {
   void ExcludeSame(RpcPermissions& rpc);
   void ExcludeSameHMILevels(std::set<HMILevel>& source,
                             const std::set<HMILevel>& target);
-  void ExcludeSameParameters(std::set<Parameter>& source,
-                             const std::set<Parameter>& target);
+  void ExcludeSameParameters(std::set<VehicleDataType>& source,
+                             const std::set<VehicleDataType>& target);
   void InitRpcKeys(const std::string& rpc_name);
   bool RpcParametersEmpty(RpcPermissions& rpc);
   bool IsSectionEmpty(ParameterPermissions& permissions,

@@ -65,7 +65,7 @@ typedef Array<Enum<AppHMIType>, 0, 255> AppHMITypes;
 
 typedef Array<Enum<HMILevel>, 0, 4> HmiLevels;
 
-typedef Array<Enum<Parameter>, 0, 24> Parameters;
+typedef Array<Enum<VehicleDataType>, 0, 24> Parameters;
 
 typedef Map<RpcParameters, 0, UINT_MAX> Rpc;
 

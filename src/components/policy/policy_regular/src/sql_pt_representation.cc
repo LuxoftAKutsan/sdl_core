@@ -621,7 +621,7 @@ bool SQLPTRepresentation::GatherFunctionalGroupings(
         }
       }
       if (!rpcs.IsNull(2)) {
-        policy_table::Parameter param;
+        policy_table::VehicleDataType param;
         if (policy_table::EnumFromJsonString(rpcs.GetString(2), &param)) {
           InsertUnique(param, &(*rpcs_tbl.rpcs[rpcs.GetString(0)].parameters));
         }

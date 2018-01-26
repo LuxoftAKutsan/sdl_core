@@ -1543,8 +1543,8 @@ TEST_F(SQLPTExtRepresentationTest, SaveFunctionalGroupings_ExpectedSaved) {
 
   const HMILevel test_level_1 = HL_FULL;
   const HMILevel test_level_2 = HL_LIMITED;
-  const policy_table::Parameter test_parameter_1 = P_GPS;
-  const policy_table::Parameter test_parameter_2 = P_SPEED;
+  const policy_table::VehicleDataType test_parameter_1 = P_GPS;
+  const policy_table::VehicleDataType test_parameter_2 = P_SPEED;
 
   Rpcs rpcs;
 
@@ -1580,7 +1580,7 @@ TEST_F(SQLPTExtRepresentationTest, SaveFunctionalGroupings_ExpectedSaved) {
   *another_rpcs.user_consent_prompt = another_user_consent_prompt;
 
   const HMILevel test_level_3 = HL_BACKGROUND;
-  const policy_table::Parameter test_parameter_3 = P_BELTSTATUS;
+  const policy_table::VehicleDataType test_parameter_3 = P_BELTSTATUS;
 
   RpcParameters another_parameters;
   another_parameters.hmi_levels.push_back(test_level_3);

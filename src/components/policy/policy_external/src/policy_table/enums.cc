@@ -108,7 +108,7 @@ bool EnumFromJsonString(const std::string& literal, HMILevel* result) {
   }
 }
 
-bool IsValidEnum(Parameter val) {
+bool IsValidEnum(VehicleDataType val) {
   switch (val) {
     case P_GPS:
       return true;
@@ -197,7 +197,7 @@ bool IsValidEnum(Parameter val) {
   }
 }
 
-const char* EnumToJsonString(Parameter val) {
+const char* EnumToJsonString(VehicleDataType val) {
   switch (val) {
     case P_GPS:
       return "gps";
@@ -286,7 +286,7 @@ const char* EnumToJsonString(Parameter val) {
   }
 }
 
-bool EnumFromJsonString(const std::string& literal, Parameter* result) {
+bool EnumFromJsonString(const std::string& literal, VehicleDataType* result) {
   if ("gps" == literal) {
     *result = P_GPS;
     return true;
