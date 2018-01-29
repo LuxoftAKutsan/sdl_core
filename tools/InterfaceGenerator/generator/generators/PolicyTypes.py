@@ -26,6 +26,9 @@ class GenerateError(Exception):
 
     pass
 
+def to_camel_case(snake_str):
+    components = snake_str.split('_')
+    return components[0].lower() + "".join(x.title() for x in components[1:])
 
 class CodeGenerator(object):
 
@@ -58,7 +61,18 @@ class CodeGenerator(object):
 
         if interface is None:
             raise GenerateError("Given interface is None.")
-
+        
+        vi_data_names = []
+        for func in interface.functions.values():
+            if (func.name == "SubscribeVehicleData"):
+                for param in func.params:
+                    vi_data_names.append(param)
+        def string_vi_name(vi_enum):
+            for vi_name in vi_data_names:
+                if (vi_enum == vi_name.upper()):
+                    return vi_name
+            return ""
+            
         required_enums_for_policy = [
             "HMILevel",
             "FunctionID",
@@ -68,6 +82,7 @@ class CodeGenerator(object):
             "ModuleType",
             "Common_AppPriority"
         ]
+
         self.enum_items_naming_conversion_ = {
             "HMILevel" :  lambda enum_name : "HL_" + enum_name.replace("HMI_", ""),
             "AppHMIType" : lambda enum_name : enum_name,
@@ -76,6 +91,16 @@ class CodeGenerator(object):
             "ModuleType" : lambda enum_name : "MT_" + enum_name,
             "VehicleDataType" :  lambda enum_name : "P_" + enum_name.replace("VEHICLEDATA_", ""),
             "Common_AppPriority" :  lambda enum_name : "P_" + enum_name
+        }
+
+        self.enum_items_string_naming_conversion_ = {
+            "HMILevel" :  lambda enum_name : enum_name,
+            "AppHMIType" : lambda enum_name : enum_name,
+            "FunctionID" : lambda enum_name : enum_name,
+            "RequestType" : lambda enum_name : enum_name,
+            "ModuleType" : lambda enum_name : enum_name,
+            "VehicleDataType" :  lambda enum_name : string_vi_name(enum_name.replace("VEHICLEDATA_", "")),
+            "Common_AppPriority" :  lambda enum_name : enum_name,
         }
 
         self.enum_naming_conversion_ = {
@@ -271,7 +296,9 @@ class CodeGenerator(object):
 
     def _gen_enum_item_to_json(self, item, enum_name):
         return self._enum_to_json_item_template.substitute(
-            name =  self.enum_items_naming_conversion_[enum_name](item.name))
+            name =  self.enum_items_naming_conversion_[enum_name](item.name),
+            string_name = self.enum_items_string_naming_conversion_[enum_name](item.name)
+            )
 
 
     def _gen_enum_from_json(self, enum):
@@ -282,7 +309,9 @@ class CodeGenerator(object):
 
     def _gen_enum_item_from_json(self, item, enum_name):
         return self._enum_from_json_item_template.substitute(
-            name = self.enum_items_naming_conversion_[enum_name](item.name))
+            name = self.enum_items_naming_conversion_[enum_name](item.name),
+            string_name = self.enum_items_string_naming_conversion_[enum_name](item.name)
+            )
 
     def _gen_comment(self, interface_item_base, use_doxygen=True):
         """Generate doxygen comment for iterface_item_base for header file.
@@ -517,7 +546,7 @@ class CodeGenerator(object):
         u'''};\n''')
 
     _enum_to_json_item_template = string.Template(
-        u'''    case $name: return "$name";''')
+        u'''    case $name: return "$string_name";''')
 
     _enum_from_json_template = string.Template(
         u'''bool EnumFromJsonString(const std::string& literal, $name* result) {\n'''
@@ -526,7 +555,7 @@ class CodeGenerator(object):
         u'''};\n''')
 
     _enum_from_json_item_template = string.Template(
-        u'''  if ("$name" == literal) {\n'''
+        u'''  if ("$string_name" == literal) {\n'''
         u'''    *result = $name;\n'''
         u'''    return true;\n'''
         u'''  }\n''')
