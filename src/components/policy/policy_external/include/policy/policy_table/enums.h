@@ -41,6 +41,14 @@
 namespace rpc {
 namespace policy_table_interface_base {
 
+enum Input {
+  I_GUI,
+  I_VUI,
+};
+bool IsValidEnum(Input val);
+const char* EnumToJsonString(Input val);
+bool EnumFromJsonString(const std::string& literal, Input* result);
+
 // enum Priority {
 //  P_EMERGENCY,
 //  P_NAVIGATION,
