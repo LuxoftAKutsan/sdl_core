@@ -611,8 +611,8 @@ void FillNotificationData::ExcludeSame() {
 }
 
 void FillNotificationData::ExcludeSameHMILevels(
-    std::set<HMILevel>& source, const std::set<HMILevel>& target) {
-  std::set<HMILevel> diff_hmi;
+    std::set<StringHMILevel>& source, const std::set<StringHMILevel>& target) {
+  std::set<StringHMILevel> diff_hmi;
 
   std::set_difference(source.begin(),
                       source.end(),
@@ -624,7 +624,8 @@ void FillNotificationData::ExcludeSameHMILevels(
 }
 
 void FillNotificationData::ExcludeSameParameters(
-    std::set<VehicleDataType>& source, const std::set<VehicleDataType>& target) {
+    std::set<VehicleDataType>& source,
+    const std::set<VehicleDataType>& target) {
   std::set<VehicleDataType> diff_parameter;
 
   std::set_difference(source.begin(),

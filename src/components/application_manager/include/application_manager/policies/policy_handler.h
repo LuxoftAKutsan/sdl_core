@@ -89,7 +89,7 @@ class PolicyHandler : public PolicyHandlerInterface,
   bool UnloadPolicyLibrary() OVERRIDE;
   virtual void OnPermissionsUpdated(const std::string& policy_app_id,
                                     const Permissions& permissions,
-                                    const HMILevel& default_hmi) OVERRIDE;
+                                    const StringHMILevel& default_hmi) OVERRIDE;
 
   virtual void OnPermissionsUpdated(const std::string& policy_app_id,
                                     const Permissions& permissions) OVERRIDE;

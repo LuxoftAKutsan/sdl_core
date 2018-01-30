@@ -113,7 +113,7 @@ bool EnumFromJsonString(const std::string& literal, Input* result);
 //  P_DELIVERY_MODE,
 //  P_TIMESTAMP,
 //  P_ADDRESS,
-//  P_EMPTY  // Added to allow empty parameters handling
+//   P_EMPTY  // Added to allow empty parameters handling
 //};
 
 // bool IsValidEnum(VehicleDataType val);

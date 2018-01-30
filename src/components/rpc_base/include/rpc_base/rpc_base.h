@@ -137,6 +137,7 @@ class PrimitiveType {
 class CompositeType {
  public:
   void mark_initialized();
+  void mark_uninitialized();
   void ReportErrors(ValidationReport* report) const;
   policy_table_interface_base::PolicyTableType GetPolicyTableType() const;
   virtual void SetPolicyTableType(

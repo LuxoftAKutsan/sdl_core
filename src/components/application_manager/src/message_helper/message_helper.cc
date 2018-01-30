@@ -2216,9 +2216,9 @@ void MessageHelper::SendOnPermissionsChangeNotification(
       smart_objects::SmartObject& hmi_levels =
           hmi_permissions[(*it_hmi_permissions).first];
 
-      std::set<policy::HMILevel>::const_iterator it_hmi_levels =
+      std::set<policy::StringHMILevel>::const_iterator it_hmi_levels =
           (*it_hmi_permissions).second.begin();
-      std::set<policy::HMILevel>::const_iterator it_hmi_levels_end =
+      std::set<policy::StringHMILevel>::const_iterator it_hmi_levels_end =
           (*it_hmi_permissions).second.end();
 
       for (size_t index_hmi_levels = 0; it_hmi_levels != it_hmi_levels_end;

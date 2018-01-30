@@ -1353,7 +1353,7 @@ void PolicyHandler::PTExchangeAtUserRequest(uint32_t correlation_id) {
 
 void PolicyHandler::OnPermissionsUpdated(const std::string& policy_app_id,
                                          const Permissions& permissions,
-                                         const HMILevel& default_hmi) {
+                                         const StringHMILevel& default_hmi) {
   LOG4CXX_AUTO_TRACE(logger_);
   OnPermissionsUpdated(policy_app_id, permissions);
 

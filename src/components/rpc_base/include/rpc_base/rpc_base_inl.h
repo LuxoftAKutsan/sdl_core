@@ -108,6 +108,10 @@ inline void CompositeType::mark_initialized() {
   initialization_state__ = kInitialized;
 }
 
+inline void CompositeType::mark_uninitialized() {
+  initialization_state__ = kUninitialized;
+}
+
 inline CompositeType::CompositeType(InitializationState init_state)
     : initialization_state__(init_state)
     , policy_table_type_(policy_table_interface_base::PT_PRELOADED) {}

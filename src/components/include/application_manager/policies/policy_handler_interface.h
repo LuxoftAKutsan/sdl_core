@@ -70,7 +70,7 @@ class PolicyHandlerInterface {
   virtual bool UnloadPolicyLibrary() = 0;
   virtual void OnPermissionsUpdated(const std::string& policy_app_id,
                                     const Permissions& permissions,
-                                    const HMILevel& default_hmi) = 0;
+                                    const StringHMILevel& default_hmi) = 0;
 
   virtual void OnPermissionsUpdated(const std::string& policy_app_id,
                                     const Permissions& permissions) = 0;
