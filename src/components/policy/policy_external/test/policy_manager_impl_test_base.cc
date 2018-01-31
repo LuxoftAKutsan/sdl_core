@@ -260,7 +260,7 @@ void PolicyManagerImplTest2::SetUp() {
   ON_CALL(policy_settings_, app_storage_folder())
       .WillByDefault(ReturnRef(app_storage_folder_));
   policy_manager_->set_listener(&listener_);
-  const char* levels[] = {"BACKGROUND", "FULL", "LIMITED", "NONE"};
+  const char* levels[] = {"FULL", "LIMITED", "BACKGROUND", "NONE"};
   hmi_level_.assign(levels, levels + sizeof(levels) / sizeof(levels[0]));
   srand(time(NULL));
   index_ = rand() % 3;

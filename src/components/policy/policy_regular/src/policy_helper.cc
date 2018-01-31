@@ -528,7 +528,7 @@ bool FillNotificationData::operator()(const RpcValueType& rpc) {
 }
 
 void FillNotificationData::UpdateHMILevels(
-    const policy_table::HmiLevels& in_hmi, std::set<HMILevel>& out_hmi) {
+    const policy_table::HmiLevels& in_hmi, std::set<StringHMILevel>& out_hmi) {
   HMILevelsConstItr it_hmi_levels = in_hmi.begin();
   HMILevelsConstItr it_hmi_levels_end = in_hmi.end();
 

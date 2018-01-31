@@ -142,14 +142,14 @@ struct FillNotificationData {
                        GroupConsent undefined_group_consent);
   bool operator()(const RpcValueType& rpc);
   void UpdateHMILevels(const policy_table::HmiLevels& in_hmi,
-                       std::set<HMILevel>& out_hmi);
+                       std::set<StringHMILevel>& out_hmi);
   void UpdateParameters(const policy_table::Parameters& in_parameters,
                         std::set<VehicleDataType>& out_parameter);
 
  private:
   void ExcludeSame();
-  void ExcludeSameHMILevels(std::set<HMILevel>& source,
-                            const std::set<HMILevel>& target);
+  void ExcludeSameHMILevels(std::set<StringHMILevel>& source,
+                            const std::set<StringHMILevel>& target);
   void ExcludeSameParameters(std::set<VehicleDataType>& source,
                              const std::set<VehicleDataType>& target);
   void InitRpcKeys(const std::string& rpc_name);
