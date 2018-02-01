@@ -209,7 +209,7 @@ class PolicyManagerImplTest2 : public ::testing::Test {
     ON_CALL(policy_settings_, app_storage_folder())
         .WillByDefault(ReturnRef(kAppStorageFolder));
     manager->set_listener(&listener);
-    const char* levels[] = {"BACKGROUND", "FULL", "LIMITED", "NONE"};
+    const char* levels[] = {"FULL", "LIMITED", "BACKGROUND", "NONE"};
     hmi_level.assign(levels, levels + sizeof(levels) / sizeof(levels[0]));
     srand(time(NULL));
     index = rand() % 3;

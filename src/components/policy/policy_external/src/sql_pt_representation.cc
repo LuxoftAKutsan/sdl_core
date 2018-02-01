@@ -659,8 +659,6 @@ bool SQLPTRepresentation::GatherFunctionalGroupings(
       if (!rpcs.IsNull(2)) {
         policy_table::Parameter param;
         if (policy_table::EnumFromJsonString(rpcs.GetString(2), &param)) {
-          // EMPTY is a special mark to specify that 'parameters' section is
-          // present, but has no parameters. It is not valid parameter value.
           if (policy_table::P_EMPTY == param) {
             (*rpcs_tbl.rpcs[rpcs.GetString(0)].parameters).mark_initialized();
             continue;

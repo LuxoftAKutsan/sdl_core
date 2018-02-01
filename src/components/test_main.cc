@@ -3,6 +3,7 @@
 #include "utils/custom_string.h"
 int main(int argc, char** argv) {
   namespace custom_str = utils::custom_string;
+  INIT_LOGGER("log4cxx.properties", false);
   testing::InitGoogleMock(&argc, argv);
   ::testing::DefaultValue<custom_str::CustomString>::Set(
       custom_str::CustomString(""));
