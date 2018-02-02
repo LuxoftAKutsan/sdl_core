@@ -280,6 +280,43 @@ std::string PolicyManagerImpl::GetLockScreenIconUrl() const {
   return cache_->GetLockScreenIconUrl();
 }
 
+void FilterInvalidFunctions(policy_table::Rpc& rpcs) {
+  policy_table::Rpc valid_rpcs;
+  for (auto& rpc : rpcs) {
+    const std::string& rpc_name = rpc.first;
+    policy_table::FunctionID function_id;
+    if (policy_table::EnumFromJsonString(rpc_name, &function_id)) {
+      valid_rpcs.insert(rpc);
+    }
+  }
+  rpcs.swap(valid_rpcs);
+}
+
+void FilterInvalidParameters(policy_table::RpcParameters& rpc_parameters) {
+  policy_table::Parameters valid_params;
+  //  for (auto it = rpc_parameters.parameters->begin();
+  //       it != rpc_parameters.parameters->end();
+  //       ++it) {
+  //  auto param = *it;
+  for (auto& param : *(rpc_parameters.parameters)) {
+    if (param.is_valid()) {
+      valid_params.push_back(param);
+    }
+  }
+  rpc_parameters.parameters->swap(valid_params);
+}
+
+void FilterNotValidValues(policy_table::PolicyTable& pt) {
+  for (auto& group : pt.functional_groupings) {
+    policy_table::Rpc& rpcs = group.second.rpcs;
+    FilterInvalidFunctions(rpcs);
+
+    for (auto& func : rpcs) {
+      FilterInvalidParameters(func.second);
+    }
+  }
+}
+
 bool PolicyManagerImpl::LoadPT(const std::string& file,
                                const BinaryMessage& pt_content) {
   LOG4CXX_INFO(logger_, "LoadPT of size " << pt_content.size());
@@ -296,7 +333,7 @@ bool PolicyManagerImpl::LoadPT(const std::string& file,
   }
 
   file_system::DeleteFile(file);
-
+  FilterNotValidValues(pt_update->policy_table);
   if (!IsPTValid(pt_update, policy_table::PT_UPDATE)) {
     wrong_ptu_update_received_ = true;
     update_status_manager_.OnWrongUpdateReceived();
