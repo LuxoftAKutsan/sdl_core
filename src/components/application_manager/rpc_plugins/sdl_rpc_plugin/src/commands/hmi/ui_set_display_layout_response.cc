@@ -42,7 +42,7 @@ namespace commands {
 UiSetDisplayLayoutResponse::UiSetDisplayLayoutResponse(
     const application_manager::commands::MessageSharedPtr& message,
     ApplicationManager& application_manager)
-    : ResponseFromHMI(message, application_manager) {}
+    :app_mngr::commands::ResponseFromHMI(message, application_manager) {}
 
 UiSetDisplayLayoutResponse::~UiSetDisplayLayoutResponse() {}
 

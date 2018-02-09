@@ -37,21 +37,20 @@
 #include "interfaces/HMI_API.h"
 #include "smart_objects/smart_object.h"
 
-namespace sdl_rpc_plugin {
-namespace app_mngr = application_manager;
+namespace application_manager {
 
 namespace commands {
 
-class NotificationFromHMI : public app_mngr::commands::CommandImpl {
+class NotificationFromHMI : public CommandImpl {
  public:
-  NotificationFromHMI(const app_mngr::commands::MessageSharedPtr& message,
-                      app_mngr::ApplicationManager& application_manager);
+  NotificationFromHMI(const commands::MessageSharedPtr& message,
+                      ApplicationManager& application_manager);
   virtual ~NotificationFromHMI();
   virtual bool Init();
   virtual bool CleanUp();
   virtual void Run();
   void SendNotificationToMobile(
-      const app_mngr::commands::MessageSharedPtr& message);
+      const commands::MessageSharedPtr& message);
   void CreateHMIRequest(const hmi_apis::FunctionID::eType& function_id,
                         const smart_objects::SmartObject& msg_params) const;
 

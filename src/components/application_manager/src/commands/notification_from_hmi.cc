@@ -30,54 +30,46 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "application_manager/commands/response_from_hmi.h"
+#include "application_manager/commands/notification_from_hmi.h"
+#include "application_manager/application_manager.h"
 #include "application_manager/rpc_service.h"
 #include "smart_objects/smart_object.h"
 
-namespace sdl_rpc_plugin {
-using namespace application_manager;
+namespace application_manager {
 
 namespace commands {
 
-ResponseFromHMI::ResponseFromHMI(
+NotificationFromHMI::NotificationFromHMI(
     const application_manager::commands::MessageSharedPtr& message,
     ApplicationManager& application_manager)
     : CommandImpl(message, application_manager) {
-  // If it is error response, shift info
-  if ((*message)[strings::params].keyExists(hmi_response::message)) {
-    (*message)[strings::msg_params][strings::info] =
-        (*message)[strings::params][hmi_response::message];
-  }
-
   // Replace HMI app id with Mobile connection id
   ReplaceHMIWithMobileAppId(*message);
 }
 
-ResponseFromHMI::~ResponseFromHMI() {}
+NotificationFromHMI::~NotificationFromHMI() {}
 
-bool ResponseFromHMI::Init() {
+bool NotificationFromHMI::Init() {
   return true;
 }
 
-bool ResponseFromHMI::CleanUp() {
+bool NotificationFromHMI::CleanUp() {
   return true;
 }
 
-void ResponseFromHMI::Run() {}
+void NotificationFromHMI::Run() {}
 
-void ResponseFromHMI::SendResponseToMobile(
-    const application_manager::commands::MessageSharedPtr& message,
-    ApplicationManager& application_manager) {
-  (*message)[strings::params][strings::message_type] = MessageType::kResponse;
-
+void NotificationFromHMI::SendNotificationToMobile(
+    const application_manager::commands::MessageSharedPtr& message) {
+  (*message)[strings::params][strings::message_type] =
+      static_cast<int32_t>(application_manager::MessageType::kNotification);
   application_manager_.GetRPCService().ManageMobileCommand(message, SOURCE_SDL);
 }
 
-void ResponseFromHMI::CreateHMIRequest(
+void NotificationFromHMI::CreateHMIRequest(
     const hmi_apis::FunctionID::eType& function_id,
     const smart_objects::SmartObject& msg_params) const {
   smart_objects::SmartObjectSPtr result = new smart_objects::SmartObject;
-
   if (!result) {
     LOG4CXX_ERROR(logger_, "Memory allocation failed.");
     return;
@@ -88,8 +80,10 @@ void ResponseFromHMI::CreateHMIRequest(
       application_manager_.GetNextHMICorrelationID();
 
   NsSmartDeviceLink::NsSmartObjects::SmartObject& request = *result;
-  request[strings::params][strings::message_type] = MessageType::kRequest;
-  request[strings::params][strings::function_id] = function_id;
+  request[strings::params][strings::message_type] =
+      static_cast<int32_t>(application_manager::MessageType::kRequest);
+  request[strings::params][strings::function_id] =
+      static_cast<int32_t>(function_id);
   request[strings::params][strings::correlation_id] = hmi_correlation_id_;
   request[strings::params][strings::protocol_version] =
       CommandImpl::protocol_version_;

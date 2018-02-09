@@ -44,7 +44,7 @@ namespace commands {
  * @brief VISubscriveVehicleDataResponseTemplate command class
  **/
 template <event_engine::Event::EventID eventID>
-class VISubscribeVehicleDataResponseTemplate : public ResponseFromHMI {
+class VISubscribeVehicleDataResponseTemplate : public app_mngr::commands::ResponseFromHMI {
  public:
   /**
    * @brief VISubscriveVehicleDataResponseTemplate class constructor
@@ -54,7 +54,7 @@ class VISubscribeVehicleDataResponseTemplate : public ResponseFromHMI {
   VISubscribeVehicleDataResponseTemplate(
       const app_mngr::commands::MessageSharedPtr& message,
       app_mngr::ApplicationManager& application_manager)
-      : ResponseFromHMI(message, application_manager) {}
+      :app_mngr::commands::ResponseFromHMI(message, application_manager) {}
 
   /**
    * @brief Execute command

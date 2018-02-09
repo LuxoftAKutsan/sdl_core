@@ -45,7 +45,7 @@ namespace commands {
  * @brief VIGetVehicleDataResponseTemplate command class
  **/
 template <event_engine::Event::EventID eventID>
-class VIGetVehicleDataResponseTemplate : public ResponseFromHMI {
+class VIGetVehicleDataResponseTemplate : public app_mngr::commands::ResponseFromHMI {
  public:
   /**
    * @brief VIGetVehicleDataResponseTemplate class constructor
@@ -55,7 +55,7 @@ class VIGetVehicleDataResponseTemplate : public ResponseFromHMI {
   VIGetVehicleDataResponseTemplate(
       const app_mngr::commands::MessageSharedPtr& message,
       app_mngr::ApplicationManager& application_manager)
-      : ResponseFromHMI(message, application_manager) {}
+      :app_mngr::commands::ResponseFromHMI(message, application_manager) {}
 
   /**
    * @brief Execute command
