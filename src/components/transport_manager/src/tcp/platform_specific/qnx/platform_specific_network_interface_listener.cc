@@ -30,68 +30,57 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_NETWORK_INTERFACE_LISTENER_IMPL_H_
-#define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_NETWORK_INTERFACE_LISTENER_IMPL_H_
+#include "transport_manager/tcp/network_interface_listener_impl.h"
 
-#include <string>
-#include <memory>
+#include <arpa/inet.h>
+#include <asm/types.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <ifaddrs.h>
+#include <unistd.h>
+#include <net/if.h>
+#include <sys/types.h>
+#include <sys/select.h>
+#include <sys/socket.h>
+#ifdef __linux__
+#include <linux/netlink.h>
+#include <linux/rtnetlink.h>
+#endif  // __linux__
 
-#include "utils/macro.h"
-#include "transport_manager/tcp/network_interface_listener.h"
+#include "transport_manager/tcp/tcp_client_listener.h"
+#include "utils/logger.h"
+#include "utils/threads/thread.h"
 
 namespace transport_manager {
 namespace transport_adapter {
 
-class TcpClientListener;
+CREATE_LOGGERPTR_GLOBAL(logger_, "TransportManager")
 
 
-/**
- * @brief Listener to detect various events on network interfaces
- */
-class NetworkInterfaceListenerImpl : public NetworkInterfaceListener {
- public:
-  /**
-   * @brief Constructor
-   *
-   * @param tcp_client_listener  an instance of TcpClientListener which receives
-   *                             status updates
-   * @param designated_interface  if we want to listen only on a specific
-   *                              network interface, specify its name
-   */
-  NetworkInterfaceListenerImpl(TcpClientListener* tcp_client_listener,
-                               const std::string designated_interface);
+NetworkInterfaceListenerImpl::NetworkInterfaceListenerImpl(
+    TcpClientListener* tcp_client_listener,
+    const std::string designated_interface)
+{
 
-  /**
-   * @brief Destructor
-   */
-  virtual ~NetworkInterfaceListenerImpl();
+}
 
-  /**
-   * @brief Initialize this listener
-   */
-  bool Init() OVERRIDE;
+NetworkInterfaceListenerImpl::~NetworkInterfaceListenerImpl() {
+}
 
-  /**
-   * @brief Deinitialize this listener
-   */
-  void Deinit() OVERRIDE;
+bool NetworkInterfaceListenerImpl::Init() {
+  return true;
+}
 
-  /**
-   * @brief Start this listener
-   */
-  bool Start() OVERRIDE;
+void NetworkInterfaceListenerImpl::Deinit() {
+}
 
-  /**
-   * @brief Stop this listener
-   */
-  bool Stop() OVERRIDE;
+bool NetworkInterfaceListenerImpl::Start() {
+  return true;
+}
 
-private:
-  std::unique_ptr<NetworkInterfaceListener> platform_specific_impl_;
-
-};
+bool NetworkInterfaceListenerImpl::Stop() {
+  return true;
+}
 
 }  // namespace transport_adapter
 }  // namespace transport_manager
-
-#endif  // SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_NETWORK_INTERFACE_LISTENER_IMPL_H_

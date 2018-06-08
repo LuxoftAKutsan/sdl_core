@@ -43,6 +43,12 @@ include_directories (
   ${LOG4CXX_INCLUDE_DIRECTORY}
 )
 
+if (CMAKE_SYSTEM_NAME STREQUAL "QNX")
+    include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/include/transport_manager/tcp/platform_specific/qnx")
+else ()
+    include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/include/transport_manager/tcp/platform_specific/linux")
+endif ()
+
 set(PATHS
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src

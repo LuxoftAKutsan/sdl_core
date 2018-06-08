@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "transport_manager/tcp/network_interface_listener_impl.h"
+#include "transport_manager/tcp/platform_specific/linux/platform_specific_network_interface_listener_impl.h"
 
 #include <arpa/inet.h>
 #include <asm/types.h>
@@ -42,10 +42,9 @@
 #include <sys/types.h>
 #include <sys/select.h>
 #include <sys/socket.h>
-#ifdef __linux__
+
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
-#endif  // __linux__
 
 #include "transport_manager/tcp/tcp_client_listener.h"
 #include "utils/logger.h"
@@ -106,7 +105,7 @@ void InterfaceStatus::SetIPv6Address(struct in6_addr* addr) {
   }
 }
 
-NetworkInterfaceListenerImpl::NetworkInterfaceListenerImpl(
+PlatformSpecificNetworkInterfaceListener::PlatformSpecificNetworkInterfaceListener(
     TcpClientListener* tcp_client_listener,
     const std::string designated_interface)
     : tcp_client_listener_(tcp_client_listener)
@@ -120,11 +119,11 @@ NetworkInterfaceListenerImpl::NetworkInterfaceListenerImpl(
 #endif  // BUILD_TESTS
 {
   pipe_fds_[0] = pipe_fds_[1] = -1;
-  thread_ = threads::CreateThread("NetworkInterfaceListenerImpl",
+  thread_ = threads::CreateThread("PlatformSpecificNetworkInterfaceListener",
                                   new ListenerThreadDelegate(this));
 }
 
-NetworkInterfaceListenerImpl::~NetworkInterfaceListenerImpl() {
+PlatformSpecificNetworkInterfaceListener::~PlatformSpecificNetworkInterfaceListener() {
   LOG4CXX_AUTO_TRACE(logger_);
 
   Stop();
@@ -134,7 +133,7 @@ NetworkInterfaceListenerImpl::~NetworkInterfaceListenerImpl() {
   threads::DeleteThread(thread_);
 }
 
-bool NetworkInterfaceListenerImpl::Init() {
+bool PlatformSpecificNetworkInterfaceListener::Init() {
   LOG4CXX_AUTO_TRACE(logger_);
 
   if (socket_ >= 0) {
@@ -180,7 +179,7 @@ bool NetworkInterfaceListenerImpl::Init() {
   return true;
 }
 
-void NetworkInterfaceListenerImpl::Deinit() {
+void PlatformSpecificNetworkInterfaceListener::Deinit() {
   LOG4CXX_AUTO_TRACE(logger_);
 
   if (socket_ >= 0) {
@@ -197,7 +196,7 @@ void NetworkInterfaceListenerImpl::Deinit() {
   }
 }
 
-bool NetworkInterfaceListenerImpl::Start() {
+bool PlatformSpecificNetworkInterfaceListener::Start() {
   LOG4CXX_AUTO_TRACE(logger_);
 
   if (socket_ < 0) {
@@ -219,7 +218,7 @@ bool NetworkInterfaceListenerImpl::Start() {
   return true;
 }
 
-bool NetworkInterfaceListenerImpl::Stop() {
+bool PlatformSpecificNetworkInterfaceListener::Stop() {
   LOG4CXX_AUTO_TRACE(logger_);
 
   if (!thread_->is_running()) {
@@ -233,7 +232,7 @@ bool NetworkInterfaceListenerImpl::Stop() {
   return true;
 }
 
-void NetworkInterfaceListenerImpl::Loop() {
+void PlatformSpecificNetworkInterfaceListener::Loop() {
   LOG4CXX_AUTO_TRACE(logger_);
 
   InitializeStatus();
@@ -337,7 +336,7 @@ void NetworkInterfaceListenerImpl::Loop() {
   }
 }
 
-bool NetworkInterfaceListenerImpl::StopLoop() {
+bool PlatformSpecificNetworkInterfaceListener::StopLoop() {
   LOG4CXX_AUTO_TRACE(logger_);
 
   LOG4CXX_INFO(logger_, "Stopping network interface listener");
@@ -358,7 +357,7 @@ bool NetworkInterfaceListenerImpl::StopLoop() {
   return true;
 }
 
-bool NetworkInterfaceListenerImpl::InitializeStatus() {
+bool PlatformSpecificNetworkInterfaceListener::InitializeStatus() {
   LOG4CXX_AUTO_TRACE(logger_);
 
 #ifdef BUILD_TESTS
@@ -417,7 +416,7 @@ bool NetworkInterfaceListenerImpl::InitializeStatus() {
   return true;
 }
 
-bool NetworkInterfaceListenerImpl::UpdateStatus(
+bool PlatformSpecificNetworkInterfaceListener::UpdateStatus(
     uint16_t type, std::vector<EventParam>& params) {
   LOG4CXX_AUTO_TRACE(logger_);
 
@@ -486,7 +485,7 @@ bool NetworkInterfaceListenerImpl::UpdateStatus(
   return true;
 }
 
-void NetworkInterfaceListenerImpl::NotifyIPAddresses() {
+void PlatformSpecificNetworkInterfaceListener::NotifyIPAddresses() {
   LOG4CXX_AUTO_TRACE(logger_);
 
   std::string ipv4_addr;
@@ -519,7 +518,7 @@ void NetworkInterfaceListenerImpl::NotifyIPAddresses() {
   }
 }
 
-const std::string NetworkInterfaceListenerImpl::SelectInterface() {
+const std::string PlatformSpecificNetworkInterfaceListener::SelectInterface() {
   LOG4CXX_AUTO_TRACE(logger_);
 
   if (!designated_interface_.empty()) {
@@ -562,8 +561,8 @@ const std::string NetworkInterfaceListenerImpl::SelectInterface() {
   return selected_interface_;
 }
 
-std::vector<NetworkInterfaceListenerImpl::EventParam>
-NetworkInterfaceListenerImpl::ParseIFAddrMessage(struct ifaddrmsg* message,
+std::vector<PlatformSpecificNetworkInterfaceListener::EventParam>
+PlatformSpecificNetworkInterfaceListener::ParseIFAddrMessage(struct ifaddrmsg* message,
                                                  unsigned int size) {
   LOG4CXX_AUTO_TRACE(logger_);
 
@@ -619,7 +618,7 @@ NetworkInterfaceListenerImpl::ParseIFAddrMessage(struct ifaddrmsg* message,
   return params;
 }
 
-void NetworkInterfaceListenerImpl::DumpTable() const {
+void PlatformSpecificNetworkInterfaceListener::DumpTable() const {
   LOG4CXX_DEBUG(logger_,
                 "Number of network interfaces: " << status_table_.size());
 
@@ -637,15 +636,15 @@ void NetworkInterfaceListenerImpl::DumpTable() const {
   }
 }
 
-NetworkInterfaceListenerImpl::ListenerThreadDelegate::ListenerThreadDelegate(
-    NetworkInterfaceListenerImpl* parent)
+PlatformSpecificNetworkInterfaceListener::ListenerThreadDelegate::ListenerThreadDelegate(
+    PlatformSpecificNetworkInterfaceListener* parent)
     : parent_(parent) {}
 
-void NetworkInterfaceListenerImpl::ListenerThreadDelegate::threadMain() {
+void PlatformSpecificNetworkInterfaceListener::ListenerThreadDelegate::threadMain() {
   parent_->Loop();
 }
 
-void NetworkInterfaceListenerImpl::ListenerThreadDelegate::exitThreadMain() {
+void PlatformSpecificNetworkInterfaceListener::ListenerThreadDelegate::exitThreadMain() {
   parent_->StopLoop();
 }
 

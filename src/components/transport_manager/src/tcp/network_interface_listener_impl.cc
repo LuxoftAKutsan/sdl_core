@@ -30,68 +30,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_NETWORK_INTERFACE_LISTENER_IMPL_H_
-#define SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_NETWORK_INTERFACE_LISTENER_IMPL_H_
-
-#include <string>
-#include <memory>
-
-#include "utils/macro.h"
-#include "transport_manager/tcp/network_interface_listener.h"
+#include "transport_manager/tcp/network_interface_listener_impl.h"
+#include "platform_specific_network_interface_listener_impl.h"
 
 namespace transport_manager {
 namespace transport_adapter {
 
-class TcpClientListener;
+NetworkInterfaceListenerImpl::NetworkInterfaceListenerImpl(
+    TcpClientListener* tcp_client_listener,
+    const std::string designated_interface):
+   platform_specific_impl_(new PlatformSpecificNetworkInterfaceListener(tcp_client_listener,
+                                                                        designated_interface)){
 
+}
 
-/**
- * @brief Listener to detect various events on network interfaces
- */
-class NetworkInterfaceListenerImpl : public NetworkInterfaceListener {
- public:
-  /**
-   * @brief Constructor
-   *
-   * @param tcp_client_listener  an instance of TcpClientListener which receives
-   *                             status updates
-   * @param designated_interface  if we want to listen only on a specific
-   *                              network interface, specify its name
-   */
-  NetworkInterfaceListenerImpl(TcpClientListener* tcp_client_listener,
-                               const std::string designated_interface);
+NetworkInterfaceListenerImpl::~NetworkInterfaceListenerImpl() {
+}
 
-  /**
-   * @brief Destructor
-   */
-  virtual ~NetworkInterfaceListenerImpl();
+bool NetworkInterfaceListenerImpl::Init() {
+  return true;
+}
 
-  /**
-   * @brief Initialize this listener
-   */
-  bool Init() OVERRIDE;
+void NetworkInterfaceListenerImpl::Deinit() {
 
-  /**
-   * @brief Deinitialize this listener
-   */
-  void Deinit() OVERRIDE;
+}
 
-  /**
-   * @brief Start this listener
-   */
-  bool Start() OVERRIDE;
+bool NetworkInterfaceListenerImpl::Start() {
+  return true;
+}
 
-  /**
-   * @brief Stop this listener
-   */
-  bool Stop() OVERRIDE;
+bool NetworkInterfaceListenerImpl::Stop() {
 
-private:
-  std::unique_ptr<NetworkInterfaceListener> platform_specific_impl_;
-
-};
-
+  return true;
+}
 }  // namespace transport_adapter
 }  // namespace transport_manager
-
-#endif  // SRC_COMPONENTS_TRANSPORT_MANAGER_INCLUDE_TRANSPORT_MANAGER_TCP_NETWORK_INTERFACE_LISTENER_IMPL_H_
