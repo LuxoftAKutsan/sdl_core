@@ -38,30 +38,27 @@ namespace transport_adapter {
 
 NetworkInterfaceListenerImpl::NetworkInterfaceListenerImpl(
     TcpClientListener* tcp_client_listener,
-    const std::string designated_interface):
-   platform_specific_impl_(new PlatformSpecificNetworkInterfaceListener(tcp_client_listener,
-                                                                        designated_interface)){
+    const std::string designated_interface)
+    : platform_specific_impl_(new PlatformSpecificNetworkInterfaceListener(
+          tcp_client_listener, designated_interface)) {}
 
-}
-
-NetworkInterfaceListenerImpl::~NetworkInterfaceListenerImpl() {
-}
+NetworkInterfaceListenerImpl::~NetworkInterfaceListenerImpl() {}
 
 bool NetworkInterfaceListenerImpl::Init() {
-  return true;
+  return platform_specific_impl_->Init();
 }
 
 void NetworkInterfaceListenerImpl::Deinit() {
-
+  platform_specific_impl_->Deinit();
 }
 
 bool NetworkInterfaceListenerImpl::Start() {
-  return true;
+  return platform_specific_impl_->Start();
 }
 
 bool NetworkInterfaceListenerImpl::Stop() {
-
-  return true;
+  return platform_specific_impl_->Stop();
 }
+
 }  // namespace transport_adapter
 }  // namespace transport_manager
