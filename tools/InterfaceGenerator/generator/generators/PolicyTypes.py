@@ -79,42 +79,42 @@ class CodeGenerator(object):
             return vi_enum.lower()
             
         required_enums_for_policy = [
-            #"HMILevel",
+            "HMILevel",
             "FunctionID",
             # "VehicleDataType",
-            #"AppHMIType",
-            #"RequestType",
-            #"ModuleType",
-            #"Common_AppPriority"
+            "AppHMIType",
+            "RequestType",
+            "ModuleType",
+            "Common_AppPriority"
         ]
 
         self.enum_items_naming_conversion_ = {
-            #"HMILevel" :  lambda item_name : "HL_" + item_name.replace("HMI_", ""),
-            #"AppHMIType" : lambda item_name : "AHT_" + item_name,
+            "HMILevel" :  lambda item_name : "HL_" + item_name.replace("HMI_", ""),
+            "AppHMIType" : lambda item_name : "AHT_" + item_name,
             "FunctionID" : lambda item_name : item_name,
-            #"RequestType" : lambda item_name : "RT_" + item_name,
-            #"ModuleType" : lambda item_name : "MT_" + item_name,
-            #"Common_AppPriority" :  lambda item_name : "P_" + item_name
+            "RequestType" : lambda item_name : "RT_" + item_name,
+            "ModuleType" : lambda item_name : "MT_" + item_name,
+            "Common_AppPriority" :  lambda item_name : "P_" + item_name
         }
 
         self.enum_items_string_naming_conversion_ = {
-            #"HMILevel" :  lambda item_name : item_name,
-            #"AppHMIType" : lambda item_name : item_name,
+            "HMILevel" :  lambda item_name : item_name,
+            "AppHMIType" : lambda item_name : item_name,
             "FunctionID" : lambda item_name : item_name[:item_name.find("ID")],
-            #"RequestType" : lambda item_name : item_name,
-            #"ModuleType" : lambda item_name : item_name,
+            "RequestType" : lambda item_name : item_name,
+            "ModuleType" : lambda item_name : item_name,
             # "VehicleDataType" :  lambda enum_name : string_vi_name(enum_name.replace("VEHICLEDATA_", "")),
-            #"Common_AppPriority" :  lambda item_name : item_name,
+            "Common_AppPriority" :  lambda item_name : item_name,
         }
 
         self.enum_naming_conversion_ = {
-            #"HMILevel" : "HmiLevel",
-            #"AppHMIType" : "AppHMIType",
+            "HMILevel" : "HmiLevel",
+            "AppHMIType" : "AppHMIType",
             "FunctionID" : "FunctionID",
-            #"RequestType" : "RequestType",
-            #"ModuleType" : "ModuleType",
+            "RequestType" : "RequestType",
+            "ModuleType" : "ModuleType",
             # "VehicleDataType" : "VehicleDataType",
-            #"Common_AppPriority" : "Priority" 
+            "Common_AppPriority" : "Priority" 
         }
         
         get_first_enum_value_name = lambda enum : enum.elements.values()[0].name
