@@ -34,6 +34,8 @@
 #define SRC_COMPONENTS_POLICY_POLICY_REGULAR_INCLUDE_POLICY_POLICY_TABLE_ENUMS_H_
 
 #include <string>
+#include "generated_MOBILE_API_policy_types.h"
+#include "generated_HMI_API_policy_types.h"
 
 namespace rpc {
 namespace policy_table_interface_base {
@@ -89,6 +91,21 @@ enum Parameter {
   P_DEVICESTATUS,
   P_EMERGENCYEVENT,
   P_ECALLINFO,
+  P_ABS_STATE,
+  P_TURN_SIGNAL,
+  P_FUEL_RANGE,
+  P_TIRE_PRESSURE_VALUE,
+  P_TPMS,
+  P_LONGTITUDE_DEGREES,
+  P_LATITUDE_DEGREES,
+  P_LOCATION_NAME,
+  P_LOCATION_DESCRIPTION,
+  P_ADDRESS_LINES,
+  P_PHONE_NUMBER,
+  P_LOCATION_IMAGE,
+  P_DELIVERY_MODE,
+  P_TIMESTAMP,
+  P_ADDRESS,
   P_EMPTY  // Added to allow empty parameters handling
 };
 
