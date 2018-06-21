@@ -34,6 +34,8 @@
 #define SRC_COMPONENTS_POLICY_POLICY_REGULAR_INCLUDE_POLICY_POLICY_TABLE_ENUMS_H_
 
 #include <string>
+#include "generated_MOBILE_API_policy_types.h"
+#include "generated_HMI_API_policy_types.h"
 
 namespace rpc {
 namespace policy_table_interface_base {
