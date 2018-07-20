@@ -38,6 +38,8 @@
 #include "rc_rpc_plugin/rc_rpc_plugin.h"
 #include "rc_rpc_plugin/rc_module_constants.h"
 #include "rc_rpc_plugin/mock/mock_resource_allocation_manager.h"
+#include "rc_rpc_plugin/mock/mock_interior_data_cache.h"
+#include "rc_rpc_plugin/mock/mock_interior_data_manager.h"
 #include "gtest/gtest.h"
 #include "interfaces/MOBILE_API.h"
 
@@ -88,18 +90,25 @@ class RCOnRemoteControlSettingsNotificationTest
   application_manager::SharedPtr<Command> CreateRCCommand(
       MessageSharedPtr& msg) {
     InitCommand(kDefaultTimeout_);
+    RCCommandParams params{app_mngr_,
+                           mock_rpc_service_,
+                           mock_hmi_capabilities_,
+                           mock_policy_handler_,
+                           mock_allocation_manager_,
+                           mock_interior_data_cache_,
+                           mock_interior_data_manager_};
     return ::utils::MakeShared<Command>(msg ? msg : msg = CreateMessage(),
-                                        app_mngr_,
-                                        mock_rpc_service_,
-                                        mock_hmi_capabilities_,
-                                        mock_policy_handler_,
-                                        mock_allocation_manager_);
+                                        params);
   }
 
  protected:
   utils::SharedPtr<MockApplication> mock_app_;
   testing::NiceMock<rc_rpc_plugin_test::MockResourceAllocationManager>
       mock_allocation_manager_;
+  testing::NiceMock<rc_rpc_plugin_test::MockInteriorDataCache>
+      mock_interior_data_cache_;
+  testing::NiceMock<rc_rpc_plugin_test::MockInteriorDataManager>
+      mock_interior_data_manager_;
 };
 
 TEST_F(RCOnRemoteControlSettingsNotificationTest,

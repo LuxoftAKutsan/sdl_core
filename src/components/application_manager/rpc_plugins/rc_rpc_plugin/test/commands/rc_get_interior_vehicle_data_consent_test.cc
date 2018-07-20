@@ -46,6 +46,8 @@
 #include "rc_rpc_plugin/rc_rpc_plugin.h"
 #include "rc_rpc_plugin/rc_module_constants.h"
 #include "rc_rpc_plugin/mock/mock_resource_allocation_manager.h"
+#include "rc_rpc_plugin/mock/mock_interior_data_cache.h"
+#include "rc_rpc_plugin/mock/mock_interior_data_manager.h"
 #include "rc_rpc_plugin/commands/mobile/button_press_request.h"
 #include "rc_rpc_plugin/commands/hmi/rc_get_interior_vehicle_data_consent_response.h"
 #include "rc_rpc_plugin/commands/hmi/rc_get_interior_vehicle_data_consent_request.h"
@@ -102,11 +104,11 @@ class RCGetInteriorVehicleDataConsentTest
       : mock_app_(utils::MakeShared<NiceMock<MockApplication> >())
       , command_holder(app_mngr_)
       , request_controller(mock_request_controler)
-      , rpc_service(app_mngr_,
-                    request_controller,
-                    &mock_protocol_handler,
-                    &mock_hmi_handler,
-                    command_holder)
+      , rpc_service_(app_mngr_,
+                     request_controller,
+                     &mock_protocol_handler,
+                     &mock_hmi_handler,
+                     command_holder)
       , rc_app_extention_(utils::MakeShared<RCAppExtension>(kPluginID))
       , mock_rpc_plugin_manager(
             utils::MakeShared<NiceMock<MockRPCPluginManager> >())
@@ -121,8 +123,10 @@ class RCGetInteriorVehicleDataConsentTest
         .WillByDefault(Return(application_manager::HmiInterfaces::
                                   InterfaceState::STATE_AVAILABLE));
     ON_CALL(app_mngr_, application(kAppId)).WillByDefault(Return(mock_app_));
-    ON_CALL(mock_allocation_manager_, GetApplicationExtention(_))
+    ON_CALL(*mock_app_, QueryInterface(RCRPCPlugin::kRCPluginID))
         .WillByDefault(Return(rc_app_extention_));
+    testing::NiceMock<rc_rpc_plugin_test::MockInteriorDataCache>
+        mock_interior_data_cache_;
     ON_CALL(app_mngr_, GetPolicyHandler())
         .WillByDefault(ReturnRef(mock_policy_handler_));
     ON_CALL(app_mngr_, hmi_capabilities())
@@ -149,12 +153,15 @@ class RCGetInteriorVehicleDataConsentTest
   application_manager::SharedPtr<Command> CreateRCCommand(
       MessageSharedPtr& msg) {
     InitCommand(kDefaultTimeout_);
+    RCCommandParams params{app_mngr_,
+                           rpc_service_,
+                           mock_hmi_capabilities_,
+                           mock_policy_handler_,
+                           mock_allocation_manager_,
+                           mock_interior_data_cache_,
+                           mock_interior_data_manager_};
     return ::utils::MakeShared<Command>(msg ? msg : msg = CreateMessage(),
-                                        app_mngr_,
-                                        rpc_service,
-                                        mock_hmi_capabilities_,
-                                        mock_policy_handler_,
-                                        mock_allocation_manager_);
+                                        params);
   }
 
   MessageSharedPtr CreateBasicMessage() {
@@ -177,11 +184,15 @@ class RCGetInteriorVehicleDataConsentTest
   am::CommandHolderImpl command_holder;
   testing::NiceMock<rc_rpc_plugin_test::MockResourceAllocationManager>
       mock_allocation_manager_;
+  testing::NiceMock<rc_rpc_plugin_test::MockInteriorDataCache>
+      mock_interior_data_cache_;
+  testing::NiceMock<rc_rpc_plugin_test::MockInteriorDataManager>
+      mock_interior_data_manager_;
   smart_objects::SmartObject rc_capabilities_;
   MockRPCPlugin mock_rpc_plugin;
   MockCommandFactory mock_command_factory;
   am::request_controller::RequestController request_controller;
-  am::rpc_service::RPCServiceImpl rpc_service;
+  am::rpc_service::RPCServiceImpl rpc_service_;
   utils::SharedPtr<RCAppExtension> rc_app_extention_;
   utils::SharedPtr<am::plugin_manager::MockRPCPluginManager>
       mock_rpc_plugin_manager;
