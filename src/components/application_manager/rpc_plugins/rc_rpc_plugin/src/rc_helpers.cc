@@ -56,7 +56,7 @@ smart_objects::SmartObjectSPtr RCHelpers::CreateUnsubscribeRequestToHMI(
 }
 
 std::vector<application_manager::ApplicationSharedPtr>
-RCHelpers::AppsSubscribedTo(application_manager::ApplicationManager& app_mngr,
+RCHelpers::AppsSubscribedToModuleType(application_manager::ApplicationManager& app_mngr,
                             const std::string& module_type) {
   std::vector<application_manager::ApplicationSharedPtr> result;
   auto rc_apps = RCRPCPlugin::GetRCApplications(app_mngr);
@@ -69,6 +69,7 @@ RCHelpers::AppsSubscribedTo(application_manager::ApplicationManager& app_mngr,
   }
   return result;
 }
+
 
 RCHelpers::AppsModules RCHelpers::GetApplicaitonsAllowedModules(
     app_mngr::ApplicationManager& app_mngr) {
@@ -84,17 +85,5 @@ RCHelpers::AppsModules RCHelpers::GetApplicaitonsAllowedModules(
   return result;
 }
 
-std::vector<application_manager::ApplicationSharedPtr>
-RCHelpers::AppsSubscribedToModuleType(const std::string& module_type,
-                                      app_mngr::ApplicationManager& app_mngr) {
-  std::vector<application_manager::ApplicationSharedPtr> result;
-  auto apps_list = RCRPCPlugin::GetRCApplications(app_mngr);
-  for (auto& app : apps_list) {
-    auto extension = RCHelpers::GetRCExtension(*app);
-    if (extension->IsSubscibedToInteriorVehicleData(module_type)) {
-      result.push_back(app);
-    }
-  }
-  return result;
-}
+
 }

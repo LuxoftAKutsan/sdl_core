@@ -68,7 +68,7 @@ void OnInteriorVehicleDataNotification::Run() {
 
   const std::string module_type = ModuleType();
   auto apps_subscribed =
-      RCHelpers::AppsSubscribedTo(application_manager_, module_type);
+      RCHelpers::AppsSubscribedToModuleType(application_manager_, module_type);
   if (!apps_subscribed.empty()) {
     AddDataToCache(module_type);
   }

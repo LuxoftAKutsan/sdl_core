@@ -51,8 +51,7 @@ GetInteriorVehicleDataRequest::GetInteriorVehicleDataRequest(
     const RCCommandParams& params)
     : RCCommandRequest(message, params)
 
-    , excessive_subscription_occured_(false) {
-}
+    , excessive_subscription_occured_(false) {}
 
 bool CheckIfModuleTypeExistInCapabilities(
     const smart_objects::SmartObject& rc_capabilities,
@@ -145,7 +144,8 @@ bool GetInteriorVehicleDataRequest::TheLastAppShouldBeUnsubscribed(
   LOG4CXX_AUTO_TRACE(logger_);
   if (AppShouldBeUnsubscribed()) {
     const auto subscribed_to_module_type =
-        AppsSubscribedToModuleType(ModuleType());
+        RCHelpers::AppsSubscribedToModuleType(application_manager_,
+                                              ModuleType());
     if (subscribed_to_module_type.size() == 1 &&
         subscribed_to_module_type.front() == app) {
       LOG4CXX_DEBUG(logger_,
@@ -248,22 +248,6 @@ void GetInteriorVehicleDataRequest::on_event(
 }
 
 GetInteriorVehicleDataRequest::~GetInteriorVehicleDataRequest() {}
-
-std::vector<application_manager::ApplicationSharedPtr>
-GetInteriorVehicleDataRequest::AppsSubscribedToModuleType(
-    const std::string& module_type) {
-  std::vector<application_manager::ApplicationSharedPtr> subscribed_apps;
-  auto apps = RCRPCPlugin::GetRCApplications(application_manager_);
-  for (auto app : apps) {
-    auto extension = std::static_pointer_cast<
-        RCAppExtension>(app->QueryInterface(RCRPCPlugin::kRCPluginID));
-    DCHECK_OR_RETURN(extension, subscribed_apps);
-    if (extension->IsSubscibedToInteriorVehicleData(module_type)) {
-      subscribed_apps.push_back(app);
-    }
-  }
-  return subscribed_apps;
-}
 
 void GetInteriorVehicleDataRequest::ProccessSubscription(
     const NsSmartDeviceLink::NsSmartObjects::SmartObject& hmi_response) {

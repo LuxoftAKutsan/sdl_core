@@ -90,7 +90,7 @@ void InteriorDataManagerImpl::UpdateHMISubscriptionsOnPolicyUpdated() {
     for (const auto& module : pair.second) {
       rc_extension->UnsubscribeFromInteriorVehicleData(module);
       auto apps_subscribed =
-          RCHelpers::AppsSubscribedToModuleType(module, app_mngr_);
+          RCHelpers::AppsSubscribedToModuleType(app_mngr_, module);
       if (apps_subscribed.empty()) {
         UnsubscribeFromInteriorVehicleData(module);
       }
@@ -105,7 +105,8 @@ void InteriorDataManagerImpl::UpdateHMISubscriptionsOnAppUnregistered(
   auto subscribed_data = rc_extension->InteriorVehicleDataSubscriptions();
   rc_extension->UnsubscribeFromInteriorVehicleData();
   for (auto& data : subscribed_data) {
-    auto apps_subscribed = RCHelpers::AppsSubscribedTo(app_mngr_, data);
+    auto apps_subscribed =
+        RCHelpers::AppsSubscribedToModuleType(app_mngr_, data);
     if (apps_subscribed.empty()) {
       UnsubscribeFromInteriorVehicleData(data);
     }
