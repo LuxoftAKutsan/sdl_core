@@ -55,8 +55,8 @@ class InteriorDataCacheImpl : public InteriorDataCache {
   void Clear() OVERRIDE;
 
  private:
-  std::map<std::string, smart_objects::SmartObject> subscriptions_;
-  mutable sync_primitives::Lock subscriptions_lock_;
+  std::map<std::string, smart_objects::SmartObject> cached_data_;
+  mutable sync_primitives::Lock cached_data_lock_;
 };
 
 }  // rc_rpc_plugin
