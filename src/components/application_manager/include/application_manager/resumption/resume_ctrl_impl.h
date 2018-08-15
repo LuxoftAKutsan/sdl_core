@@ -451,14 +451,14 @@ class ResumeCtrlImpl : public ResumeCtrl,
 
   /**
    * @brief CheckDelayAfterIgnOn should check if SDL was started less
-   * then N seconds ago. N will be read from profile.
+   * than N seconds ago. N will be read from profile.
    * @return true if SDL started N seconds ago, otherwise return false
    */
   bool CheckDelayAfterIgnOn() const;
 
   /**
    * @brief CheckDelayBeforeIgnOff checks if app was unregistered less
-   * then N seconds before Ignition OFF. N will be read from profile.
+   * than N seconds before Ignition OFF. N will be read from profile.
    * @return true if app was disconnected within timeframe of N seconds before
    * Ignition Off,
    * otherwise return false
