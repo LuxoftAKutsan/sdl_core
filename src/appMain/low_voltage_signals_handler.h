@@ -71,7 +71,7 @@ class LowVoltageSignalsHandler {
   void HandleSignal(const int signo);
 
   /**
-   * @brief Returns signals mask required for handlning
+   * @brief Returns signals mask required for handling
    * LOW VOLTAGE functionality
    */
   sigset_t LowVoltageSignalsMask() const;
