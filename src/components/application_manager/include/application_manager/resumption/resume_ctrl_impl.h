@@ -468,7 +468,8 @@ class ResumeCtrlImpl : public ResumeCtrl,
 
   /**
    * @brief CheckDelayAfterWakeUp should check if app was registered
-   * during N seconds after WakeUp signal. N will be read from profile.
+   * during the first N seconds after WakeUp signal. N will be read from
+   * profile.
    * @return true if app registered within N seconds after WakeUp, otherwise
    * return false
    */
