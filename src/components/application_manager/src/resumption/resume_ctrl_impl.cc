@@ -941,7 +941,9 @@ bool ResumeCtrlImpl::CheckIgnCyclesData() const {
   const uint32_t the_first_ignition = 1;
   const bool is_emergency_ign_off_occurred =
       global_ign_on_count > the_first_ignition;
-  // In case of resumption it should be minimum second ignition cycle.
+  // global_ign_on_count is reseting to 0 at ignition off
+  // global_ign_on_count is incrementing at ignition on
+  // global_ign_on_count > 1 means that correct ignition off was not present.
   if (is_emergency_ign_off_occurred) {
     LOG4CXX_WARN(logger_,
                  "Emergency IGN OFF occurred. Possibly after Low Voltage");
