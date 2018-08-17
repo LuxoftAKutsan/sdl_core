@@ -375,20 +375,21 @@ uint32_t ResumptionDataDB::GetGlobalIgnOnCounter() const {
   sync_primitives::AutoLock autolock(resumption_lock_);
 
   utils::dbms::SQLQuery query(db());
-  if (query.Prepare(kSelectGlobalIgnOnCounter)) {
-    if (query.Exec()) {
-      const auto global_ign_on_counter = query.GetUInteger(0);
-      LOG4CXX_DEBUG(logger_,
-                    "Global Ign On Counter = " << global_ign_on_counter);
-      return global_ign_on_counter;
-    } else {
-      LOG4CXX_ERROR(logger_,
-                    "Problem with exec query : " << kSelectGlobalIgnOnCounter);
-    }
+  if (!query.Prepare(kSelectGlobalIgnOnCounter)) {
+    LOG4CXX_ERROR(logger_,
+                  "Problem with prepare query : " << kSelectGlobalIgnOnCounter);
+    return 0;
   }
-  LOG4CXX_ERROR(logger_,
-                "Problem with prepare query : " << kSelectGlobalIgnOnCounter);
-  return 0;
+
+  if (!query.Exec()) {
+    LOG4CXX_ERROR(logger_,
+                  "Problem with exec query : " << kSelectGlobalIgnOnCounter);
+    return 0;
+  }
+
+  const auto global_ign_on_counter = query.GetUInteger(0);
+  LOG4CXX_DEBUG(logger_, "Global Ign On Counter = " << global_ign_on_counter);
+  return global_ign_on_counter;
 }
 
 void ResumptionDataDB::IncrementGlobalIgnOnCounter() {
