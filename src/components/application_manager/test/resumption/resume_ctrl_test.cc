@@ -1309,7 +1309,7 @@ TEST_F(
       .WillOnce(ReturnRef(app_mngr_settings_));
 
   EXPECT_CALL(app_mngr_settings_, resumption_delay_before_ign())
-      .WillOnce(Return(resumption_delay_before_ign_ + time_offset));
+      .WillOnce(Return(resumption_delay_before_ign_));
 
   res_ctrl_->SaveLowVoltageTime();
   res_ctrl_->StartAppHmiStateResumption(mock_app_);
