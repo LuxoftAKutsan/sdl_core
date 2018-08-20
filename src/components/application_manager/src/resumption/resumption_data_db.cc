@@ -378,13 +378,13 @@ uint32_t ResumptionDataDB::GetGlobalIgnOnCounter() const {
   if (!query.Prepare(kSelectGlobalIgnOnCounter)) {
     LOG4CXX_ERROR(logger_,
                   "Problem with prepare query : " << kSelectGlobalIgnOnCounter);
-    return 0;
+    return 1;
   }
 
   if (!query.Exec()) {
     LOG4CXX_ERROR(logger_,
                   "Problem with exec query : " << kSelectGlobalIgnOnCounter);
-    return 0;
+    return 1;
   }
 
   const auto global_ign_on_counter = query.GetUInteger(0);
