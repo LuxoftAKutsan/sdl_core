@@ -36,7 +36,6 @@
 
 #include "gtest/gtest.h"
 #include "mobile/register_app_interface_request.h"
-#include "utils/shared_ptr.h"
 #include "smart_objects/smart_object.h"
 #include "application_manager/commands/commands_test.h"
 #include "application_manager/commands/command_request_test.h"
@@ -56,6 +55,7 @@
 #include "utils/custom_string.h"
 #include "utils/lock.h"
 #include "utils/macro.h"
+#include "utils/semantic_version.h"
 
 namespace test {
 namespace components {
@@ -70,7 +70,6 @@ using ::testing::DoAll;
 
 namespace am = ::application_manager;
 
-using ::utils::SharedPtr;
 using am::commands::MessageSharedPtr;
 using sdl_rpc_plugin::commands::RegisterAppInterfaceRequest;
 
@@ -84,6 +83,7 @@ const std::string kMacAddress = "test_mac_address";
 const std::string kAppId = "test_app_id";
 const std::string kDummyString = "test_string";
 const std::vector<uint32_t> kDummyDiagModes;
+const utils::SemanticVersion mock_semantic_version(1, 0, 0);
 }  // namespace
 
 class RegisterAppInterfaceRequestTest
@@ -117,6 +117,12 @@ class RegisterAppInterfaceRequestTest
         kHmiLanguage;
     (*msg_)[am::strings::msg_params]
            [am::strings::hmi_display_language_desired] = kHmiLanguage;
+    (*msg_)[am::strings::msg_params][am::strings::sync_msg_version]
+           [am::strings::major_version] = 4;
+    (*msg_)[am::strings::msg_params][am::strings::sync_msg_version]
+           [am::strings::minor_version] = 0;
+    (*msg_)[am::strings::msg_params][am::strings::sync_msg_version]
+           [am::strings::patch_version] = 0;
   }
 
   MockAppPtr CreateBasicMockedApp() {
@@ -127,6 +133,8 @@ class RegisterAppInterfaceRequestTest
     ON_CALL(*mock_app, language()).WillByDefault(ReturnRef(kMobileLanguage));
     ON_CALL(*mock_app, ui_language()).WillByDefault(ReturnRef(kMobileLanguage));
     ON_CALL(*mock_app, policy_app_id()).WillByDefault(Return(kAppId));
+    ON_CALL(*mock_app, msg_version())
+        .WillByDefault(ReturnRef(mock_semantic_version));
     return mock_app;
   }
 
@@ -217,15 +225,14 @@ class RegisterAppInterfaceRequestTest
                 ManageHMICommand(HMIResultCodeIs(
                     hmi_apis::FunctionID::VR_ChangeRegistration))).Times(0);
 
-    EXPECT_CALL(
-        app_mngr_,
-        OnApplicationSwitched(
-            MockAppPtr::static_pointer_cast<application_manager::Application>(
-                mock_app)));
+    EXPECT_CALL(app_mngr_,
+                OnApplicationSwitched(
+                    std::static_pointer_cast<application_manager::Application>(
+                        mock_app)));
   }
 
   MessageSharedPtr msg_;
-  SharedPtr<RegisterAppInterfaceRequest> command_;
+  std::shared_ptr<RegisterAppInterfaceRequest> command_;
 
   const utils::custom_string::CustomString app_name_;
   std::shared_ptr<sync_primitives::Lock> lock_ptr_;
@@ -279,11 +286,12 @@ TEST_F(RegisterAppInterfaceRequestTest, Run_MinimalData_SUCCESS) {
   ON_CALL(mock_policy_handler_, GetInitialAppData(kAppId, _, _))
       .WillByDefault(Return(true));
   policy::StatusNotifier notify_upd_manager =
-      utils::MakeShared<utils::CallNothing>();
+      std::make_shared<utils::CallNothing>();
   ON_CALL(mock_policy_handler_, AddApplication(_, _))
       .WillByDefault(Return(notify_upd_manager));
 
   EXPECT_CALL(app_mngr_, RegisterApplication(msg_)).WillOnce(Return(mock_app));
+
   EXPECT_CALL(mock_rpc_service_,
               ManageHMICommand(HMIResultCodeIs(
                   hmi_apis::FunctionID::BasicCommunication_OnAppRegistered)))
@@ -377,7 +385,7 @@ TEST_F(RegisterAppInterfaceRequestTest,
   ON_CALL(mock_policy_handler_, GetInitialAppData(kAppId, _, _))
       .WillByDefault(Return(true));
   policy::StatusNotifier notify_upd_manager =
-      utils::MakeShared<utils::CallNothing>();
+      std::make_shared<utils::CallNothing>();
   ON_CALL(mock_policy_handler_, AddApplication(_, _))
       .WillByDefault(Return(notify_upd_manager));
 
@@ -434,8 +442,7 @@ TEST_F(RegisterAppInterfaceRequestTest,
   EXPECT_CALL(
       mock_resume_crt_,
       CheckApplicationHash(
-          MockAppPtr::static_pointer_cast<application_manager::Application>(
-              mock_app),
+          std::static_pointer_cast<application_manager::Application>(mock_app),
           request_hash_id)).WillOnce(Return(true));
 
   EXPECT_CALL(mock_resume_crt_, RemoveApplicationFromSaved(_)).Times(0);
@@ -469,15 +476,13 @@ TEST_F(RegisterAppInterfaceRequestTest,
   EXPECT_CALL(
       mock_resume_crt_,
       CheckApplicationHash(
-          MockAppPtr::static_pointer_cast<application_manager::Application>(
-              mock_app),
+          std::static_pointer_cast<application_manager::Application>(mock_app),
           request_hash_id)).WillOnce(Return(false));
 
   EXPECT_CALL(
       mock_application_helper_,
       RecallApplicationData(
-          MockAppPtr::static_pointer_cast<application_manager::Application>(
-              mock_app),
+          std::static_pointer_cast<application_manager::Application>(mock_app),
           _));
 
   EXPECT_CALL(app_mngr_, RegisterApplication(msg_)).Times(0);
@@ -506,8 +511,7 @@ TEST_F(RegisterAppInterfaceRequestTest,
   EXPECT_CALL(
       mock_application_helper_,
       RecallApplicationData(
-          MockAppPtr::static_pointer_cast<application_manager::Application>(
-              mock_app),
+          std::static_pointer_cast<application_manager::Application>(mock_app),
           _));
 
   EXPECT_CALL(app_mngr_, RegisterApplication(msg_)).Times(0);

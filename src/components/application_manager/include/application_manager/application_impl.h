@@ -50,7 +50,7 @@
 
 #include "connection_handler/device.h"
 #include "utils/lock.h"
-#include "utils/atomic_object.h"
+#include <atomic>
 #include "utils/custom_string.h"
 #include "utils/timer.h"
 #include "utils/macro.h"
@@ -91,15 +91,7 @@ class ApplicationImpl : public virtual Application,
       const std::string& mac_address,
       const connection_handler::DeviceHandle device_id,
       const custom_str::CustomString& app_name,
-      utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
-      ApplicationManager& application_manager);
-
-  DEPRECATED ApplicationImpl(
-      uint32_t application_id,
-      const std::string& policy_app_id,
-      const std::string& mac_address,
-      const custom_str::CustomString& app_name,
-      utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
+      std::shared_ptr<usage_statistics::StatisticsManager> statistics_manager,
       ApplicationManager& application_manager);
 
   ~ApplicationImpl();
@@ -353,6 +345,12 @@ class ApplicationImpl : public virtual Application,
   virtual const HmiStatePtr CurrentHmiState() const;
 
   /**
+   * @brief Checks if app is allowed to change audio source
+   * @return True - if allowed, otherwise - False
+   */
+  virtual bool IsAllowedToChangeAudioSource() const;
+
+  /**
    * @brief RegularHmiState of application without active events VR, TTS etc ...
    * @return HmiState of application
    */
@@ -499,7 +497,7 @@ class ApplicationImpl : public virtual Application,
   HelpPromptManagerImpl help_prompt_manager_impl_;
   protocol_handler::MajorProtocolVersion protocol_version_;
   bool is_voice_communication_application_;
-  sync_primitives::atomic_bool is_resuming_;
+  std::atomic_bool is_resuming_;
   mobile_api::HMILevel::eType deferred_resumption_hmi_level_;
   bool is_hash_changed_during_suspend_;
 

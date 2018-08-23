@@ -95,7 +95,7 @@ void SetGlobalPropertiesRequest::Run() {
         (*message_)[strings::msg_params][strings::menu_icon],
         app,
         application_manager_);
-    if (mobile_apis::Result::SUCCESS != verification_result) {
+    if (mobile_apis::Result::INVALID_DATA == verification_result) {
       LOG4CXX_ERROR(
           logger_, "MessageHelper::VerifyImage return " << verification_result);
       SendResponse(false, verification_result);
@@ -104,7 +104,7 @@ void SetGlobalPropertiesRequest::Run() {
   }
   // Check for image file(s) in vrHelpItem
   if ((*message_)[strings::msg_params].keyExists(strings::vr_help)) {
-    if (mobile_apis::Result::SUCCESS !=
+    if (mobile_apis::Result::INVALID_DATA ==
         MessageHelper::VerifyImageVrHelpItems(
             (*message_)[strings::msg_params][strings::vr_help],
             app,
@@ -284,7 +284,7 @@ void SetGlobalPropertiesRequest::on_event(const event_engine::Event& event) {
       ui_result_ = static_cast<hmi_apis::Common_Result::eType>(
           message[strings::params][hmi_response::code].asInt());
       GetInfo(message, ui_response_info_);
-      if (application.valid()) {
+      if (application.use_count() != 0) {
         auto& help_prompt_manager = application->help_prompt_manager();
         help_prompt_manager.OnSetGlobalPropertiesReceived(message, true);
       }
@@ -297,7 +297,7 @@ void SetGlobalPropertiesRequest::on_event(const event_engine::Event& event) {
       tts_result_ = static_cast<hmi_apis::Common_Result::eType>(
           message[strings::params][hmi_response::code].asInt());
       GetInfo(message, tts_response_info_);
-      if (application.valid()) {
+      if (application.use_count() != 0) {
         auto& help_prompt_manager = application->help_prompt_manager();
         help_prompt_manager.OnSetGlobalPropertiesReceived(message, true);
       }

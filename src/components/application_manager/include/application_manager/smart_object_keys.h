@@ -160,6 +160,7 @@ extern const char* hours;
 extern const char* minutes;
 extern const char* seconds;
 extern const char* update_mode;
+extern const char* audioStreamingIndicator;
 extern const char* trigger_source;
 extern const char* hmi_level;
 extern const char* activate_app_hmi_level;
@@ -311,6 +312,8 @@ extern const char* last_ign_off_time;
 extern const char* resume_vr_grammars;
 
 extern const char* ign_off_count;
+
+extern const char* global_ign_on_counter;
 
 extern const char* connection_info;
 extern const char* is_download_complete;

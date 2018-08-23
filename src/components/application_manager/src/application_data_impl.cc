@@ -103,6 +103,10 @@ const mobile_api::Language::eType& InitialApplicationDataImpl::ui_language()
   return ui_language_;
 }
 
+const utils::SemanticVersion& InitialApplicationDataImpl::msg_version() const {
+  return msg_version_;
+}
+
 void InitialApplicationDataImpl::set_app_types(
     const smart_objects::SmartObject& app_types) {
   if (app_types_) {
@@ -153,6 +157,11 @@ void InitialApplicationDataImpl::set_ui_language(
   ui_language_ = ui_language;
 }
 
+void InitialApplicationDataImpl::set_msg_version(
+    const utils::SemanticVersion& version) {
+  msg_version_ = version;
+}
+
 void InitialApplicationDataImpl::set_perform_interaction_layout(
     mobile_apis::LayoutMode::eType layout) {
   perform_interaction_layout_ = layout;
@@ -178,13 +187,14 @@ DynamicApplicationDataImpl::DynamicApplicationDataImpl()
     , night_color_scheme_(NULL)
     , display_layout_("")
     , commands_()
-    , commands_lock_ptr_(new sync_primitives::Lock(true))
+    , commands_lock_ptr_(std::make_shared<sync_primitives::RecursiveLock>())
     , sub_menu_()
     , sub_menu_lock_ptr_(std::make_shared<sync_primitives::Lock>())
     , choice_set_map_()
     , choice_set_map_lock_ptr_(std::make_shared<sync_primitives::Lock>())
     , performinteraction_choice_set_map_()
-    , performinteraction_choice_set_lock_ptr_(new sync_primitives::Lock(true))
+    , performinteraction_choice_set_lock_ptr_(
+          std::make_shared<sync_primitives::RecursiveLock>())
     , is_perform_interaction_active_(false)
     , is_reset_global_properties_active_(false)
     , perform_interaction_mode_(-1) {}

@@ -35,6 +35,7 @@
 
 #include <string>
 #include "utils/lock.h"
+#include "utils/semantic_version.h"
 #include "smart_objects/smart_object.h"
 #include "application_manager/application.h"
 #include "interfaces/MOBILE_API.h"
@@ -55,6 +56,7 @@ class InitialApplicationDataImpl : public virtual Application {
   const smart_objects::SmartObject* ngn_media_screen_name() const;
   const mobile_api::Language::eType& language() const;
   const mobile_api::Language::eType& ui_language() const;
+  const utils::SemanticVersion& msg_version() const;
 
   void set_app_types(const smart_objects::SmartObject& app_types);
   void set_vr_synonyms(const smart_objects::SmartObject& vr_synonyms);
@@ -63,6 +65,7 @@ class InitialApplicationDataImpl : public virtual Application {
   void set_ngn_media_screen_name(const smart_objects::SmartObject& ngn_name);
   void set_language(const mobile_api::Language::eType& language);
   void set_ui_language(const mobile_api::Language::eType& ui_language);
+  void set_msg_version(const utils::SemanticVersion& version);
 
   void set_perform_interaction_layout(
       mobile_api::LayoutMode::eType layout) OVERRIDE;
@@ -77,6 +80,7 @@ class InitialApplicationDataImpl : public virtual Application {
   mobile_api::Language::eType language_;
   mobile_api::Language::eType ui_language_;
   mobile_apis::LayoutMode::eType perform_interaction_layout_;
+  utils::SemanticVersion msg_version_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(InitialApplicationDataImpl);
@@ -275,13 +279,13 @@ class DynamicApplicationDataImpl : public virtual Application {
   std::string display_layout_;
 
   CommandsMap commands_;
-  mutable std::shared_ptr<sync_primitives::Lock> commands_lock_ptr_;
+  mutable std::shared_ptr<sync_primitives::RecursiveLock> commands_lock_ptr_;
   SubMenuMap sub_menu_;
   mutable std::shared_ptr<sync_primitives::Lock> sub_menu_lock_ptr_;
   ChoiceSetMap choice_set_map_;
   mutable std::shared_ptr<sync_primitives::Lock> choice_set_map_lock_ptr_;
   PerformChoiceSetMap performinteraction_choice_set_map_;
-  mutable std::shared_ptr<sync_primitives::Lock>
+  mutable std::shared_ptr<sync_primitives::RecursiveLock>
       performinteraction_choice_set_lock_ptr_;
   uint32_t is_perform_interaction_active_;
   bool is_reset_global_properties_active_;

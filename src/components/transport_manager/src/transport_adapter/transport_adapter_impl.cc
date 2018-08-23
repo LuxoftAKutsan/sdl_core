@@ -52,13 +52,9 @@ const char* tc_tcp_ip_address = "tcp_ip_address";
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "TransportManager")
 namespace {
-// @deprecated DeviceTypes: PASA_AOA, PASA_BLUETOOTH, MME
 DeviceTypes devicesType = {
     std::make_pair(DeviceType::AOA, std::string("USB_AOA")),
-    std::make_pair(DeviceType::PASA_AOA, std::string("USB_AOA")),
     std::make_pair(DeviceType::BLUETOOTH, std::string("BLUETOOTH")),
-    std::make_pair(DeviceType::PASA_BLUETOOTH, std::string("BLUETOOTH")),
-    std::make_pair(DeviceType::MME, std::string("USB_IOS")),
     std::make_pair(DeviceType::IOS_BT, std::string("BLUETOOTH_IOS")),
     std::make_pair(DeviceType::IOS_USB, std::string("USB_IOS")),
     std::make_pair(DeviceType::TCP, std::string("WIFI")),
@@ -826,16 +822,16 @@ ApplicationList TransportAdapterImpl::GetApplicationList(
     const DeviceUID& device_id) const {
   LOG4CXX_TRACE(logger_, "enter. device_id: " << &device_id);
   DeviceSptr device = FindDevice(device_id);
-  if (device.valid()) {
+  if (device.use_count() != 0) {
     ApplicationList lst = device->GetApplicationList();
     LOG4CXX_TRACE(logger_,
                   "exit with ApplicationList. It's size = "
-                      << lst.size() << " Condition: device.valid()");
+                      << lst.size() << " Condition: device.use_count() != 0");
     return lst;
   }
-  LOG4CXX_TRACE(
-      logger_,
-      "exit with empty ApplicationList. Condition: NOT device.valid()");
+  LOG4CXX_TRACE(logger_,
+                "exit with empty ApplicationList. Condition: NOT "
+                "device.use_count() != 0");
   return ApplicationList();
 }
 
@@ -898,7 +894,7 @@ bool TransportAdapterImpl::IsInitialised() const {
 
 std::string TransportAdapterImpl::DeviceName(const DeviceUID& device_id) const {
   DeviceSptr device = FindDevice(device_id);
-  if (device.valid()) {
+  if (device.use_count() != 0) {
     return device->name();
   } else {
     return "";

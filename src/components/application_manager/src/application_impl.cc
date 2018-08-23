@@ -41,8 +41,7 @@
 #include "utils/file_system.h"
 #include "utils/logger.h"
 #include "utils/gen_hash.h"
-#include "utils/shared_ptr.h"
-#include "utils/make_shared.h"
+
 #include "utils/timer_task_impl.h"
 #include "application_manager/policies/policy_handler_interface.h"
 #include "application_manager/resumption/resume_ctrl.h"
@@ -83,8 +82,8 @@ void SwitchApplicationParameters(ApplicationSharedPtr app,
                                  const size_t device_id,
                                  const std::string& mac_address) {
   LOG4CXX_AUTO_TRACE(logger_);
-  utils::SharedPtr<ApplicationImpl> application =
-      ApplicationSharedPtr::dynamic_pointer_cast<ApplicationImpl>(app);
+  std::shared_ptr<ApplicationImpl> application =
+      std::dynamic_pointer_cast<ApplicationImpl>(app);
   DCHECK_OR_RETURN_VOID(application);
   application->app_id_ = app_id;
   application->device_id_ = device_id;
@@ -97,7 +96,7 @@ ApplicationImpl::ApplicationImpl(
     const std::string& mac_address,
     const connection_handler::DeviceHandle device_id,
     const custom_str::CustomString& app_name,
-    utils::SharedPtr<usage_statistics::StatisticsManager> statistics_manager,
+    std::shared_ptr<usage_statistics::StatisticsManager> statistics_manager,
     ApplicationManager& application_manager)
     : grammar_id_(0)
     , hmi_app_id_(0)
@@ -313,6 +312,13 @@ const HmiStatePtr ApplicationImpl::CurrentHmiState() const {
 
 const HmiStatePtr ApplicationImpl::RegularHmiState() const {
   return state_.GetState(HmiState::STATE_ID_REGULAR);
+}
+
+bool ApplicationImpl::IsAllowedToChangeAudioSource() const {
+  if (is_remote_control_supported() && is_media_application()) {
+    return true;
+  }
+  return false;
 }
 
 const HmiStatePtr ApplicationImpl::PostponedHmiState() const {
@@ -663,10 +669,6 @@ bool ApplicationImpl::set_app_icon_path(const std::string& path) {
 
 void ApplicationImpl::set_app_allowed(const bool allowed) {
   is_app_allowed_ = allowed;
-}
-
-void ApplicationImpl::set_device(connection_handler::DeviceHandle device) {
-  device_id_ = device;
 }
 
 void ApplicationImpl::set_secondary_device(

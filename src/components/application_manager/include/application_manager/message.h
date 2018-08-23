@@ -36,7 +36,6 @@
 #include <string>
 #include <vector>
 
-#include "utils/shared_ptr.h"
 #include "protocol/message_priority.h"
 #include "protocol/rpc_type.h"
 #include "protocol/common.h"
@@ -89,7 +88,6 @@ class Message {
   void set_correlation_id(int32_t id);
   void set_connection_key(int32_t key);
   void set_message_type(MessageType type);
-  DEPRECATED void set_binary_data(BinaryData* data);
   void set_binary_data(const BinaryData* data);
   void set_json_message(const std::string& json_message);
   void set_protocol_version(protocol_handler::MajorProtocolVersion version);
@@ -126,8 +124,8 @@ class Message {
   protocol_handler::MajorProtocolVersion version_;
 };
 
-typedef utils::SharedPtr<application_manager::Message> MobileMessage;
-typedef utils::SharedPtr<application_manager::Message> MessagePtr;
+typedef std::shared_ptr<application_manager::Message> MobileMessage;
+typedef std::shared_ptr<application_manager::Message> MessagePtr;
 }  // namespace application_manager
 
 #endif  // SRC_COMPONENTS_APPLICATION_MANAGER_INCLUDE_APPLICATION_MANAGER_MESSAGE_H_

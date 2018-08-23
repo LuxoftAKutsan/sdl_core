@@ -124,6 +124,7 @@ const char* hours = "hours";
 const char* minutes = "minutes";
 const char* seconds = "seconds";
 const char* update_mode = "updateMode";
+const char* audioStreamingIndicator = "audioStreamingIndicator";
 const char* trigger_source = "triggerSource";
 const char* hmi_level = "hmiLevel";
 const char* activate_app_hmi_level = "level";
@@ -275,6 +276,7 @@ const char* last_ign_off_time = "last_ign_off_time";
 const char* resume_vr_grammars = "resumeVrGrammars";
 
 const char* ign_off_count = "ign_off_count";
+const char* global_ign_on_counter = "global_ign_on_counter";
 const char* suspend_count = "suspend_count";
 
 const char* connection_info = "connection_info";

@@ -125,7 +125,6 @@
 #include "sdl_rpc_plugin/commands/mobile/send_haptic_data_request.h"
 #include "sdl_rpc_plugin/commands/mobile/send_haptic_data_response.h"
 #include "interfaces/MOBILE_API.h"
-#include "utils/make_shared.h"
 
 CREATE_LOGGERPTR_GLOBAL(logger_, "ApplicationManager")
 namespace sdl_rpc_plugin {
@@ -264,7 +263,7 @@ CommandCreator& MobileCommandFactory::get_creator_factory(
     }
     case mobile_apis::FunctionID::GetWayPointsID: {
       return mobile_api::messageType::request == message_type
-                 ? factory.GetCreator<commands::ShowConstantTBTRequest>()
+                 ? factory.GetCreator<commands::GetWayPointsRequest>()
                  : factory.GetCreator<commands::GetWayPointsResponse>();
     }
     case mobile_apis::FunctionID::SubscribeWayPointsID: {
@@ -274,8 +273,8 @@ CommandCreator& MobileCommandFactory::get_creator_factory(
     }
     case mobile_apis::FunctionID::UnsubscribeWayPointsID: {
       return mobile_api::messageType::request == message_type
-                 ? factory.GetCreator<commands::ShowConstantTBTRequest>()
-                 : factory.GetCreator<commands::ShowConstantTBTResponse>();
+                 ? factory.GetCreator<commands::UnSubscribeWayPointsRequest>()
+                 : factory.GetCreator<commands::UnsubscribeWayPointsResponse>();
     }
     case mobile_apis::FunctionID::GetSystemCapabilityID: {
       return mobile_api::messageType::request == message_type

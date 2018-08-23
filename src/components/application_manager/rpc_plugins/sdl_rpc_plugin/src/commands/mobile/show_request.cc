@@ -143,7 +143,7 @@ void ShowRequest::Run() {
         (*message_)[strings::msg_params][strings::graphic],
         app,
         application_manager_);
-    if (mobile_apis::Result::SUCCESS != verification_result) {
+    if (mobile_apis::Result::INVALID_DATA == verification_result) {
       LOG4CXX_ERROR(logger_, "Image verification failed.");
       SendResponse(false, verification_result);
       return;
@@ -155,7 +155,7 @@ void ShowRequest::Run() {
         (*message_)[strings::msg_params][strings::secondary_graphic],
         app,
         application_manager_);
-    if (mobile_apis::Result::SUCCESS != verification_result) {
+    if (mobile_apis::Result::INVALID_DATA == verification_result) {
       LOG4CXX_ERROR(logger_, "Image verification failed.");
       SendResponse(false, verification_result);
       return;
@@ -276,7 +276,7 @@ void ShowRequest::Run() {
   SendHMIRequest(hmi_apis::FunctionID::UI_Show, &msg_params, true);
 
   app_mngr::commands::MessageSharedPtr persistentData =
-      new smart_objects::SmartObject(msg_params);
+      std::make_shared<smart_objects::SmartObject>(msg_params);
   app->set_show_command(*persistentData);
 }
 
