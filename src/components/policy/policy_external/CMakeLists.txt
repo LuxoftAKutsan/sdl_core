@@ -57,6 +57,7 @@ set(SOURCES
   ${POLICY_PATH}/src/update_status_manager.cc
   ${POLICY_PATH}/src/status.cc
   ${POLICY_PATH}/src/cache_manager.cc
+  ${POLICY_PATH}/src/access_remote_impl.cc
   ${COMPONENTS_DIR}/rpc_base/src/rpc_base/rpc_base.cc
   ${CMAKE_CURRENT_BINARY_DIR}/
 )
@@ -84,10 +85,6 @@ add_custom_target(
     DEPENDS ${GENERATED_HMI_POLICY_TYPES_HPP}
     DEPENDS ${GENERATED_HMI_POLICY_TYPES_CPP}
     )
-
-if (REMOTE_CONTROL)
-  list(APPEND SOURCES ${POLICY_PATH}/src/access_remote_impl.cc)
-endif()
 
 list(APPEND SOURCES
   ${POLICY_PATH}/src/sql_pt_ext_queries.cc

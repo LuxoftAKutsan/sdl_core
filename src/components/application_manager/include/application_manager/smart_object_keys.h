@@ -54,6 +54,7 @@ extern const char* msg_params;
 extern const char* method_name;
 extern const char* info;
 extern const char* app_id;
+extern const char* full_app_id;
 extern const char* bundle_id;
 extern const char* app_info;
 extern const char* app_launch;
@@ -160,10 +161,12 @@ extern const char* hours;
 extern const char* minutes;
 extern const char* seconds;
 extern const char* update_mode;
+extern const char* audioStreamingIndicator;
 extern const char* trigger_source;
 extern const char* hmi_level;
 extern const char* activate_app_hmi_level;
 extern const char* audio_streaming_state;
+extern const char* video_streaming_state;
 extern const char* system_context;
 extern const char* speech_capabilities;
 extern const char* vr_capabilities;
@@ -187,6 +190,7 @@ extern const char* red;
 extern const char* green;
 extern const char* blue;
 extern const char* display_layout;
+extern const char* icon_resumed;
 
 // PutFile
 extern const char* sync_file_name;
@@ -195,10 +199,12 @@ extern const char* file_type;
 extern const char* file_size;
 extern const char* crc32_check_sum;
 extern const char* request_type;
+extern const char* request_subtype;
 extern const char* persistent_file;
 extern const char* file_data;
 extern const char* space_available;
 extern const char* image_type;
+extern const char* is_template;
 extern const char* image;
 extern const char* type;
 extern const char* system_file;
@@ -214,6 +220,7 @@ extern const char* did_location;
 extern const char* app_list;
 extern const char* device_list;
 extern const char* device_info;
+extern const char* secondary_device_info;
 extern const char* name;
 extern const char* id;
 extern const char* isSDLAllowed;
@@ -250,11 +257,13 @@ extern const char* fuel_level_state;
 extern const char* instant_fuel_consumption;
 extern const char* fuel_range;
 extern const char* external_temp;
+extern const char* turn_signal;
 extern const char* vin;
 extern const char* prndl;
 extern const char* tire_pressure;
 extern const char* odometer;
 extern const char* belt_status;
+extern const char* electronic_park_brake_status;
 extern const char* body_information;
 extern const char* device_status;
 extern const char* driver_braking;
@@ -304,6 +313,8 @@ extern const char* last_ign_off_time;
 extern const char* resume_vr_grammars;
 
 extern const char* ign_off_count;
+
+extern const char* global_ign_on_counter;
 
 extern const char* connection_info;
 extern const char* is_download_complete;
@@ -418,7 +429,19 @@ extern const char* kFull;
 extern const char* kLimited;
 extern const char* kBackground;
 extern const char* kNone;
-}
+}  // namespace hmi_levels
+
+namespace time_keys {
+extern const char* millisecond;
+extern const char* second;
+extern const char* minute;
+extern const char* hour;
+extern const char* day;
+extern const char* month;
+extern const char* year;
+extern const char* tz_hour;
+extern const char* tz_minute;
+}  // namespace time_keys
 
 namespace hmi_request {
 extern const char* parent_id;
@@ -480,6 +503,7 @@ extern const char* dtc;
 extern const char* ecu_header;
 extern const char* image_capabilities;
 extern const char* display_type;
+extern const char* display_name;
 extern const char* text_fields;
 extern const char* media_clock_formats;
 extern const char* graphic_supported;
@@ -490,7 +514,7 @@ extern const char* num_custom_presets_available;
 extern const char* urls;
 extern const char* policy_app_id;
 extern const char* enabled;
-
+extern const char* system_time;
 }  // namespace hmi_response
 
 namespace hmi_notification {

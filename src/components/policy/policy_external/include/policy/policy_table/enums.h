@@ -69,6 +69,7 @@ enum Parameter {
   P_SPEED,
   P_ENGINETORQUE,
   P_EXTERNALTEMPERATURE,
+  P_TURNSIGNAL,
   P_FUELLEVEL,
   P_FUELLEVEL_STATE,
   P_HEADLAMPSTATUS,
@@ -80,6 +81,7 @@ enum Parameter {
   P_VIN,
   P_ACCPEDALPOSITION,
   P_BELTSTATUS,
+  P_ELECTRONICPARKBRAKESTATUS,
   P_DRIVERBRAKING,
   P_PRNDL,
   P_RPM,
@@ -93,7 +95,6 @@ enum Parameter {
   P_EMERGENCYEVENT,
   P_ECALLINFO,
   P_ABS_STATE,
-  P_TURN_SIGNAL,
   P_FUEL_RANGE,
   P_TIRE_PRESSURE_VALUE,
   P_TPMS,
@@ -152,7 +153,9 @@ enum RequestType {
   RT_VEHICLE_DIAGNOSTICS,
   RT_EMERGENCY,
   RT_MEDIA,
-  RT_FOTA
+  RT_FOTA,
+  RT_OEM_SPECIFIC,
+  RT_EMPTY  // Added to allow empty Request Types handling
 };
 
 bool IsValidEnum(RequestType val);
@@ -170,6 +173,10 @@ bool EnumFromJsonString(const std::string& literal, Input* result);
 enum ModuleType {
   MT_CLIMATE,
   MT_RADIO,
+  MT_SEAT,
+  MT_AUDIO,
+  MT_LIGHT,
+  MT_HMI_SETTINGS
 };
 bool IsValidEnum(ModuleType val);
 const char* EnumToJsonString(ModuleType val);
