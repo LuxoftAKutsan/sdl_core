@@ -92,6 +92,7 @@ void VehicleInfoPlugin::ProcessResumptionSubscription(
     const auto it = ext.Subscriptions().find(ivi.second);
     if (ext.Subscriptions().end() != it) {
       subscriptions.insert(ivi.first);
+//      pending_subscriptions_.push_back(ivi.first);
     }
   }
 
@@ -168,6 +169,7 @@ smart_objects::SmartObjectSPtr VehicleInfoPlugin::CreateUnsubscriptionRequest(
 
   return request;
 }
+
 
 bool VehicleInfoPlugin::IsSubscribedAppExist(const std::string& ivi) {
   auto applications = application_manager_->applications();

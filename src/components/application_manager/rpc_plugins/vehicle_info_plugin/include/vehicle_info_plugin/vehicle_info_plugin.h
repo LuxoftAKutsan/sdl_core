@@ -86,12 +86,17 @@ class VehicleInfoPlugin : public plugins::RPCPlugin {
   smart_objects::SmartObjectSPtr CreateUnsubscriptionRequest(
       const std::set<std::string>& list_of_subscriptions);
 
+
+  // EventObserver interface
+public:
+
  private:
   bool IsSubscribedAppExist(const std::string& ivi);
   void DeleteSubscriptions(app_mngr::ApplicationSharedPtr app);
 
   std::unique_ptr<app_mngr::CommandFactory> command_factory_;
   app_mngr::ApplicationManager* application_manager_;
+
 };
 }
 
