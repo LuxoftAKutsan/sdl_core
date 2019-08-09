@@ -699,7 +699,7 @@ const std::string kSelectVehicleDataItemParams =
     "SELECT * FROM `vehicle_data_item_parameters` "
     "WHERE `parent_name` = ? AND `parent_key` = ?";
 
-const std::string kSelectParametrizedVehicleDataItemsKey =
+const std::string kSelectCompositeVehicleDataItemsKey =
     "SELECT DISTINCT `parent_name`, `parent_key` FROM "
     "`vehicle_data_item_parameters` "
     "LEFT JOIN "
@@ -710,7 +710,7 @@ const std::string kSelectParametrizedVehicleDataItemsKey =
     "`vehicle_data_item_parameters`.`parent_key` = `vdi_params`.`param_key` "
     "WHERE `vdi_params`.`param_key` IS NULL";
 
-const std::string kSelectNonParametrizedVehicleDataItems =
+const std::string kSelectPrimitiveVehicleDataItems =
     "SELECT * FROM `vehicle_data_item_definition` "
     "LEFT JOIN ( "
     "SELECT `parent_name`, `parent_key` FROM `vehicle_data_item_parameters` "

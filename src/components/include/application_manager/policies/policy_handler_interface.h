@@ -41,7 +41,7 @@
 #include "boost/optional.hpp"
 
 #include "application_manager/application.h"
-#include "application_manager/policies/custom_vehicle_data_povider.h"
+#include "application_manager/policies/custom_vehicle_data_provider.h"
 #include "application_manager/policies/policy_handler_observer.h"
 #include "interfaces/MOBILE_API.h"
 #include "policy/cache_manager_interface.h"

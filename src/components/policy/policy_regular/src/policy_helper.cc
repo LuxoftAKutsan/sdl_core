@@ -411,14 +411,14 @@ bool CheckAppPolicy::operator()(const AppPoliciesValueType& app_policy) {
         snapshot_app_policy_begin, snapshot_app_policy_end, find_app);
 
     if ((snapshot_app_policy_end != app) &&
-        (RESULT_CONSENT_NOT_REQIURED != result)) {
+        (RESULT_CONSENT_NOT_REQUIRED != result)) {
       SetPendingPermissions(*app, result);
       NotifySystem(*app);
     }
     return true;
   }
 
-  if (RESULT_CONSENT_NOT_REQIURED != result) {
+  if (RESULT_CONSENT_NOT_REQUIRED != result) {
     SetPendingPermissions(app_policy, result);
     NotifySystem(app_policy);
   }
@@ -497,7 +497,7 @@ policy::CheckAppPolicy::CheckPermissionsChanges(
   } else if (has_consent_needed_groups) {
     return RESULT_CONSENT_NEEDED;
   } else if (has_new_groups) {
-    return RESULT_CONSENT_NOT_REQIURED;
+    return RESULT_CONSENT_NOT_REQUIRED;
   }
 
   return RESULT_NO_CHANGES;

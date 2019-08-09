@@ -1656,8 +1656,6 @@ const std::string VehicleDataItem::kStruct = "Struct";
 const std::string VehicleDataItem::kString = "String";
 const std::string VehicleDataItem::kFloat = "Float";
 const std::string VehicleDataItem::kBoolean = "Boolean";
-const std::string VehicleDataItem::kName = "name";
-const std::string VehicleDataItem::kParams = "params";
 
 const std::vector<std::string> VehicleDataItem::kPODTypes = {
     kInteger, kFloat, kString, kBoolean};
@@ -1810,7 +1808,7 @@ void VehicleDataItem::ReportErrors(rpc::ValidationReport* report__) const {
   }
   if (!ValidateNaming(std::string(name))) {
     report__->set_validation_info(
-        "Invalid name valus [" + std::string(name) +
+        "Invalid name values [" + std::string(name) +
         "]. It should not contain spaces or invalid chars.");
   }
   if (!type.is_valid()) {
@@ -1825,7 +1823,7 @@ void VehicleDataItem::ReportErrors(rpc::ValidationReport* report__) const {
   }
   if (!ValidateNaming(std::string(key))) {
     report__->set_validation_info(
-        "Invalid key valus [" + std::string(key) +
+        "Invalid key values [" + std::string(key) +
         "]. It should not contain spaces or invalid chars.");
   }
   if (!array.is_valid()) {
@@ -1858,6 +1856,9 @@ void VehicleDataItem::ReportErrors(rpc::ValidationReport* report__) const {
   if (!minsize.is_valid()) {
     minsize.ReportErrors(&report__->ReportSubobject("minsize"));
   }
+  if (!maxsize.is_valid()) {
+    maxsize.ReportErrors(&report__->ReportSubobject("maxsize"));
+  }
   if (!minlength.is_valid()) {
     minlength.ReportErrors(&report__->ReportSubobject("minlength"));
   }
@@ -1888,8 +1889,8 @@ void VehicleDataItem::SetPolicyTableType(PolicyTableType pt_type) {
 
 bool VehicleDataItem::ValidateNaming(std::string str) const {
   auto contains_spec_chars = [](std::string str) {
-    const auto invlaid_chars = "!@#$%^&*";
-    return str.npos != str.find_first_of(invlaid_chars);
+    const auto invalid_chars = "!@#$%^&*";
+    return str.npos != str.find_first_of(invalid_chars);
   };
 
   auto contains_spaces = [](std::string str) {

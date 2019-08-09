@@ -847,12 +847,12 @@ bool SQLPTRepresentation::GatherVehicleData(
 
 bool SQLPTRepresentation::GatherVehicleDataItems(
     policy_table::VehicleDataItems* vehicle_data_items) const {
-  auto parameterized_vdi = SelectParameterizedVehicleDataItems();
+  auto parameterized_vdi = SelectCompositeVehicleDataItems();
   if (!parameterized_vdi.is_initialized()) {
     return false;
   }
 
-  auto non_parameterized_vdi = SelectNonParameterizedVehicleDataItems();
+  auto non_parameterized_vdi = SelectPrimitiveVehicleDataItems();
   if (!non_parameterized_vdi.is_initialized()) {
     return false;
   }
@@ -1723,9 +1723,9 @@ policy_table::VehicleDataItem SQLPTRepresentation::PopulateVDIFromQuery(
 }
 
 policy_table::VehicleDataItems
-SQLPTRepresentation::SelectParameterizedVehicleDataItems() const {
+SQLPTRepresentation::SelectCompositeVehicleDataItems() const {
   utils::dbms::SQLQuery query(db());
-  if (!query.Prepare(sql_pt::kSelectParametrizedVehicleDataItemsKey)) {
+  if (!query.Prepare(sql_pt::kSelectCompositeVehicleDataItemsKey)) {
     LOG4CXX_ERROR(logger_,
                   "Incorrect statement for parameterized vehicle data items");
     return policy_table::VehicleDataItems();
@@ -1748,9 +1748,9 @@ SQLPTRepresentation::SelectParameterizedVehicleDataItems() const {
 }
 
 policy_table::VehicleDataItems
-SQLPTRepresentation::SelectNonParameterizedVehicleDataItems() const {
+SQLPTRepresentation::SelectPrimitiveVehicleDataItems() const {
   utils::dbms::SQLQuery query(db());
-  if (!query.Prepare(sql_pt::kSelectNonParametrizedVehicleDataItems)) {
+  if (!query.Prepare(sql_pt::kSelectPrimitiveVehicleDataItems)) {
     LOG4CXX_ERROR(
         logger_,
         "Incorrect statement for non parameterized vehicle data items");
