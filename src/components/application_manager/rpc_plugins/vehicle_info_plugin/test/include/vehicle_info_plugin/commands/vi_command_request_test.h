@@ -40,9 +40,9 @@
 #include "application_manager/commands/command_request_impl.h"
 #include "application_manager/commands/command_request_test.h"
 #include "application_manager/event_engine/event.h"
+#include "application_manager/policies/mock_custom_vehicle_data_provider.h"
 #include "application_manager/smart_object_keys.h"
 #include "smart_objects/smart_object.h"
-#include "vehicle_info_plugin/mock_custom_vehicle_data_manager.h"
 #include "vehicle_info_plugin/vehicle_info_command_params.h"
 
 namespace test {
@@ -77,15 +77,18 @@ class VICommandRequestTest : public CommandRequestTest<kIsNice> {
         CommandsTest<kIsNice>::mock_rpc_service_,
         CommandsTest<kIsNice>::mock_hmi_capabilities_,
         CommandsTest<kIsNice>::mock_policy_handler_,
-        mock_custom_vehicle_data_manager_};
+        custom_vehicle_data_manager_};
     return std::make_shared<Command>(msg, params);
   }
 
-  testing::NiceMock<vehicle_info_plugin::MockCustomVehicleDataManager>
-      mock_custom_vehicle_data_manager_;
+  vehicle_info_plugin::CustomVehicleDataManager custom_vehicle_data_manager_;
+  testing::NiceMock<policy_test::MockCustomVehicleDataProvider>
+      mock_custom_vehicle_data_provider_;
 
  protected:
-  VICommandRequestTest() : CommandRequestTest<kIsNice>() {}
+  VICommandRequestTest()
+      : CommandRequestTest<kIsNice>()
+      , custom_vehicle_data_manager_(mock_custom_vehicle_data_provider_) {}
 
   void InitCommandVI(const uint32_t& timeout) {
     CommandRequestTest<kIsNice>::InitCommand(kDefaultTimeout_);

@@ -22,25 +22,23 @@ namespace policy_table = rpc::policy_table_interface_base;
 typedef boost::optional<const policy_table::VehicleDataItem> OptionalDataItem;
 typedef std::set<std::string> VehicleInfoSubscriptions;
 
-class CustomVehicleDataManagerImpl : public CustomVehicleDataManager {
+class CustomVehicleDataManagerImpl {
  public:
   CustomVehicleDataManagerImpl(
       policy::VehicleDataItemProvider& vehicle_data_provider);
-  bool ValidateVehicleDataItems(
-      const smart_objects::SmartObject& msg_params) OVERRIDE;
+  bool ValidateVehicleDataItems(const smart_objects::SmartObject& msg_params);
 
-  virtual smart_objects::SmartObject CreateHMIMessageParams(
-      const std::set<std::string>& item_names) OVERRIDE;
+  smart_objects::SmartObject CreateHMIMessageParams(
+      const std::set<std::string>& item_names);
 
   std::string GetVehicleDataItemType(
-      const std::string& vehicle_data_item_name) const OVERRIDE;
+      const std::string& vehicle_data_item_name) const;
 
-  virtual void CreateMobileMessageParams(
-      smart_objects::SmartObject& msg_params) OVERRIDE;
+  void CreateMobileMessageParams(smart_objects::SmartObject& msg_params);
 
-  bool IsVehicleDataName(const std::string& name) OVERRIDE;
+  bool IsVehicleDataName(const std::string& name);
 
-  bool IsVehicleDataKey(const std::string& key) OVERRIDE;
+  bool IsVehicleDataKey(const std::string& key);
 
  private:
   bool ValidateVehicleDataItem(

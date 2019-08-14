@@ -54,7 +54,7 @@ bool VehicleInfoPlugin::Init(
     policy::PolicyHandlerInterface& policy_handler) {
   application_manager_ = &app_manager;
   custom_vehicle_data_manager_.reset(
-      new CustomVehicleDataManagerImpl(policy_handler));
+      new CustomVehicleDataManager(policy_handler));
   command_factory_.reset(new vehicle_info_plugin::VehicleInfoCommandFactory(
       app_manager,
       rpc_service,

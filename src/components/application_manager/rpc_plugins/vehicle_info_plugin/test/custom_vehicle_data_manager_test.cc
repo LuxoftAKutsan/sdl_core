@@ -29,11 +29,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE. */
 
+#include "vehicle_info_plugin/custom_vehicle_data_manager.h"
 #include "application_manager/mock_message_helper.h"
 #include "application_manager/policies/mock_custom_vehicle_data_provider.h"
 #include "gtest/gtest.h"
 #include "test/application_manager/mock_application_manager.h"
-#include "vehicle_info_plugin/custom_vehicle_data_manager_impl.h"
 
 namespace vehicle_info_plugin_test {
 
@@ -55,12 +55,12 @@ class CustomVehicleDataManagerTest : public ::testing::Test {
   void SetUp() OVERRIDE {}
 
   void InitValidationManager(const policy_table::VehicleDataItems& items) {
-    using vehicle_info_plugin::CustomVehicleDataManagerImpl;
+    using vehicle_info_plugin::CustomVehicleDataManager;
 
     ON_CALL(mock_custom_vehicle_data_provider_, GetVehicleDataItems())
         .WillByDefault(Return(items));
     custom_vd_manager_.reset(
-        new CustomVehicleDataManagerImpl(mock_custom_vehicle_data_provider_));
+        new CustomVehicleDataManager(mock_custom_vehicle_data_provider_));
   }
 
   test::components::application_manager_test::MockApplicationManager

@@ -70,6 +70,8 @@ MATCHER_P(EqualMsgParams, msg_params, "") {
 
 TEST_F(VIGetVehicleDataRequestTest, Run_Success) {
   using namespace app_mngr;
+  using namespace rpc::policy_table_interface_base;
+
   auto command_msg = CreateMessage(smart_objects::SmartType_Map);
   (*command_msg)[strings::msg_params][strings::rpm] = true;
   (*command_msg)[strings::msg_params][kMobileParam] = true;
@@ -80,21 +82,20 @@ TEST_F(VIGetVehicleDataRequestTest, Run_Success) {
   ON_CALL(mock_message_helper_, vehicle_data())
       .WillByDefault(ReturnRef(vehicle_data));
 
-  std::string oem_vehicle_data_type_str;
-  smart_objects::EnumConversionHelper<mobile_apis::VehicleDataType::eType>::
-      EnumToString(mobile_apis::VehicleDataType::VEHICLEDATA_OEM_CUSTOM_DATA,
-                   &oem_vehicle_data_type_str);
+  std::vector<VehicleDataItem> vehicle_data_items;
+  VehicleDataItem custom_param;
+  custom_param.mark_initialized();
+  custom_param.name = kMobileParam;
+  custom_param.key = kHMIParam;
+  custom_param.type = VehicleDataItem::kString;
+  vehicle_data_items.push_back(custom_param);
 
-  smart_objects::SmartObject hmi_params;
-  hmi_params[kHMIParam] = smart_objects::SmartType_Map;
-  hmi_params[kHMIParam][strings::data_type] = oem_vehicle_data_type_str;
-  ON_CALL(mock_custom_vehicle_data_manager_, CreateHMIMessageParams(_))
-      .WillByDefault(Return(hmi_params));
+  ON_CALL(mock_custom_vehicle_data_provider_, GetVehicleDataItems())
+      .WillByDefault(Return(vehicle_data_items));
 
   smart_objects::SmartObject hmi_request_msg;
-  hmi_request_msg[strings::rpm] =
-      (*command_msg)[strings::msg_params][strings::rpm];
-  hmi_request_msg[kHMIParam] = hmi_params[kHMIParam];
+  hmi_request_msg[strings::rpm] = true;
+  hmi_request_msg[kHMIParam] = true;
 
   EXPECT_CALL(mock_rpc_service_,
               SendMessageToHMI(EqualMsgParams(hmi_request_msg)));
