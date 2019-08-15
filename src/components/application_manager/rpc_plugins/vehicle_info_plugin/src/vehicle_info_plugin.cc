@@ -34,7 +34,6 @@
 #include "application_manager/message_helper.h"
 #include "application_manager/plugin_manager/plugin_keys.h"
 #include "application_manager/smart_object_keys.h"
-#include "vehicle_info_plugin/custom_vehicle_data_manager_impl.h"
 #include "vehicle_info_plugin/vehicle_info_app_extension.h"
 #include "vehicle_info_plugin/vehicle_info_command_factory.h"
 
@@ -54,7 +53,7 @@ bool VehicleInfoPlugin::Init(
     policy::PolicyHandlerInterface& policy_handler) {
   application_manager_ = &app_manager;
   custom_vehicle_data_manager_.reset(
-      new CustomVehicleDataManager(policy_handler));
+      CustomVehicleDataManager::create(policy_handler));
   command_factory_.reset(new vehicle_info_plugin::VehicleInfoCommandFactory(
       app_manager,
       rpc_service,

@@ -46,6 +46,8 @@
 #include "application_manager/mock_message_helper.h"
 #include "application_manager/policies/mock_custom_vehicle_data_provider.h"
 #include "application_manager/policies/mock_policy_handler_interface.h"
+
+#include "vehicle_info_plugin/mock_custom_vehicle_data_manager.h"
 #include "vehicle_info_plugin/vehicle_info_command_params.h"
 
 namespace test {
@@ -82,17 +84,25 @@ class VICommandsTest : public CommandsTest<kIsNice> {
         CommandsTest<kIsNice>::mock_rpc_service_,
         CommandsTest<kIsNice>::mock_hmi_capabilities_,
         CommandsTest<kIsNice>::mock_policy_handler_,
-        custom_vehicle_data_manager_};
+        *custom_vehicle_data_manager_};
     return std::make_shared<Command>(msg, params);
   }
 
-  vehicle_info_plugin::CustomVehicleDataManager custom_vehicle_data_manager_;
+  std::unique_ptr<vehicle_info_plugin::CustomVehicleDataManager>
+      custom_vehicle_data_manager_;
+  vehicle_info_plugin::CustomVehicleDataManagerMock*
+      mock_custom_vehicle_data_manager_;
   testing::NiceMock<policy_test::MockCustomVehicleDataProvider>
       mock_custom_vehicle_data_provider_;
 
  protected:
-  VICommandsTest()
-      : custom_vehicle_data_manager_(mock_custom_vehicle_data_provider_) {}
+  VICommandsTest() {
+    mock_custom_vehicle_data_manager_ =
+        new vehicle_info_plugin::CustomVehicleDataManagerMock();
+    custom_vehicle_data_manager_.reset(
+        vehicle_info_plugin::CustomVehicleDataManager::create(
+            mock_custom_vehicle_data_manager_));
+  }
 
   void InitCommandVI(const uint32_t& timeout) {
     ON_CALL(CommandsTest<kIsNice>::app_mngr_, get_settings())

@@ -60,7 +60,7 @@ class CustomVehicleDataManagerTest : public ::testing::Test {
     ON_CALL(mock_custom_vehicle_data_provider_, GetVehicleDataItems())
         .WillByDefault(Return(items));
     custom_vd_manager_.reset(
-        new CustomVehicleDataManager(mock_custom_vehicle_data_provider_));
+        CustomVehicleDataManager::create(mock_custom_vehicle_data_provider_));
   }
 
   test::components::application_manager_test::MockApplicationManager

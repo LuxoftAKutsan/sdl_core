@@ -46,6 +46,7 @@
 #include "smart_objects/smart_object.h"
 #include "vehicle_info_plugin/commands/mobile/diagnostic_message_request.h"
 #include "vehicle_info_plugin/commands/vi_command_request_test.h"
+#include "vehicle_info_plugin/mock_custom_vehicle_data_manager.h"
 
 namespace test {
 namespace components {

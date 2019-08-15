@@ -37,6 +37,7 @@
 #include "mobile/unsubscribe_vehicle_data_response.h"
 
 #include "vehicle_info_plugin/commands/vi_commands_test.h"
+#include "vehicle_info_plugin/mock_custom_vehicle_data_manager.h"
 #include "vehicle_info_plugin/vehicle_info_command_factory.h"
 
 namespace test {

@@ -137,6 +137,9 @@ TEST_F(GetVehicleDataRequestTest, Run_EmptyMsgParams_UNSUCCESS) {
   const am::VehicleData kEmptyVehicleData;
   ON_CALL(mock_message_helper_, vehicle_data())
       .WillByDefault(ReturnRef(kEmptyVehicleData));
+  smart_objects::SmartObject empty_hmi_custom_params;
+  ON_CALL(*mock_custom_vehicle_data_manager_, CreateHMIMessageParams(_))
+      .WillByDefault(Return(empty_hmi_custom_params));
 
   MockAppPtr app(CreateMockApp());
   ON_CALL(app_mngr_, application(kConnectionKey)).WillByDefault(Return(app));
@@ -156,6 +159,10 @@ TEST_F(GetVehicleDataRequestTest,
 
   std::shared_ptr<UnwrappedGetVehicleDataRequest> command(
       CreateCommandVI<UnwrappedGetVehicleDataRequest>(command_msg));
+
+  smart_objects::SmartObject empty_hmi_custom_params;
+  ON_CALL(*mock_custom_vehicle_data_manager_, CreateHMIMessageParams(_))
+      .WillByDefault(Return(empty_hmi_custom_params));
 
   const am::VehicleData kEmptyVehicleData;
   ON_CALL(mock_message_helper_, vehicle_data())
@@ -184,6 +191,9 @@ TEST_F(GetVehicleDataRequestTest, Run_SUCCESS) {
 
   GetVehicleDataRequestPtr command(
       CreateCommandVI<GetVehicleDataRequest>(command_msg));
+
+  ON_CALL(*mock_custom_vehicle_data_manager_, IsVehicleDataName(_))
+      .WillByDefault(Return(true));
 
   am::VehicleData vehicle_data;
   vehicle_data.insert(am::VehicleData::value_type(
